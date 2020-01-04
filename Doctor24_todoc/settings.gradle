@@ -1,0 +1,2 @@
+rootProject.name='Doctor24_todoc'
+include ':app'
