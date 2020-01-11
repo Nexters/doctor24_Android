@@ -52,6 +52,9 @@ dependencies {
     implementation "androidx.lifecycle:lifecycle-extensions:$rootProject.lifecycle_version"
     implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
 
+    // motionLayout
+    implementation 'androidx.constraintlayout:constraintlayout:2.0.0-beta4'
+
     // google
     implementation "com.google.android.material:material:$rootProject.material_version"
     implementation "com.google.android.gms:play-services-location:$rootProject.playservice_version"

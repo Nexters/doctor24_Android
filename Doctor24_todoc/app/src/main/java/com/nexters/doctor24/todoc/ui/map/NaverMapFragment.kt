@@ -36,6 +36,7 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
             onCreate(savedInstanceState)
             getMapAsync(this@NaverMapFragment)
         }
+
     }
 
     override fun onStart() {
