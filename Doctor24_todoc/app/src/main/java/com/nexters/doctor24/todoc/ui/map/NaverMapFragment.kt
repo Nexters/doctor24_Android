@@ -23,7 +23,6 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
     }
 
     private lateinit var locationSource : FusedLocationSource
-
     override val layoutResId: Int
         get() = R.layout.navermap_fragment
     override val viewModel: NaverMapViewModel by viewModel()

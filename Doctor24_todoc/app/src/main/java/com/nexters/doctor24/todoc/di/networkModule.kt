@@ -1,6 +1,8 @@
 package com.nexters.doctor24.todoc.di
 
 import com.nexters.doctor24.todoc.BuildConfig
+import com.nexters.doctor24.todoc.data.MarkerDataSource
+import com.nexters.doctor24.todoc.data.MarkerDataSourceImpl
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import org.koin.core.module.Module
@@ -26,4 +28,6 @@ val networkModule: Module = module {
             .baseUrl(BASE_URL)
             .build()
     })
+
+    single{ MarkerDataSourceImpl(get()) as MarkerDataSource }
 }

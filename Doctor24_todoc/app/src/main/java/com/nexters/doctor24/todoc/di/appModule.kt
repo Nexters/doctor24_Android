@@ -9,5 +9,5 @@ import org.koin.dsl.module
 
 val appModule = module {
     single { androidContext().resources as Resources }
-    viewModel { NaverMapViewModel() }
+    viewModel { NaverMapViewModel(get()) }
 }
