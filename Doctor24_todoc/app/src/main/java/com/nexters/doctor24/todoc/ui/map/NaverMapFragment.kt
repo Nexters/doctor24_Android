@@ -2,6 +2,8 @@ package com.nexters.doctor24.todoc.ui.map
 
 import android.os.Bundle
 import android.view.View
+import android.widget.FrameLayout
+import com.google.android.material.tabs.TabLayout
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.LocationTrackingMode
 import com.naver.maps.map.NaverMap
@@ -12,8 +14,9 @@ import com.naver.maps.map.util.MarkerIcons
 import com.nexters.doctor24.todoc.R
 import com.nexters.doctor24.todoc.base.BaseFragment
 import com.nexters.doctor24.todoc.databinding.NavermapFragmentBinding
-import com.nexters.doctor24.todoc.ui.MainActivity
+import kotlinx.android.synthetic.main.navermap_fragment.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
+
 
 internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMapViewModel>(),
     OnMapReadyCallback {
@@ -36,6 +39,10 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
             onCreate(savedInstanceState)
             getMapAsync(this@NaverMapFragment)
         }
+
+        tab.addTab(tab.newTab().apply { text = "병원" })
+        tab.addTab(tab.newTab().apply { text = "약국" })
+        tab.addTab(tab.newTab().apply { text = "동물병원" })
 
     }
 
