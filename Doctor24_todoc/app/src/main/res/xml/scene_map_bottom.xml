@@ -8,6 +8,7 @@
         <OnSwipe
             motion:touchAnchorId="@+id/map_bottom"
             motion:touchAnchorSide="top"
+            motion:touchRegionId="@+id/map_bottom"
             motion:dragDirection="dragUp" />
     </Transition>
 </MotionScene>
