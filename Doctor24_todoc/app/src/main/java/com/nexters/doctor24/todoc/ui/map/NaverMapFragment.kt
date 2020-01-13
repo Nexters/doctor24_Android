@@ -1,8 +1,11 @@
 package com.nexters.doctor24.todoc.ui.map
 
+import android.location.Location
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.FrameLayout
+import androidx.lifecycle.Observer
 import com.google.android.material.tabs.TabLayout
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.LocationTrackingMode
@@ -21,14 +24,18 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMapViewModel>(),
     OnMapReadyCallback {
 
+    private val TAG = this@NaverMapFragment.javaClass.simpleName
+
     companion object {
         private const val LOCATION_PERMISSION_REQUEST_CODE = 1000
     }
 
-    private lateinit var locationSource : FusedLocationSource
     override val layoutResId: Int
         get() = R.layout.navermap_fragment
     override val viewModel: NaverMapViewModel by viewModel()
+
+    private lateinit var locationSource: FusedLocationSource
+    private lateinit var naverMap: NaverMap
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -44,6 +51,20 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
         tab.addTab(tab.newTab().apply { text = "약국" })
         tab.addTab(tab.newTab().apply { text = "동물병원" })
 
+        initObserve()
+    }
+
+    private fun initObserve() {
+        viewModel.hospitalMarkerDatas.observe(viewLifecycleOwner, Observer {
+            it.forEach { coord ->
+                Log.d(TAG, "hospitalMarker : $coord")
+                Marker().apply {
+                    position = coord.location
+                    icon = MarkerIcons.LIGHTBLUE
+                    map = naverMap
+                }
+            }
+        })
     }
 
     override fun onStart() {
@@ -93,6 +114,7 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
     }
 
     override fun onMapReady(map: NaverMap) {
+        naverMap = map
         map.uiSettings.apply {
             isCompassEnabled = false
             isRotateGesturesEnabled = false
@@ -108,11 +130,13 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
             minZoom = 4.0
         }
 
-
-        drawMarker(map)
+        map.addOnLocationChangeListener { location ->
+            viewModel.reqMarker(location.latitude, location.longitude)
+        }
+//        drawMarker(map)
     }
 
-    private fun drawMarker(naverMap : NaverMap) {
+    private fun drawMarker(naverMap: NaverMap) {
         arrayOf(
             LatLng(37.5666102, 126.9783881),
             LatLng(37.57000, 126.97618),
