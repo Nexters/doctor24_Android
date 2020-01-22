@@ -7,6 +7,8 @@ import androidx.lifecycle.Transformations
 import com.airbnb.lottie.model.Marker
 import com.naver.maps.geometry.LatLng
 import com.nexters.doctor24.todoc.base.BaseViewModel
+import com.nexters.doctor24.todoc.base.DefaultDispatcherProvider
+import com.nexters.doctor24.todoc.base.DispatcherProvider
 import com.nexters.doctor24.todoc.data.marker.MarkerTypeEnum
 import com.nexters.doctor24.todoc.data.marker.response.ResMapMarker
 import com.nexters.doctor24.todoc.repository.MarkerRepository
@@ -15,7 +17,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import okhttp3.internal.toImmutableList
 
-internal class NaverMapViewModel(private val repo: MarkerRepository) : BaseViewModel() {
+internal class NaverMapViewModel(private val dispatchers: DispatcherProvider, private val repo: MarkerRepository) : BaseViewModel() {
 
     private val _markerList = MutableLiveData<List<ResMapMarker>>()
     private val _hospitalMarkerDatas = Transformations.map(_markerList) {
@@ -28,10 +30,10 @@ internal class NaverMapViewModel(private val repo: MarkerRepository) : BaseViewM
     val hospitalMarkerDatas : LiveData<List<MarkerUIData>> get() = _hospitalMarkerDatas
 
     fun reqMarker(latitude: Double, longitude: Double) {
-        uiScope.launch(Dispatchers.IO) {
+        uiScope.launch(dispatchers.io()) {
             try {
                 val result = repo.getMarkers(latitude.toString(), longitude.toString(), MarkerTypeEnum.HOSPITAL)
-                withContext(Dispatchers.Main) {
+                withContext(dispatchers.main()) {
                     _markerList.value = result
                 }
             } catch (e:Exception) {

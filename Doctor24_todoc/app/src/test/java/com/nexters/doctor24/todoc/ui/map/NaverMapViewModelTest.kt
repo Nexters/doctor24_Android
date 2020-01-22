@@ -6,7 +6,9 @@ import com.nexters.doctor24.todoc.data.marker.MarkerTypeEnum
 import com.nexters.doctor24.todoc.data.marker.response.OperatingDate
 import com.nexters.doctor24.todoc.data.marker.response.ResMapMarker
 import com.nexters.doctor24.todoc.repository.MarkerRepository
-import com.nexters.doctor24.todoc.rule.TestCoroutineRule
+import com.nexters.doctor24.todoc.rule.CoroutineTestRule
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Rule
@@ -19,12 +21,13 @@ import org.mockito.junit.MockitoJUnitRunner
 /**
  * Created by jiyoung on 13/01/2020
  */
+@ExperimentalCoroutinesApi
 @RunWith(MockitoJUnitRunner::class)
 class NaverMapViewModelTest {
     @get:Rule
     var instantTaskExecutorRule = InstantTaskExecutorRule()
     @get:Rule
-    val testCoroutineRule = TestCoroutineRule()
+    var testCoroutineRule = CoroutineTestRule()
 
     private lateinit var viewModel : NaverMapViewModel
     @Mock
@@ -34,7 +37,7 @@ class NaverMapViewModelTest {
     fun init() {
 //        MockitoAnnotations.initMocks(this)
 //        startKoin { modules(listOf(networkModule, repositoryModule)) }
-        viewModel = NaverMapViewModel(markerRepo)
+        viewModel = NaverMapViewModel(testCoroutineRule.testDispatcherProvider, markerRepo)
     }
 
     @Test
@@ -44,7 +47,7 @@ class NaverMapViewModelTest {
             name = "강남병원"
         ))
 
-        testCoroutineRule.runBlockingTest {
+        testCoroutineRule.testDispatcher.runBlockingTest {
             Mockito. `when` (markerRepo.getMarkers("0.0", "0.0", MarkerTypeEnum.HOSPITAL)).thenReturn(
                 listOf(
                     ResMapMarker(
@@ -58,10 +61,27 @@ class NaverMapViewModelTest {
             )
             viewModel.reqMarker(0.0,0.0)
             viewModel.hospitalMarkerDatas.observeForever {
-                println("hospitalMarderDatas : $it")
+                println("hospitalMarkerDatas : $it")
                 assertEquals(expectedResult, it)
             }
         }
+    }
+
+    @Test
+    fun `(Given) Map 화면 진입 시 (When) x(아무 조작도 하지 않음) (Then) 하단에 주변 병원 리스트 텍스트가 노출`() {
+        val expectedResult = "주변 병원 정보"
+        /*viewModel.bottomTitle.observeForever {
+            assertEquals(expectedResult, it)
+        }*/
+    }
+
+    @Test
+    fun `(Given) Map 화면에서 (When) 약국 탭을 눌렀을 때 (Then) 하단에 주변 약국 리스트 텍스트가 노출`() {
+
+    }
+
+    @Test
+    fun `(Given) Map 화면에서 (When) 동물병원 탭을 눌렀을 때 (Then) 하단에 주변 동물병원 리스트 텍스트가 노`() {
 
     }
 }
