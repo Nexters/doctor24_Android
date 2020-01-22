@@ -16,6 +16,7 @@ import com.naver.maps.map.util.FusedLocationSource
 import com.naver.maps.map.util.MarkerIcons
 import com.nexters.doctor24.todoc.R
 import com.nexters.doctor24.todoc.base.BaseFragment
+import com.nexters.doctor24.todoc.data.marker.MarkerTypeEnum
 import com.nexters.doctor24.todoc.databinding.NavermapFragmentBinding
 import kotlinx.android.synthetic.main.navermap_fragment.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -39,6 +40,9 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        binding.apply {
+            vm = viewModel
+        }
 
         locationSource = FusedLocationSource(this, LOCATION_PERMISSION_REQUEST_CODE)
 
@@ -47,11 +51,26 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
             getMapAsync(this@NaverMapFragment)
         }
 
-        tab.addTab(tab.newTab().apply { text = "병원" })
-        tab.addTab(tab.newTab().apply { text = "약국" })
-        tab.addTab(tab.newTab().apply { text = "동물병원" })
-
+        initView()
         initObserve()
+    }
+
+    private fun initView() {
+        viewModel.tabList.forEach {
+            binding.tab.run {
+                addTab(newTab().apply { text = it.title })
+            }
+        }
+
+        binding.tab.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener{
+            override fun onTabReselected(tab: TabLayout.Tab?) {}
+
+            override fun onTabUnselected(tab: TabLayout.Tab?) {}
+
+            override fun onTabSelected(tab: TabLayout.Tab?) {
+                tab?.position?.let { viewModel.onChangeTab(it) }
+            }
+        })
     }
 
     private fun initObserve() {
@@ -64,6 +83,10 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
                     map = naverMap
                 }
             }
+        })
+
+        viewModel.tabChangeEvent.observe(viewLifecycleOwner, Observer {
+            viewModel.onChangeBottomTitle(getString(R.string.map_bottom_sheet_title).format(viewModel.tabList[it].title))
         })
     }
 
