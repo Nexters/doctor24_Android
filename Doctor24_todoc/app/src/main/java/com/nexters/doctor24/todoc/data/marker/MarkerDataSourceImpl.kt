@@ -7,6 +7,15 @@ import kotlinx.coroutines.awaitAll
 import retrofit2.Retrofit
 
 internal class MarkerDataSourceImpl(val retrofit: Retrofit) : MarkerDataSource {
-    override suspend fun getMarkers(lat:String, long:String, type: MarkerTypeEnum): List<ResMapMarker> = retrofit.create(
-        APIMarker::class.java).getMarkers(latitude = lat, longitude = long, type = type.type)
+    override suspend fun getMarkers(lat:String, long:String, type: MarkerTypeEnum): List<ResMapMarker>
+            = retrofit.create(APIMarker::class.java).getMarkers(latitude = lat, longitude = long, type = type.type)
+
+    override suspend fun getBounds(
+        xlat: String,
+        xlong: String,
+        zlat: String,
+        zlong: String,
+        type: MarkerTypeEnum
+    ): List<ResMapMarker>
+    = retrofit.create(APIMarker::class.java).getBounds(type = type.type, xlat = xlat, xlong = xlong, zlat = zlat, zlong = zlong)
 }

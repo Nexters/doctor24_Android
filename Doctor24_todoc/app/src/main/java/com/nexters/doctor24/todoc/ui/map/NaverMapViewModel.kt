@@ -20,6 +20,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import okhttp3.internal.toImmutableList
 import com.nexters.doctor24.todoc.base.Result
+import com.nexters.doctor24.todoc.base.SingleLiveEvent
 
 internal class NaverMapViewModel(private val dispatchers: DispatcherProvider,
                                  private val repo: MarkerRepository,
@@ -43,6 +44,9 @@ internal class NaverMapViewModel(private val dispatchers: DispatcherProvider,
 
     private val _mapAddressData = MutableLiveData<Result<ResMapAddress>>()
     val mapAddressData : LiveData<Result<ResMapAddress>> get() = _mapAddressData
+
+    private val _boundsEvent = SingleLiveEvent<Unit>()
+    val boundsEvent : LiveData<Unit> get() = _boundsEvent
 
     private val _tabChangeEvent = MutableLiveData<Int>().apply { postValue(0) }
     val tabChangeEvent : LiveData<Int> get() = _tabChangeEvent
@@ -73,6 +77,19 @@ internal class NaverMapViewModel(private val dispatchers: DispatcherProvider,
         }
     }
 
+    fun reqBounds(xLocation: LatLng, zLocation: LatLng) {
+        uiScope.launch(dispatchers.io()) {
+            try {
+                val result = repo.getBounds(xLocation = xLocation, zLocation = zLocation, type = MarkerTypeEnum.HOSPITAL)
+                withContext(dispatchers.main()) {
+                    _markerList.value = result
+                }
+            } catch (e:Exception) {
+
+            }
+        }
+    }
+
     fun onChangedLocation(location: LatLng) {
         if(_currentLocation.value != location) {
             _currentLocation.value = location
@@ -83,6 +100,10 @@ internal class NaverMapViewModel(private val dispatchers: DispatcherProvider,
         currentLocation.value?.let {
             reqAddress("${it.longitude},${it.latitude}")
         }
+    }
+
+    fun onClickGetBounds() {
+        _boundsEvent.call()
     }
 
     fun onChangeTab(position: Int) {

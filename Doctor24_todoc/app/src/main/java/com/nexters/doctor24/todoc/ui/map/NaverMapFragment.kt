@@ -104,6 +104,11 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
         viewModel.currentLocation.observe(viewLifecycleOwner, Observer {
             viewModel.reqMarker(it.latitude, it.longitude)
         })
+
+        viewModel.boundsEvent.observe(viewLifecycleOwner, Observer {
+            val bounds = naverMap.contentBounds
+            viewModel.reqBounds(bounds.southWest, bounds.northEast)
+        })
     }
 
     override fun onStart() {
