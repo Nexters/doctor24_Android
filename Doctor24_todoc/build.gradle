@@ -17,6 +17,7 @@ buildscript {
         koin_version = '2.0.1'
         mockito_version = '3.2.4'
         map_version = '3.6.2'
+        timber_version = '4.7.1'
     }
     repositories {
         google()

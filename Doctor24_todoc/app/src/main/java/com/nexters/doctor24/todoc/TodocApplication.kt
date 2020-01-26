@@ -8,6 +8,7 @@ import com.nexters.doctor24.todoc.di.networkModule
 import com.nexters.doctor24.todoc.di.repositoryModule
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
+import timber.log.Timber
 
 /**
  * Created by jiyoung on 07/01/2020
@@ -15,6 +16,10 @@ import org.koin.core.context.startKoin
 class TodocApplication : Application() {
     override fun onCreate() {
         super.onCreate()
+
+        if (BuildConfig.DEBUG) {
+            Timber.plant(Timber.DebugTree())
+        }
 
         startKoin {
             androidContext(this@TodocApplication)
