@@ -11,23 +11,6 @@ import org.junit.runner.Description
 /**
  * Created by jiyoung on 13/01/2020
  */
-/*
-class TestCoroutineRule : TestRule {
-    private val testCoroutineDispatcher = TestCoroutineDispatcher()
-    private val testCoroutineScope = TestCoroutineScope(testCoroutineDispatcher)
-
-    override fun apply(base: Statement?, description: Description?) = object: Statement() {
-        @Throws(Throwable::class)
-        override fun evaluate() {
-            Dispatchers.setMain(testCoroutineDispatcher)
-            base?.evaluate()
-            Dispatchers.resetMain()
-            testCoroutineScope.cleanupTestCoroutines()
-        }
-    }
-
-    fun runBlockingTest(block: suspend TestCoroutineScope.() -> Unit) = testCoroutineScope.runBlockingTest { block() }
-}*/
 @ExperimentalCoroutinesApi
 class CoroutineTestRule(val testDispatcher: TestCoroutineDispatcher = TestCoroutineDispatcher()) : TestWatcher() {
 

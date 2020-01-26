@@ -1,7 +1,9 @@
 package com.nexters.doctor24.todoc.ui.map
 
+import android.content.res.Resources
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.naver.maps.geometry.LatLng
+import com.nexters.doctor24.todoc.R
 import com.nexters.doctor24.todoc.data.marker.MarkerTypeEnum
 import com.nexters.doctor24.todoc.data.marker.response.OperatingDate
 import com.nexters.doctor24.todoc.data.marker.response.ResMapMarker
@@ -33,11 +35,14 @@ class NaverMapViewModelTest {
     @Mock
     private lateinit var markerRepo : MarkerRepository
 
+    @Mock
+    lateinit var resources: Resources
+
     @Before
     fun init() {
 //        MockitoAnnotations.initMocks(this)
 //        startKoin { modules(listOf(networkModule, repositoryModule)) }
-        viewModel = NaverMapViewModel(testCoroutineRule.testDispatcherProvider, markerRepo)
+        viewModel = NaverMapViewModel(testCoroutineRule.testDispatcherProvider, markerRepo, resources)
     }
 
     @Test
@@ -68,20 +73,41 @@ class NaverMapViewModelTest {
     }
 
     @Test
-    fun `(Given) Map 화면 진입 시 (When) x(아무 조작도 하지 않음) (Then) 하단에 주변 병원 리스트 텍스트가 노출`() {
-        val expectedResult = "주변 병원 정보"
-        /*viewModel.bottomTitle.observeForever {
+    fun `(Given) Map 화면에서 (When) 병원 탭을 눌렀을 때 (Then) 하단에 주변 병원 리스트 텍스트가 노출`() {
+        val expectedResult = "주변 병원 리스트"
+        viewModel.onChangeTab(0)
+        viewModel.tabChangeEvent.observeForever {
+            viewModel.onChangeBottomTitle(String.format("주변 %s 리스트", viewModel.tabList[it].title))
+        }
+        viewModel.bottomTitle.observeForever {
+            println("bottomTitle : $it")
             assertEquals(expectedResult, it)
-        }*/
+        }
     }
 
     @Test
     fun `(Given) Map 화면에서 (When) 약국 탭을 눌렀을 때 (Then) 하단에 주변 약국 리스트 텍스트가 노출`() {
-
+        val expectedResult = "주변 약국 리스트"
+        viewModel.onChangeTab(1)
+        viewModel.tabChangeEvent.observeForever {
+            viewModel.onChangeBottomTitle(String.format("주변 %s 리스트", viewModel.tabList[it].title))
+        }
+        viewModel.bottomTitle.observeForever {
+            println("bottomTitle : $it")
+            assertEquals(expectedResult, it)
+        }
     }
 
     @Test
     fun `(Given) Map 화면에서 (When) 동물병원 탭을 눌렀을 때 (Then) 하단에 주변 동물병원 리스트 텍스트가 노`() {
-
+        val expectedResult = "주변 동물병원 리스트"
+        viewModel.onChangeTab(2)
+        viewModel.tabChangeEvent.observeForever {
+            viewModel.onChangeBottomTitle(String.format("주변 %s 리스트", viewModel.tabList[it].title))
+        }
+        viewModel.bottomTitle.observeForever {
+            println("bottomTitle : $it")
+            assertEquals(expectedResult, it)
+        }
     }
 }
