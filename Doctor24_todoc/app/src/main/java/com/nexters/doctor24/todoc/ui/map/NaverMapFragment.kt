@@ -17,7 +17,6 @@ import com.nexters.doctor24.todoc.databinding.NavermapFragmentBinding
 import kotlinx.android.synthetic.main.navermap_fragment.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-
 internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMapViewModel>(),
     OnMapReadyCallback {
 
@@ -119,7 +118,7 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
             LatLng(37.56138, 126.97970)
         ).map { coord ->
             Marker().apply {
-                position = coord
+                position = coord    
                 icon = MarkerIcons.GRAY
                 map = naverMap
             }
