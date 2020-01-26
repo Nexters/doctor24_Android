@@ -2,6 +2,7 @@ package com.nexters.doctor24.todoc
 
 import android.app.Application
 import com.naver.maps.map.NaverMapSdk
+import com.nexters.doctor24.todoc.api.DefaultNaverAPIInfo
 import com.nexters.doctor24.todoc.di.appModule
 import com.nexters.doctor24.todoc.di.dbModule
 import com.nexters.doctor24.todoc.di.networkModule
@@ -20,6 +21,9 @@ class TodocApplication : Application() {
         if (BuildConfig.DEBUG) {
             Timber.plant(Timber.DebugTree())
         }
+
+        NaverMapSdk.getInstance(this).client =
+            NaverMapSdk.NaverCloudPlatformClient(DefaultNaverAPIInfo.HEADER_CLIENT_ID_VALUE)
 
         startKoin {
             androidContext(this@TodocApplication)
