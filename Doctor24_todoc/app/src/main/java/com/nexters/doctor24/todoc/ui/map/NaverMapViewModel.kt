@@ -34,10 +34,10 @@ internal class NaverMapViewModel(private val dispatchers: DispatcherProvider,
     private val _bottomTitle = MutableLiveData<String>()
     val bottomTitle : LiveData<String> get() = _bottomTitle
 
-    fun reqMarker(latitude: Double, longitude: Double) {
+    fun reqMarker(location: LatLng) {
         uiScope.launch(dispatchers.io()) {
             try {
-                val result = repo.getMarkers(latitude.toString(), longitude.toString(), MarkerTypeEnum.HOSPITAL)
+                val result = repo.getMarkers(location.latitude.toString(), location.longitude.toString(), MarkerTypeEnum.HOSPITAL)
                 withContext(dispatchers.main()) {
                     _markerList.value = result
                 }

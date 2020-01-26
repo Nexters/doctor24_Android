@@ -153,23 +153,6 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
             minZoom = 4.0
         }
 
-        map.addOnLocationChangeListener { location ->
-            viewModel.reqMarker(location.latitude, location.longitude)
-        }
-//        drawMarker(map)
-    }
-
-    private fun drawMarker(naverMap: NaverMap) {
-        arrayOf(
-            LatLng(37.5666102, 126.9783881),
-            LatLng(37.57000, 126.97618),
-            LatLng(37.56138, 126.97970)
-        ).map { coord ->
-            Marker().apply {
-                position = coord
-                icon = MarkerIcons.GRAY
-                map = naverMap
-            }
-        }
+        viewModel.reqMarker(map.cameraPosition.target)
     }
 }

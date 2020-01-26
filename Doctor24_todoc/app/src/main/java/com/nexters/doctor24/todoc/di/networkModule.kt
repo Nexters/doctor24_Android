@@ -3,8 +3,6 @@ package com.nexters.doctor24.todoc.di
 import com.nexters.doctor24.todoc.BuildConfig
 import com.nexters.doctor24.todoc.api.DefaultAPIInfo
 import com.nexters.doctor24.todoc.api.DefaultNaverAPIInfo
-import com.nexters.doctor24.todoc.data.map.MapDataSource
-import com.nexters.doctor24.todoc.data.map.MapDataSourceImpl
 import com.nexters.doctor24.todoc.data.marker.MarkerDataSource
 import com.nexters.doctor24.todoc.data.marker.MarkerDataSourceImpl
 import okhttp3.OkHttpClient
@@ -12,7 +10,6 @@ import okhttp3.logging.HttpLoggingInterceptor
 import org.koin.core.module.Module
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
-import retrofit2.CallAdapter
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
@@ -63,5 +60,4 @@ val networkModule: Module = module {
     }
 
     single{ MarkerDataSourceImpl(get(named("todocApi"))) as MarkerDataSource }
-    factory{ MapDataSourceImpl(get(named("naverApi")))  as MapDataSource }
 }
