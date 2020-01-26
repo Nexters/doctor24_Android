@@ -42,7 +42,7 @@ class NaverMapViewModelTest {
     fun init() {
 //        MockitoAnnotations.initMocks(this)
 //        startKoin { modules(listOf(networkModule, repositoryModule)) }
-        viewModel = NaverMapViewModel(testCoroutineRule.testDispatcherProvider, markerRepo, resources)
+        viewModel = NaverMapViewModel(testCoroutineRule.testDispatcherProvider, markerRepo)
     }
 
     @Test
