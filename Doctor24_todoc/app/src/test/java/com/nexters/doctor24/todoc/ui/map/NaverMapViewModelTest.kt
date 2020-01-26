@@ -1,12 +1,19 @@
 package com.nexters.doctor24.todoc.ui.map
 
 import android.content.res.Resources
+import android.location.Location
+import android.location.LocationProvider
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.naver.maps.geometry.LatLng
 import com.nexters.doctor24.todoc.R
+import com.nexters.doctor24.todoc.data.map.response.ResAddressData
+import com.nexters.doctor24.todoc.data.map.response.ResArea
+import com.nexters.doctor24.todoc.data.map.response.ResMapAddress
+import com.nexters.doctor24.todoc.data.map.response.ResRegion
 import com.nexters.doctor24.todoc.data.marker.MarkerTypeEnum
 import com.nexters.doctor24.todoc.data.marker.response.OperatingDate
 import com.nexters.doctor24.todoc.data.marker.response.ResMapMarker
+import com.nexters.doctor24.todoc.repository.MapRepository
 import com.nexters.doctor24.todoc.repository.MarkerRepository
 import com.nexters.doctor24.todoc.rule.CoroutineTestRule
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -36,13 +43,16 @@ class NaverMapViewModelTest {
     private lateinit var markerRepo : MarkerRepository
 
     @Mock
+    private lateinit var mapRepo : MapRepository
+
+    @Mock
     lateinit var resources: Resources
 
     @Before
     fun init() {
 //        MockitoAnnotations.initMocks(this)
 //        startKoin { modules(listOf(networkModule, repositoryModule)) }
-        viewModel = NaverMapViewModel(testCoroutineRule.testDispatcherProvider, markerRepo)
+        viewModel = NaverMapViewModel(testCoroutineRule.testDispatcherProvider, markerRepo, mapRepo)
     }
 
     @Test
@@ -73,6 +83,35 @@ class NaverMapViewModelTest {
     }
 
     @Test
+    fun `(Given) Map화면에서 (When) 구단위 주소 버튼 누르면 (Then) api 호출해서 주소받아오기`() {
+        val expectedResult = "인제군"
+
+        testCoroutineRule.testDispatcher.runBlockingTest {
+            Mockito. `when` (mapRepo.getAddress("128.12345,37.98776")).thenReturn(
+                ResMapAddress(
+                    addressData = listOf(
+                        ResAddressData(
+                            typeName = "legalcode",
+                            region = ResRegion(
+                                area2 = ResArea(
+                                    areaName = "인제군",
+                                    coords = null
+                                )
+                            )
+                        )
+                    )
+                )
+            )
+            viewModel.currentLocation.value = LatLng(128.12345, 37.98776)
+            viewModel.onClickGetAddress()
+            viewModel.mapAddressData.observeForever{
+                println("mapAddressData : $it")
+                assertEquals(expectedResult, it)
+            }
+        }
+    }
+
+    /*@Test
     fun `(Given) Map 화면에서 (When) 병원 탭을 눌렀을 때 (Then) 하단에 주변 병원 리스트 텍스트가 노출`() {
         val expectedResult = "주변 병원 리스트"
         viewModel.onChangeTab(0)
@@ -109,5 +148,5 @@ class NaverMapViewModelTest {
             println("bottomTitle : $it")
             assertEquals(expectedResult, it)
         }
-    }
+    }*/
 }

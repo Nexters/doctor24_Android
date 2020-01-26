@@ -5,6 +5,8 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.FrameLayout
+import android.widget.Toast
+import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
 import com.google.android.material.tabs.TabLayout
 import com.naver.maps.geometry.LatLng
@@ -15,7 +17,13 @@ import com.naver.maps.map.overlay.Marker
 import com.naver.maps.map.util.FusedLocationSource
 import com.naver.maps.map.util.MarkerIcons
 import com.nexters.doctor24.todoc.R
+import com.nexters.doctor24.todoc.api.error.ErrorHandler
 import com.nexters.doctor24.todoc.base.BaseFragment
+import com.nexters.doctor24.todoc.base.Progress
+import com.nexters.doctor24.todoc.base.Error
+import com.nexters.doctor24.todoc.base.Result
+import com.nexters.doctor24.todoc.base.Success
+import com.nexters.doctor24.todoc.data.map.response.ResMapAddress
 import com.nexters.doctor24.todoc.data.marker.MarkerTypeEnum
 import com.nexters.doctor24.todoc.databinding.NavermapFragmentBinding
 import kotlinx.android.synthetic.main.navermap_fragment.*
@@ -88,6 +96,14 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
         viewModel.tabChangeEvent.observe(viewLifecycleOwner, Observer {
             viewModel.onChangeBottomTitle(getString(R.string.map_bottom_sheet_title).format(viewModel.tabList[it].title))
         })
+
+        viewModel.mapAddressData.observe(viewLifecycleOwner, Observer {
+            handleResponse(it)
+        })
+
+        viewModel.currentLocation.observe(viewLifecycleOwner, Observer {
+            viewModel.reqMarker(it.latitude, it.longitude)
+        })
     }
 
     override fun onStart() {
@@ -153,22 +169,28 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
             minZoom = 4.0
         }
 
-        map.addOnLocationChangeListener { location ->
-            viewModel.reqMarker(location.latitude, location.longitude)
-        }
+        viewModel.onChangedLocation(map.cameraPosition.target)
 //        drawMarker(map)
     }
 
-    private fun drawMarker(naverMap: NaverMap) {
-        arrayOf(
-            LatLng(37.5666102, 126.9783881),
-            LatLng(37.57000, 126.97618),
-            LatLng(37.56138, 126.97970)
-        ).map { coord ->
-            Marker().apply {
-                position = coord
-                icon = MarkerIcons.GRAY
-                map = naverMap
+    private fun handleResponse(result: Result<ResMapAddress>) {
+        when (result) {
+            //comment this Success check if you are observing data from DB
+            is Success<ResMapAddress> -> {
+                result.data.addressData?.get(0)?.region?.area2?.areaName?.let {
+                    Toast.makeText(context, "현재 구 주소 : $it", Toast.LENGTH_SHORT).show()
+                }
+            }
+            is Error -> {
+                view?.let { view ->
+                    ErrorHandler.handleError(
+                        view,
+                        result
+                    )
+                }
+            }
+            is Progress -> {
+                binding.progressBar.isVisible = result.isLoading
             }
         }
     }
