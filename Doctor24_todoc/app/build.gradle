@@ -29,12 +29,20 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
 
+    kotlinOptions {
+        jvmTarget = JavaVersion.VERSION_1_8.toString()
+    }
+
     dataBinding {
         enabled = true
     }
 
     androidExtensions {
         experimental = true
+    }
+
+    testOptions {
+        unitTests.returnDefaultValues = true
     }
 }
 
@@ -81,6 +89,9 @@ dependencies {
     implementation "org.koin:koin-core:$rootProject.koin_version"
     implementation "org.koin:koin-androidx-scope:$rootProject.koin_version" // Koin for Lifecycle scoping
     implementation "org.koin:koin-androidx-viewmodel:$rootProject.koin_version" // Koin for Android Architecture ViewModel
+
+    // debug
+    implementation "com.jakewharton.timber:timber:$rootProject.timber_version"
 
     // test
     testImplementation 'junit:junit:4.13'

@@ -6,10 +6,10 @@ import retrofit2.http.Path
 import retrofit2.http.Query
 
 internal interface  APIMarker {
-    @GET("medicals/{type}/facilities")
+    @GET("medicals/{type}/latitudes/{latitude}/longitudes/{longitude}/facilities")
     suspend fun getMarkers(
         @Path("type") type: String,
-        @Query("latitude") latitude: String,
-        @Query("longitude") longitude: String
+        @Path("latitude") latitude: String,
+        @Path("longitude") longitude: String
     ): List<ResMapMarker>
 }
