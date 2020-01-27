@@ -4,7 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-
+        <variable
+            name="vm"
+            type="com.nexters.doctor24.todoc.ui.map.NaverMapViewModel" />
     </data>
 
     <androidx.constraintlayout.motion.widget.MotionLayout
@@ -54,7 +56,20 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+            app:layout_constraintEnd_toEndOf="parent"
+            >
+
+            <TextView
+                android:id="@+id/tvBottomTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textStyle="bold"
+                android:text="@{vm.bottomTitle}"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                />
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.constraintlayout.motion.widget.MotionLayout>
 </layout>

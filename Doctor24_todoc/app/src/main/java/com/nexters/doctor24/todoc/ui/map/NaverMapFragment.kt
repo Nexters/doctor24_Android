@@ -2,8 +2,6 @@ package com.nexters.doctor24.todoc.ui.map
 
 import android.os.Bundle
 import android.view.View
-import android.widget.FrameLayout
-import com.google.android.material.tabs.TabLayout
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.LocationTrackingMode
 import com.naver.maps.map.NaverMap
@@ -17,6 +15,7 @@ import com.nexters.doctor24.todoc.databinding.NavermapFragmentBinding
 import kotlinx.android.synthetic.main.navermap_fragment.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
+
 internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMapViewModel>(),
     OnMapReadyCallback {
 
@@ -24,7 +23,7 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
         private const val LOCATION_PERMISSION_REQUEST_CODE = 1000
     }
 
-    private lateinit var locationSource : FusedLocationSource
+    private lateinit var locationSource: FusedLocationSource
     override val layoutResId: Int
         get() = R.layout.navermap_fragment
     override val viewModel: NaverMapViewModel by viewModel()
@@ -111,14 +110,14 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
         drawMarker(map)
     }
 
-    private fun drawMarker(naverMap : NaverMap) {
+    private fun drawMarker(naverMap: NaverMap) {
         arrayOf(
             LatLng(37.5666102, 126.9783881),
             LatLng(37.57000, 126.97618),
             LatLng(37.56138, 126.97970)
         ).map { coord ->
             Marker().apply {
-                position = coord    
+                position = coord
                 icon = MarkerIcons.GRAY
                 map = naverMap
             }
