@@ -1,8 +1,8 @@
 package com.nexters.doctor24.todoc.ui.map
 
 import android.os.Bundle
-import android.util.Log
 import android.view.View
+import android.widget.TimePicker
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.LocationTrackingMode
 import com.naver.maps.map.NaverMap
@@ -14,11 +14,12 @@ import com.nexters.doctor24.todoc.R
 import com.nexters.doctor24.todoc.base.BaseFragment
 import com.nexters.doctor24.todoc.databinding.NavermapFragmentBinding
 import kotlinx.android.synthetic.main.layout_set_time.*
+import kotlinx.android.synthetic.main.layout_time_picker.*
 import kotlinx.android.synthetic.main.navermap_fragment.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
-internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMapViewModel>(),
+internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMapViewModel>(), TimePicker.OnTimeChangedListener,
     OnMapReadyCallback {
 
     companion object {
@@ -45,9 +46,19 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
         tab.addTab(tab.newTab().apply { text = "동물병원" })
 
         ll_layout_set_start_time.setOnClickListener {
-            Log.e("mapFragment","시간번경")
+            include_set_time_picker.visibility = View.VISIBLE
+            include_layout_set_time.visibility = View.GONE
         }
 
+        btn_set_time.setOnClickListener {
+            include_layout_set_time.visibility = View.VISIBLE
+            include_set_time_picker.visibility = View.GONE
+        }
+
+    }
+
+    override fun onTimeChanged(p0: TimePicker?, p1: Int, p2: Int) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
     override fun onStart() {
