@@ -1,6 +1,7 @@
 package com.nexters.doctor24.todoc.ui.map
 
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.LocationTrackingMode
@@ -12,6 +13,7 @@ import com.naver.maps.map.util.MarkerIcons
 import com.nexters.doctor24.todoc.R
 import com.nexters.doctor24.todoc.base.BaseFragment
 import com.nexters.doctor24.todoc.databinding.NavermapFragmentBinding
+import kotlinx.android.synthetic.main.layout_set_time.*
 import kotlinx.android.synthetic.main.navermap_fragment.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -41,6 +43,10 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
         tab.addTab(tab.newTab().apply { text = "병원" })
         tab.addTab(tab.newTab().apply { text = "약국" })
         tab.addTab(tab.newTab().apply { text = "동물병원" })
+
+        ll_layout_set_start_time.setOnClickListener {
+            Log.e("mapFragment","시간번경")
+        }
 
     }
 
