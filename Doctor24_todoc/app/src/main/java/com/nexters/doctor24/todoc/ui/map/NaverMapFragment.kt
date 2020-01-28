@@ -2,7 +2,6 @@ package com.nexters.doctor24.todoc.ui.map
 
 import android.os.Bundle
 import android.view.View
-import android.widget.TimePicker
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.LocationTrackingMode
 import com.naver.maps.map.NaverMap
@@ -19,7 +18,7 @@ import kotlinx.android.synthetic.main.navermap_fragment.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
-internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMapViewModel>(), TimePicker.OnTimeChangedListener,
+internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMapViewModel>(),
     OnMapReadyCallback {
 
     companion object {
@@ -45,20 +44,67 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
         tab.addTab(tab.newTab().apply { text = "약국" })
         tab.addTab(tab.newTab().apply { text = "동물병원" })
 
-        ll_layout_set_start_time.setOnClickListener {
+        setStartTime()
+        setEndTime()
+    }
+
+    private fun setEndTime(){
+        ll_layout_set_end_time.setOnClickListener {
             include_set_time_picker.visibility = View.VISIBLE
             include_layout_set_time.visibility = View.GONE
+
+            btn_set_end_time.visibility = View.VISIBLE
+            btn_set_start_time.visibility = View.GONE
         }
 
-        btn_set_time.setOnClickListener {
+        btn_set_end_time.setOnClickListener {
+            tv_end_time.text = "${setHour(tp_time_picker.hour)}:${setMinute(tp_time_picker.minute)}"
+            tv_end_time_ampm.text = getAmPm(tp_time_picker.hour)
+
             include_layout_set_time.visibility = View.VISIBLE
             include_set_time_picker.visibility = View.GONE
         }
 
     }
 
-    override fun onTimeChanged(p0: TimePicker?, p1: Int, p2: Int) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    private fun setStartTime(){
+        ll_layout_set_start_time.setOnClickListener {
+            include_set_time_picker.visibility = View.VISIBLE
+            include_layout_set_time.visibility = View.GONE
+
+            btn_set_start_time.visibility = View.VISIBLE
+            btn_set_end_time.visibility = View.GONE
+        }
+
+        btn_set_start_time.setOnClickListener {
+            tv_start_time.text = "${setHour(tp_time_picker.hour)}:${setMinute(tp_time_picker.minute)}"
+            tv_start_time_ampm.text = getAmPm(tp_time_picker.hour)
+
+            include_layout_set_time.visibility = View.VISIBLE
+            include_set_time_picker.visibility = View.GONE
+        }
+
+    }
+
+    private fun getAmPm(hour: Int): String {
+        return if (hour >= 12)
+            "AM"
+        else
+            "PM"
+    }
+
+    private fun setHour(hour: Int): Int {
+        return if (hour >= 12)
+            (hour - 12)
+        else
+            hour
+    }
+
+    private fun setMinute(min: Int): String {
+        return if (min >= 10)
+            min.toString() + ""
+        else
+            "0$min"
     }
 
     override fun onStart() {

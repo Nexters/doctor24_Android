@@ -30,6 +30,7 @@
             android:orientation="horizontal">
 
             <TextView
+                android:id="@+id/tv_start_time"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="09:00"
@@ -37,6 +38,7 @@
                 android:textSize="30dp" />
 
             <TextView
+                android:id="@+id/tv_start_time_ampm"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="4dp"
@@ -57,6 +59,7 @@
             android:orientation="horizontal">
 
             <TextView
+                android:id="@+id/tv_end_time"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="09:00"
@@ -64,6 +67,7 @@
                 android:textSize="30dp" />
 
             <TextView
+                android:id="@+id/tv_end_time_ampm"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="4dp"
