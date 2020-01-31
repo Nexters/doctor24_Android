@@ -87,13 +87,18 @@ dependencies {
 
     // koin
     implementation "org.koin:koin-core:$rootProject.koin_version"
-    implementation "org.koin:koin-androidx-scope:$rootProject.koin_version" // Koin for Lifecycle scoping
-    implementation "org.koin:koin-androidx-viewmodel:$rootProject.koin_version" // Koin for Android Architecture ViewModel
+    implementation "org.koin:koin-androidx-scope:$rootProject.koin_version"
+    // Koin for Lifecycle scoping
+    implementation "org.koin:koin-androidx-viewmodel:$rootProject.koin_version"
+    // Koin for Android Architecture ViewModel
 
     // debug
     implementation "com.jakewharton.timber:timber:$rootProject.timber_version"
 
     // test
+    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
+    implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.2.0'
     testImplementation 'junit:junit:4.13'
     testImplementation "org.mockito:mockito-core:$rootProject.mockito_version"
     testImplementation "androidx.arch.core:core-testing:2.1.0"

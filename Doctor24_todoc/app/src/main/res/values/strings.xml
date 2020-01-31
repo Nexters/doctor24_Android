@@ -1,5 +1,4 @@
 <resources>
     <string name="app_name">토닥토닥</string>
 
-    <string name="map_bottom_sheet_title">주변 %s 리스트</string>
 </resources>
