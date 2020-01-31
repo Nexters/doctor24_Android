@@ -5,5 +5,5 @@ import com.nexters.doctor24.todoc.repository.MarkerRepositoryImpl
 import org.koin.dsl.module
 
 val repositoryModule = module {
-    single { MarkerRepositoryImpl(get()) as MarkerRepository }
+    factory { MarkerRepositoryImpl(get()) as MarkerRepository }
 }

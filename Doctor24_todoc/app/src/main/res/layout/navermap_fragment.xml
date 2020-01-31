@@ -48,6 +48,27 @@
             app:tabSelectedTextColor="#ffffff"
             app:tabTextAppearance="@style/TabTextAppearance" />
 
+        <!--<androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btnBounds"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="야간병원"
+            android:onClick="@{()->vm.onClickGetBounds()}"
+            app:layout_constraintTop_toBottomOf="@id/tab"
+            app:layout_constraintStart_toStartOf="parent"
+            />-->
+
+        <ProgressBar
+            android:id="@+id/progressBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            />
+
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/map_bottom"
             android:layout_width="0dp"
@@ -57,16 +78,6 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
-
-            <TextView
-                android:id="@+id/tvBottomTitle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@{vm.bottomTitle}"
-                android:textStyle="bold"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
 
             <include
                 android:id="@+id/include_layout_set_time"
