@@ -1,6 +1,5 @@
 package com.nexters.doctor24.todoc.ui.map
 
-import android.location.Location
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
@@ -12,31 +11,27 @@ import com.nexters.doctor24.todoc.data.map.response.ResMapAddress
 import com.nexters.doctor24.todoc.data.marker.MarkerTypeEnum
 import com.nexters.doctor24.todoc.data.marker.response.ResMapMarker
 import com.nexters.doctor24.todoc.ext.cancelIfActive
-import com.nexters.doctor24.todoc.repository.MapRepository
 import com.nexters.doctor24.todoc.repository.MarkerRepository
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import okhttp3.internal.toImmutableList
 import com.nexters.doctor24.todoc.base.Result
 import com.nexters.doctor24.todoc.base.SingleLiveEvent
+import com.nexters.doctor24.todoc.data.marker.response.ResMapLocation
 
 internal class NaverMapViewModel(private val dispatchers: DispatcherProvider,
-                                 private val repo: MarkerRepository,
-                                 private val mapRepo: MapRepository) : BaseViewModel() {
-
-    private var getMapAddressJob: Job? = null
+                                 private val repo: MarkerRepository) : BaseViewModel() {
 
     val tabList = listOf<MarkerTypeEnum>(MarkerTypeEnum.HOSPITAL, MarkerTypeEnum.PHARMACY, MarkerTypeEnum.ANIMAL)
     private val _currentLocation = MutableLiveData<LatLng>()
     val currentLocation : LiveData<LatLng> get() = _currentLocation
 
-    private val _markerList = MutableLiveData<List<ResMapMarker>>()
+    private val _markerList = MutableLiveData<List<ResMapLocation>>()
     private val _hospitalMarkerDatas = Transformations.map(_markerList) {
         val list = mutableListOf<MarkerUIData>()
         it.forEach {res->
-            list.add(MarkerUIData(LatLng(res.latitude, res.longitude), res.placeName))
+            list.add(MarkerUIData(LatLng(res.latitude, res.longitude), res.total))
         }
         list.toImmutableList()
     }
@@ -67,16 +62,6 @@ internal class NaverMapViewModel(private val dispatchers: DispatcherProvider,
         }
     }
 
-    private fun reqAddress(coords: String) {
-        getMapAddressJob.cancelIfActive()
-        getMapAddressJob = viewModelScope.launch {
-            mapRepo.getAddress(coords)
-                .collect {
-                    _mapAddressData.value = it
-                }
-        }
-    }
-
     fun reqBounds(xLocation: LatLng, zLocation: LatLng) {
         uiScope.launch(dispatchers.io()) {
             try {
@@ -96,12 +81,6 @@ internal class NaverMapViewModel(private val dispatchers: DispatcherProvider,
         }
     }
 
-    fun onClickGetAddress() {
-        currentLocation.value?.let {
-            reqAddress("${it.longitude},${it.latitude}")
-        }
-    }
-
     fun onClickGetBounds() {
         _boundsEvent.call()
     }
@@ -117,5 +96,5 @@ internal class NaverMapViewModel(private val dispatchers: DispatcherProvider,
 
 internal data class MarkerUIData(
     val location: LatLng,
-    val name: String
+    val count: Int
 )

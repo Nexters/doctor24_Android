@@ -12,5 +12,5 @@ import org.koin.dsl.module
 val appModule = module {
     single { androidContext().resources as Resources }
     factory { DefaultDispatcherProvider() as DispatcherProvider }
-    viewModel { NaverMapViewModel(get(), get(), get()) }
+    viewModel { NaverMapViewModel(get(), get()) }
 }

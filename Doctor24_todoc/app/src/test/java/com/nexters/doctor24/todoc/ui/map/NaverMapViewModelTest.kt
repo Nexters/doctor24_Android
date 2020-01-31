@@ -1,11 +1,8 @@
 package com.nexters.doctor24.todoc.ui.map
 
 import android.content.res.Resources
-import android.location.Location
-import android.location.LocationProvider
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.naver.maps.geometry.LatLng
-import com.nexters.doctor24.todoc.R
 import com.nexters.doctor24.todoc.data.map.response.ResAddressData
 import com.nexters.doctor24.todoc.data.map.response.ResArea
 import com.nexters.doctor24.todoc.data.map.response.ResMapAddress
@@ -13,7 +10,6 @@ import com.nexters.doctor24.todoc.data.map.response.ResRegion
 import com.nexters.doctor24.todoc.data.marker.MarkerTypeEnum
 import com.nexters.doctor24.todoc.data.marker.response.OperatingDate
 import com.nexters.doctor24.todoc.data.marker.response.ResMapMarker
-import com.nexters.doctor24.todoc.repository.MapRepository
 import com.nexters.doctor24.todoc.repository.MarkerRepository
 import com.nexters.doctor24.todoc.rule.CoroutineTestRule
 import kotlinx.coroutines.ExperimentalCoroutinesApi
