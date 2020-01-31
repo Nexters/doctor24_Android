@@ -3,10 +3,9 @@ package com.nexters.doctor24.todoc.ui.map
 import android.content.res.Resources
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.naver.maps.geometry.LatLng
-import com.nexters.doctor24.todoc.data.map.response.ResAddressData
-import com.nexters.doctor24.todoc.data.map.response.ResArea
-import com.nexters.doctor24.todoc.data.map.response.ResMapAddress
-import com.nexters.doctor24.todoc.data.map.response.ResRegion
+import com.naver.maps.geometry.LatLngBounds
+import com.nexters.doctor24.todoc.data.marker.response.ResMapLocation
+
 import com.nexters.doctor24.todoc.data.marker.MarkerTypeEnum
 import com.nexters.doctor24.todoc.data.marker.response.OperatingDate
 import com.nexters.doctor24.todoc.data.marker.response.ResMapMarker
@@ -34,12 +33,9 @@ class NaverMapViewModelTest {
     @get:Rule
     var testCoroutineRule = CoroutineTestRule()
 
-    private lateinit var viewModel : NaverMapViewModel
+    private lateinit var viewModel: NaverMapViewModel
     @Mock
-    private lateinit var markerRepo : MarkerRepository
-
-    @Mock
-    private lateinit var mapRepo : MapRepository
+    private lateinit var markerRepo: MarkerRepository
 
     @Mock
     lateinit var resources: Resources
@@ -48,60 +44,49 @@ class NaverMapViewModelTest {
     fun init() {
 //        MockitoAnnotations.initMocks(this)
 //        startKoin { modules(listOf(networkModule, repositoryModule)) }
-        viewModel = NaverMapViewModel(testCoroutineRule.testDispatcherProvider, markerRepo, mapRepo)
+        viewModel = NaverMapViewModel(testCoroutineRule.testDispatcherProvider, markerRepo)
     }
 
     @Test
     fun `(Given) Map 화면 진입 시 (When) 현재 위치 받아와서 (Then) 주변 병원 정보 마커 표시`() {
-        val expectedResult = listOf(MarkerUIData(
-            location = LatLng(0.0, 0.0),
-            name = "강남병원"
-        ))
-
-        testCoroutineRule.testDispatcher.runBlockingTest {
-            Mockito. `when` (markerRepo.getMarkers("0.0", "0.0", MarkerTypeEnum.HOSPITAL)).thenReturn(
-                listOf(
-                    ResMapMarker(
-                        placeName = "강남병원", latitude = 0.0, longitude = 0.0, medicalType = "hospital",
-                        placeAddress = "", placePhone = "01000000000",
-                        days = listOf(OperatingDate(
-                            dayType = "MONDAY",
-                            startTime = "00:00:00",
-                            endTime = "00:00:00"))
-                    ))
+        val expectedResult = listOf(
+            MarkerUIData(
+                location = LatLng(0.0, 0.0),
+                count = 1
             )
-            viewModel.reqMarker(0.0,0.0)
-            viewModel.hospitalMarkerDatas.observeForever {
-                println("hospitalMarkerDatas : $it")
-                assertEquals(expectedResult, it)
-            }
-        }
-    }
-
-    @Test
-    fun `(Given) Map화면에서 (When) 구단위 주소 버튼 누르면 (Then) api 호출해서 주소받아오기`() {
-        val expectedResult = "인제군"
+        )
 
         testCoroutineRule.testDispatcher.runBlockingTest {
-            Mockito. `when` (mapRepo.getAddress("128.12345,37.98776")).thenReturn(
-                ResMapAddress(
-                    addressData = listOf(
-                        ResAddressData(
-                            typeName = "legalcode",
-                            region = ResRegion(
-                                area2 = ResArea(
-                                    areaName = "인제군",
-                                    coords = null
+            Mockito.`when`(markerRepo.getBounds(LatLng(0.0, 0.0), LatLng(0.0, 0.0), MarkerTypeEnum.HOSPITAL)).thenReturn(
+                listOf(
+                    ResMapLocation(
+                        latitude = 0.0,
+                        longitude = 0.0,
+                        total = 1,
+                        facilities = listOf(
+                            ResMapMarker(
+                                id = "id",
+                                placeName = "강남병원",
+                                latitude = 0.0,
+                                longitude = 0.0,
+                                medicalType = "hospital",
+                                placeAddress = "",
+                                placePhone = "01000000000",
+                                days = listOf(
+                                    OperatingDate(
+                                        dayType = "MONDAY",
+                                        startTime = "00:00:00",
+                                        endTime = "00:00:00"
+                                    )
                                 )
                             )
                         )
                     )
                 )
             )
-            viewModel.currentLocation.value = LatLng(128.12345, 37.98776)
-            viewModel.onClickGetAddress()
-            viewModel.mapAddressData.observeForever{
-                println("mapAddressData : $it")
+            viewModel.reqBounds(LatLngBounds(LatLng(0.0, 0.0), LatLng(0.0, 0.0)))
+            viewModel.hospitalMarkerDatas.observeForever {
+                println("hospitalMarkerDatas : $it")
                 assertEquals(expectedResult, it)
             }
         }

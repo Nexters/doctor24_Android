@@ -1,21 +1,16 @@
 package com.nexters.doctor24.todoc.ui.map
 
-import android.location.Location
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.FrameLayout
 import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
 import com.google.android.material.tabs.TabLayout
-import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.LocationTrackingMode
 import com.naver.maps.map.NaverMap
 import com.naver.maps.map.OnMapReadyCallback
-import com.naver.maps.map.overlay.Marker
 import com.naver.maps.map.util.FusedLocationSource
-import com.naver.maps.map.util.MarkerIcons
 import com.nexters.doctor24.todoc.R
 import com.nexters.doctor24.todoc.api.error.ErrorHandler
 import com.nexters.doctor24.todoc.base.BaseFragment
@@ -26,31 +21,29 @@ import com.nexters.doctor24.todoc.base.Success
 import com.nexters.doctor24.todoc.data.map.response.ResMapAddress
 import com.nexters.doctor24.todoc.data.marker.MarkerTypeEnum
 import com.nexters.doctor24.todoc.databinding.NavermapFragmentBinding
+import kotlinx.android.synthetic.main.layout_set_time.*
+import kotlinx.android.synthetic.main.layout_time_picker.*
 import kotlinx.android.synthetic.main.navermap_fragment.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import kotlin.properties.Delegates
 
 
 internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMapViewModel>(),
     OnMapReadyCallback {
 
-    private val TAG = this@NaverMapFragment.javaClass.simpleName
-
     companion object {
         private const val LOCATION_PERMISSION_REQUEST_CODE = 1000
     }
 
+    private lateinit var locationSource: FusedLocationSource
     override val layoutResId: Int
         get() = R.layout.navermap_fragment
     override val viewModel: NaverMapViewModel by viewModel()
 
-    private lateinit var locationSource: FusedLocationSource
-    private lateinit var naverMap: NaverMap
+    private lateinit var naverMap : NaverMap
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.apply {
-            vm = viewModel
-        }
 
         locationSource = FusedLocationSource(this, LOCATION_PERMISSION_REQUEST_CODE)
 
@@ -61,54 +54,111 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
 
         initView()
         initObserve()
+        setStartTime()
+        setEndTime()
     }
 
     private fun initView() {
-        viewModel.tabList.forEach {
-            binding.tab.run {
-                addTab(newTab().apply { text = it.title })
-            }
+        val markerTypes = MarkerTypeEnum.values()
+        binding.tab.apply {
+            markerTypes.forEach { addTab(newTab().apply { text = it.title }) }
+            addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
+                override fun onTabReselected(tab: TabLayout.Tab?) {}
+
+                override fun onTabUnselected(tab: TabLayout.Tab?) {}
+
+                override fun onTabSelected(tab: TabLayout.Tab?) {
+                    tab?.let { viewModel.onChangeTab(markerTypes[it.position]) }
+                }
+            })
         }
-
-        binding.tab.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener{
-            override fun onTabReselected(tab: TabLayout.Tab?) {}
-
-            override fun onTabUnselected(tab: TabLayout.Tab?) {}
-
-            override fun onTabSelected(tab: TabLayout.Tab?) {
-                tab?.position?.let { viewModel.onChangeTab(it) }
-            }
-        })
     }
 
     private fun initObserve() {
-        viewModel.hospitalMarkerDatas.observe(viewLifecycleOwner, Observer {
-            it.forEach { coord ->
-                Log.d(TAG, "hospitalMarker : $coord")
-                Marker().apply {
-                    position = coord.location
-                    icon = MarkerIcons.LIGHTBLUE
-                    map = naverMap
-                }
-            }
-        })
-
         viewModel.tabChangeEvent.observe(viewLifecycleOwner, Observer {
-            viewModel.onChangeBottomTitle(getString(R.string.map_bottom_sheet_title).format(viewModel.tabList[it].title))
-        })
-
-        viewModel.mapAddressData.observe(viewLifecycleOwner, Observer {
-            handleResponse(it)
+            viewModel.reqBounds(naverMap.contentBounds)
         })
 
         viewModel.currentLocation.observe(viewLifecycleOwner, Observer {
-            viewModel.reqMarker(it.latitude, it.longitude)
+            viewModel.reqBounds(it)
         })
+    }
 
-        viewModel.boundsEvent.observe(viewLifecycleOwner, Observer {
-            val bounds = naverMap.contentBounds
-            viewModel.reqBounds(bounds.southWest, bounds.northEast)
-        })
+    private fun setEndTime() {
+
+        var startHour by Delegates.notNull<Int>()
+        var startMinute by Delegates.notNull<Int>()
+
+        ll_layout_set_end_time.setOnClickListener {
+            include_set_time_picker.visibility = View.VISIBLE
+            include_layout_set_time.visibility = View.GONE
+
+            startHour = tp_time_picker.hour
+            startMinute = tp_time_picker.minute
+
+            btn_set_end_time.visibility = View.VISIBLE
+            btn_set_start_time.visibility = View.GONE
+        }
+
+        btn_set_end_time.setOnClickListener {
+            tv_end_time.text = "${setHour(tp_time_picker.hour)}:${setMinute(tp_time_picker.minute)}"
+            tv_end_time_ampm.text = setAmPm(tp_time_picker.hour)
+
+            validateEndTime(startHour, startMinute)
+        }
+
+    }
+
+    private fun setStartTime() {
+        ll_layout_set_start_time.setOnClickListener {
+            include_set_time_picker.visibility = View.VISIBLE
+            include_layout_set_time.visibility = View.GONE
+
+            btn_set_start_time.visibility = View.VISIBLE
+            btn_set_end_time.visibility = View.GONE
+        }
+
+        btn_set_start_time.setOnClickListener {
+            tv_start_time.text =
+                "${setHour(tp_time_picker.hour)}:${setMinute(tp_time_picker.minute)}"
+            tv_start_time_ampm.text = setAmPm(tp_time_picker.hour)
+
+            include_layout_set_time.visibility = View.VISIBLE
+            include_set_time_picker.visibility = View.GONE
+        }
+    }
+
+    private fun validateEndTime(hour: Int, minute: Int) {
+        if (hour > tp_time_picker.hour) {
+            Toast.makeText(context, "시간 설정을 다시 해 주세요1", Toast.LENGTH_SHORT).show()
+            return
+        } else if ((hour == tp_time_picker.hour) && (minute > tp_time_picker.minute)) {
+            Toast.makeText(context, "시간 설정을 다시 해 주세요2", Toast.LENGTH_SHORT).show()
+            return
+        }
+        include_layout_set_time.visibility = View.VISIBLE
+        include_set_time_picker.visibility = View.GONE
+    }
+
+    private fun setAmPm(hour: Int): String {
+        return if (hour >= 12)
+            "PM"
+        else
+            "AM"
+    }
+
+    private fun setHour(hour: Int): String {
+        return if (hour >= 12)
+            (hour - 12).toString()
+        else
+            hour.toString()
+    }
+
+    private fun setMinute(min: Int): String {
+        return if (min >= 10)
+            min.toString() + ""
+        else
+            "0$min"
     }
 
     override fun onStart() {
@@ -174,8 +224,7 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
             minZoom = 4.0
         }
 
-        viewModel.onChangedLocation(map.cameraPosition.target)
-//        drawMarker(map)
+        viewModel.onChangedLocation(map.contentBounds)
     }
 
     private fun handleResponse(result: Result<ResMapAddress>) {
