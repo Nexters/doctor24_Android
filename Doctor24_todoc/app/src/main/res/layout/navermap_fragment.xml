@@ -25,28 +25,38 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <com.google.android.material.tabs.TabLayout
-            android:id="@+id/tab"
-            android:layout_width="0dp"
-            android:layout_height="44dp"
-            android:layout_marginStart="30dp"
-            android:layout_marginTop="30dp"
-            android:layout_marginEnd="30dp"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/layout_tab"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="64dp"
+            android:layout_marginStart="24dp"
+            android:padding="6dp"
             android:background="@drawable/background_tablayout"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:tabGravity="fill"
-            app:tabIndicator="@drawable/background_tablayout"
-            app:tabIndicatorColor="@color/colorPrimary"
-            app:tabIndicatorGravity="stretch"
-            app:tabIndicatorHeight="0dp"
-            app:tabMode="fixed"
-            app:tabPaddingEnd="16dp"
-            app:tabPaddingStart="16dp"
-            app:tabRippleColor="@null"
-            app:tabSelectedTextColor="#ffffff"
-            app:tabTextAppearance="@style/TabTextAppearance" />
+            app:layout_constraintStart_toStartOf="parent"
+            >
+
+            <com.google.android.material.tabs.TabLayout
+                android:id="@+id/tab"
+                android:layout_width="180dp"
+                android:layout_height="46dp"
+                android:background="@drawable/background_tablayout"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:tabGravity="fill"
+                app:tabIndicator="@drawable/background_tablayout"
+                app:tabIndicatorColor="#5959f7"
+                app:tabIndicatorGravity="stretch"
+                app:tabIndicatorHeight="0dp"
+                app:tabMode="fixed"
+                app:tabPaddingEnd="16dp"
+                app:tabPaddingStart="16dp"
+                app:tabRippleColor="@null"
+                app:tabSelectedTextColor="#ffffff"
+                app:tabTextAppearance="@style/TabTextAppearance" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <!--<androidx.appcompat.widget.AppCompatButton
             android:id="@+id/btnBounds"
