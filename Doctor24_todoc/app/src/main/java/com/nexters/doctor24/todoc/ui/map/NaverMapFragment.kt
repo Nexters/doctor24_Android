@@ -1,8 +1,9 @@
 package com.nexters.doctor24.todoc.ui.map
 
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
-import android.widget.FrameLayout
+import android.widget.TextView
 import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
@@ -10,14 +11,12 @@ import com.google.android.material.tabs.TabLayout
 import com.naver.maps.map.LocationTrackingMode
 import com.naver.maps.map.NaverMap
 import com.naver.maps.map.OnMapReadyCallback
+import com.naver.maps.map.overlay.Marker
 import com.naver.maps.map.util.FusedLocationSource
+import com.naver.maps.map.util.MarkerIcons
 import com.nexters.doctor24.todoc.R
 import com.nexters.doctor24.todoc.api.error.ErrorHandler
-import com.nexters.doctor24.todoc.base.BaseFragment
-import com.nexters.doctor24.todoc.base.Progress
-import com.nexters.doctor24.todoc.base.Error
-import com.nexters.doctor24.todoc.base.Result
-import com.nexters.doctor24.todoc.base.Success
+import com.nexters.doctor24.todoc.base.*
 import com.nexters.doctor24.todoc.data.map.response.ResMapAddress
 import com.nexters.doctor24.todoc.data.marker.MarkerTypeEnum
 import com.nexters.doctor24.todoc.databinding.NavermapFragmentBinding
@@ -25,6 +24,7 @@ import kotlinx.android.synthetic.main.layout_set_time.*
 import kotlinx.android.synthetic.main.layout_time_picker.*
 import kotlinx.android.synthetic.main.navermap_fragment.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import timber.log.Timber
 import kotlin.properties.Delegates
 
 
@@ -41,6 +41,7 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
     override val viewModel: NaverMapViewModel by viewModel()
 
     private lateinit var naverMap : NaverMap
+    private var mapMarker = mutableListOf<Marker>()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -61,20 +62,56 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
     private fun initView() {
         val markerTypes = MarkerTypeEnum.values()
         binding.tab.apply {
-            markerTypes.forEach { addTab(newTab().apply { text = it.title }) }
+            markerTypes.forEach {
+                val tabView = LayoutInflater.from(context).inflate(R.layout.item_tab, null) as TextView
+                tabView.text = it.title
+                tabView.setCompoundDrawablesRelativeWithIntrinsicBounds(it.icon, 0,0,0)
+                addTab(newTab().setCustomView(tabView))
+            }
             addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
-                override fun onTabReselected(tab: TabLayout.Tab?) {}
+                override fun onTabReselected(tab: TabLayout.Tab?) {
+                    tab?.let {
+                        val view = it.customView as TextView
+                        view.setTextColor(resources.getColor(R.color.white))
+                        viewModel.onChangeTab(markerTypes[it.position])
+                    }
+                }
 
-                override fun onTabUnselected(tab: TabLayout.Tab?) {}
+                override fun onTabUnselected(tab: TabLayout.Tab?) {
+                    tab?.let {
+                        val view = it.customView as TextView
+                        view.setTextColor(resources.getColor(R.color.gray))
+                    }
+                }
 
                 override fun onTabSelected(tab: TabLayout.Tab?) {
-                    tab?.let { viewModel.onChangeTab(markerTypes[it.position]) }
+                    tab?.let {
+                        val view = it.customView as TextView
+                        view.setTextColor(resources.getColor(R.color.white))
+                        viewModel.onChangeTab(markerTypes[it.position])
+                    }
                 }
             })
         }
     }
 
     private fun initObserve() {
+        viewModel.hospitalMarkerDatas.observe(viewLifecycleOwner, Observer {
+            Timber.d("DrawMarker : $it")
+            mapMarker.forEach {
+                it.map = null
+            }
+            mapMarker.clear()
+            it.forEach { coord ->
+                mapMarker.add(
+                    Marker().apply {
+                        position = coord.location
+                        icon = MarkerIcons.LIGHTBLUE
+                        map = naverMap
+                })
+            }
+        })
+
         viewModel.tabChangeEvent.observe(viewLifecycleOwner, Observer {
             viewModel.reqBounds(naverMap.contentBounds)
         })
@@ -214,17 +251,23 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
             isRotateGesturesEnabled = false
             isZoomControlEnabled = false
             isLocationButtonEnabled = true
+            isTiltGesturesEnabled = false
         }
         map.apply {
             locationSource = this@NaverMapFragment.locationSource
-            locationTrackingMode = LocationTrackingMode.Face
+            locationTrackingMode = LocationTrackingMode.Follow
             isNightModeEnabled = true
             setBackgroundResource(NaverMap.DEFAULT_BACKGROUND_DRWABLE_DARK)
             mapType = NaverMap.MapType.Navi
             minZoom = 4.0
         }
 
-        viewModel.onChangedLocation(map.contentBounds)
+        binding.tab.getTabAt(0)?.select()
+
+        map.addOnCameraIdleListener {
+            viewModel.onChangedLocation(map.contentBounds)
+        }
+//        viewModel.onChangedLocation(map.contentBounds)
     }
 
     private fun handleResponse(result: Result<ResMapAddress>) {
