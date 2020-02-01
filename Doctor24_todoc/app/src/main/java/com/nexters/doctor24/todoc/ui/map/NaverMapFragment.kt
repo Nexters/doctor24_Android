@@ -80,7 +80,7 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
                 override fun onTabUnselected(tab: TabLayout.Tab?) {
                     tab?.let {
                         val view = it.customView as TextView
-                        view.setTextColor(resources.getColor(R.color.gray))
+                        view.setTextColor(resources.getColor(R.color.grey_2))
                     }
                 }
 
@@ -259,15 +259,16 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
             isNightModeEnabled = true
             setBackgroundResource(NaverMap.DEFAULT_BACKGROUND_DRWABLE_DARK)
             mapType = NaverMap.MapType.Navi
-            minZoom = 4.0
+            minZoom = 10.0
+            maxZoom = 20.0
         }
 
         binding.tab.getTabAt(0)?.select()
 
         map.addOnCameraIdleListener {
             viewModel.onChangedLocation(map.contentBounds)
+            Toast.makeText(context, "줌 레벨 : ${map.cameraPosition.zoom}", Toast.LENGTH_SHORT).show()
         }
-//        viewModel.onChangedLocation(map.contentBounds)
     }
 
     private fun handleResponse(result: Result<ResMapAddress>) {

@@ -46,7 +46,7 @@
                 app:layout_constraintTop_toTopOf="parent"
                 app:tabGravity="fill"
                 app:tabIndicator="@drawable/background_tablayout"
-                app:tabIndicatorColor="#5959f7"
+                app:tabIndicatorColor="@color/blue"
                 app:tabIndicatorGravity="stretch"
                 app:tabIndicatorHeight="0dp"
                 app:tabMode="fixed"
