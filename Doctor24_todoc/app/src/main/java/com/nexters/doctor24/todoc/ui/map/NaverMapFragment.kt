@@ -1,8 +1,10 @@
 package com.nexters.doctor24.todoc.ui.map
 
+import android.graphics.Bitmap
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
+import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.core.view.isVisible
@@ -13,6 +15,7 @@ import com.naver.maps.map.LocationTrackingMode
 import com.naver.maps.map.NaverMap
 import com.naver.maps.map.OnMapReadyCallback
 import com.naver.maps.map.overlay.Marker
+import com.naver.maps.map.overlay.OverlayImage
 import com.naver.maps.map.util.FusedLocationSource
 import com.naver.maps.map.util.MarkerIcons
 import com.nexters.doctor24.todoc.R
@@ -21,6 +24,7 @@ import com.nexters.doctor24.todoc.base.*
 import com.nexters.doctor24.todoc.data.map.response.ResMapAddress
 import com.nexters.doctor24.todoc.data.marker.MarkerTypeEnum
 import com.nexters.doctor24.todoc.databinding.NavermapFragmentBinding
+import com.nexters.doctor24.todoc.ui.map.marker.MapMarkerAdapter
 import kotlinx.android.synthetic.main.layout_set_time.*
 import kotlinx.android.synthetic.main.layout_time_picker.*
 import kotlinx.android.synthetic.main.navermap_fragment.*
@@ -41,8 +45,8 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
         get() = R.layout.navermap_fragment
     override val viewModel: NaverMapViewModel by viewModel()
 
-    private lateinit var naverMap : NaverMap
-    private var mapMarker = mutableListOf<Marker>()
+    private lateinit var naverMap: NaverMap
+    private lateinit var mapMarkerAdapter : MapMarkerAdapter
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -64,9 +68,10 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
         val markerTypes = MarkerTypeEnum.values()
         binding.tab.apply {
             markerTypes.forEach {
-                val tabView = LayoutInflater.from(context).inflate(R.layout.item_tab, null) as TextView
+                val tabView =
+                    LayoutInflater.from(context).inflate(R.layout.item_tab, null) as TextView
                 tabView.text = it.title
-                tabView.setCompoundDrawablesRelativeWithIntrinsicBounds(it.icon, 0,0,0)
+                tabView.setCompoundDrawablesRelativeWithIntrinsicBounds(it.icon, 0, 0, 0)
                 addTab(newTab().setCustomView(tabView))
             }
             addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
@@ -97,20 +102,11 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
     }
 
     private fun initObserve() {
-        viewModel.hospitalMarkerDatas.observe(viewLifecycleOwner, Observer {
-            Timber.d("DrawMarker : $it")
-            mapMarker.forEach {
-                it.map = null
-            }
-            mapMarker.clear()
-            if(it.isEmpty()) Toast.makeText(context, "주변에 현재 운영중인 병원이 없습니다.", Toast.LENGTH_SHORT).show()
-            it.forEach { coord ->
-                mapMarker.add(
-                    Marker().apply {
-                        position = coord.location
-                        icon = MarkerIcons.LIGHTBLUE
-                        map = naverMap
-                })
+        viewModel.hospitalMarkerDatas.observe(viewLifecycleOwner, EventObserver {
+            if (it.isEmpty()) {
+                Toast.makeText(context, "현재 운영중인 병원이 없습니다.", Toast.LENGTH_SHORT).show()
+            } else {
+                mapMarkerAdapter.drawMarker(it, viewModel.tabChangeEvent.value ?: MarkerTypeEnum.HOSPITAL)
             }
         })
 
@@ -268,10 +264,11 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
             setBackgroundResource(NaverMap.DEFAULT_BACKGROUND_DRWABLE_DARK)
             mapType = NaverMap.MapType.Navi
             minZoom = 12.0
-            maxZoom = 15.0
+            maxZoom = 17.0
         }
 
         binding.tab.getTabAt(0)?.select()
+        mapMarkerAdapter = MapMarkerAdapter(context!!, naverMap)
 
         binding.buttonLocation.apply {
             setBackgroundResource(R.drawable.ic_current_location)
@@ -304,5 +301,10 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
                 binding.progressBar.isVisible = result.isLoading
             }
         }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        mapMarkerAdapter.onDestroy()
     }
 }

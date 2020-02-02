@@ -12,4 +12,6 @@
   <color name="grey_2">#cfd4d5</color>
   <color name="red">#f55165</color>
   <color name="blue_selected">#f1f1ff</color>
+
+  <color name="light_blue">#55eccf</color>
 </resources>

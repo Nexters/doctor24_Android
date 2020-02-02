@@ -6,6 +6,7 @@ import androidx.lifecycle.Transformations
 import com.naver.maps.geometry.LatLng
 import com.nexters.doctor24.todoc.base.BaseViewModel
 import com.nexters.doctor24.todoc.base.DispatcherProvider
+import com.nexters.doctor24.todoc.base.Event
 import com.nexters.doctor24.todoc.data.marker.MarkerTypeEnum
 import com.nexters.doctor24.todoc.data.marker.response.ResMapLocation
 import com.nexters.doctor24.todoc.repository.MarkerRepository
@@ -25,11 +26,17 @@ internal class NaverMapViewModel(private val dispatchers: DispatcherProvider,
     private val _hospitalMarkerDatas = Transformations.map(_markerList) {
         val list = mutableListOf<MarkerUIData>()
         it.forEach {res->
-            list.add(MarkerUIData(LatLng(res.latitude, res.longitude), res.total))
+            list.add(MarkerUIData(
+                location = LatLng(res.latitude, res.longitude),
+                count = res.total,
+                medicalType = res.facilities[0].medicalType,
+                isEmergency = res.facilities[0].emergency,
+                isNight = res.facilities[0].nightTimeServe
+            ))
         }
-        list.toImmutableList()
+        Event(list.toImmutableList())
     }
-    val hospitalMarkerDatas : LiveData<List<MarkerUIData>> get() = _hospitalMarkerDatas
+    val hospitalMarkerDatas : LiveData<Event<List<MarkerUIData>>> get() = _hospitalMarkerDatas
 
     private val _tabChangeEvent = MutableLiveData<MarkerTypeEnum>()
     val tabChangeEvent : LiveData<MarkerTypeEnum> get() = _tabChangeEvent
@@ -91,5 +98,8 @@ internal class NaverMapViewModel(private val dispatchers: DispatcherProvider,
 
 internal data class MarkerUIData(
     val location: LatLng,
-    val count: Int
+    val count: Int,
+    val medicalType: String,
+    val isEmergency: Boolean = false,
+    val isNight: Boolean = false
 )
