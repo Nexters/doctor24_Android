@@ -25,6 +25,15 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
+        <com.naver.maps.map.widget.LocationButtonView
+            android:id="@+id/button_location"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="24dp"
+            app:layout_constraintBottom_toTopOf="@id/map_bottom"
+            app:layout_constraintEnd_toEndOf="parent"
+            />
+
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/layout_tab"
             android:layout_width="wrap_content"
@@ -46,7 +55,7 @@
                 app:layout_constraintTop_toTopOf="parent"
                 app:tabGravity="fill"
                 app:tabIndicator="@drawable/background_tablayout"
-                app:tabIndicatorColor="#5959f7"
+                app:tabIndicatorColor="@color/blue"
                 app:tabIndicatorGravity="stretch"
                 app:tabIndicatorHeight="0dp"
                 app:tabMode="fixed"
