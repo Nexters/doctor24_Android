@@ -8,6 +8,7 @@ import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
 import com.google.android.material.tabs.TabLayout
+import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.LocationTrackingMode
 import com.naver.maps.map.NaverMap
 import com.naver.maps.map.OnMapReadyCallback
@@ -102,6 +103,7 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
                 it.map = null
             }
             mapMarker.clear()
+            if(it.isEmpty()) Toast.makeText(context, "주변에 현재 운영중인 병원이 없습니다.", Toast.LENGTH_SHORT).show()
             it.forEach { coord ->
                 mapMarker.add(
                     Marker().apply {
@@ -113,11 +115,17 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
         })
 
         viewModel.tabChangeEvent.observe(viewLifecycleOwner, Observer {
-            viewModel.reqBounds(naverMap.contentBounds)
+            viewModel.reqBounds(naverMap.cameraPosition.target, naverMap.cameraPosition.zoom)
         })
 
         viewModel.currentLocation.observe(viewLifecycleOwner, Observer {
-            viewModel.reqBounds(it)
+            viewModel.reqBounds(it, viewModel.currentZoom.value ?: 15.0)
+        })
+
+        viewModel.currentZoom.observe(viewLifecycleOwner, Observer { zoom ->
+            viewModel.currentLocation.value?.let {
+                viewModel.reqBounds(it, zoom)
+            }
         })
     }
 
@@ -250,7 +258,7 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
             isCompassEnabled = false
             isRotateGesturesEnabled = false
             isZoomControlEnabled = false
-            isLocationButtonEnabled = true
+            isLocationButtonEnabled = false
             isTiltGesturesEnabled = false
         }
         map.apply {
@@ -259,15 +267,20 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
             isNightModeEnabled = true
             setBackgroundResource(NaverMap.DEFAULT_BACKGROUND_DRWABLE_DARK)
             mapType = NaverMap.MapType.Navi
-            minZoom = 10.0
-            maxZoom = 20.0
+            minZoom = 12.0
+            maxZoom = 15.0
         }
 
         binding.tab.getTabAt(0)?.select()
 
+        binding.buttonLocation.apply {
+            setBackgroundResource(R.drawable.ic_current_location)
+            this.map = map
+        }
+
         map.addOnCameraIdleListener {
-            viewModel.onChangedLocation(map.contentBounds)
-            Toast.makeText(context, "줌 레벨 : ${map.cameraPosition.zoom}", Toast.LENGTH_SHORT).show()
+            viewModel.onChangedLocation(map.cameraPosition.target)
+            viewModel.onChangedZoom(map.cameraPosition.zoom)
         }
     }
 

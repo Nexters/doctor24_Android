@@ -7,13 +7,12 @@ import retrofit2.http.Path
 import retrofit2.http.Query
 
 internal interface  APIMarker {
-    /** 이제 안씀 getBounds 방식으로 바꿈 **/
-    @Deprecated("instead getBounds")
     @GET("medicals/{type}/latitudes/{latitude}/longitudes/{longitude}/facilities")
     suspend fun getMarkers(
         @Path("type") type: String,
         @Path("latitude") latitude: String,
-        @Path("longitude") longitude: String
+        @Path("longitude") longitude: String,
+        @Query("radiusLevel") radiusLevel: Int? = 1
     ): List<ResMapLocation>
 
     @GET("medicals/{type}/xlatitudes/{xlatitude}/xlongitudes/{xlongitude}/zlatitudes/{zlatitude}/zlongitudes/{zlongitude}/facilities")
