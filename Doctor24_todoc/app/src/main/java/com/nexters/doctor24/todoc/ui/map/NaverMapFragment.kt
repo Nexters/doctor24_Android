@@ -1,7 +1,9 @@
 package com.nexters.doctor24.todoc.ui.map
 
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.widget.TextView
 import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
@@ -16,6 +18,7 @@ import com.nexters.doctor24.todoc.base.*
 import com.nexters.doctor24.todoc.data.map.response.ResMapAddress
 import com.nexters.doctor24.todoc.data.marker.MarkerTypeEnum
 import com.nexters.doctor24.todoc.databinding.NavermapFragmentBinding
+import com.nexters.doctor24.todoc.ui.map.marker.MapMarkerAdapter
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
@@ -33,6 +36,7 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
     val viewModelTime: TimeViewModel by viewModel()
 
     private lateinit var naverMap: NaverMap
+    private lateinit var mapMarkerAdapter: MapMarkerAdapter
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -56,26 +60,64 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
     private fun initView() {
         val markerTypes = MarkerTypeEnum.values()
         binding.tab.apply {
-            markerTypes.forEach { addTab(newTab().apply { text = it.title }) }
+            markerTypes.forEach {
+                val tabView =
+                    LayoutInflater.from(context).inflate(R.layout.item_tab, null) as TextView
+                tabView.text = it.title
+                tabView.setCompoundDrawablesRelativeWithIntrinsicBounds(it.icon, 0, 0, 0)
+                addTab(newTab().setCustomView(tabView))
+            }
             addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
-                override fun onTabReselected(tab: TabLayout.Tab?) {}
+                override fun onTabReselected(tab: TabLayout.Tab?) {
+                    tab?.let {
+                        val view = it.customView as TextView
+                        view.setTextColor(resources.getColor(R.color.white))
+                        viewModel.onChangeTab(markerTypes[it.position])
+                    }
+                }
 
-                override fun onTabUnselected(tab: TabLayout.Tab?) {}
+                override fun onTabUnselected(tab: TabLayout.Tab?) {
+                    tab?.let {
+                        val view = it.customView as TextView
+                        view.setTextColor(resources.getColor(R.color.grey_2))
+                    }
+                }
 
                 override fun onTabSelected(tab: TabLayout.Tab?) {
-                    tab?.let { viewModel.onChangeTab(markerTypes[it.position]) }
+                    tab?.let {
+                        val view = it.customView as TextView
+                        view.setTextColor(resources.getColor(R.color.white))
+                        viewModel.onChangeTab(markerTypes[it.position])
+                    }
                 }
             })
         }
     }
 
     private fun initObserve() {
+        viewModel.hospitalMarkerDatas.observe(viewLifecycleOwner, EventObserver {
+            if (it.isEmpty()) {
+                Toast.makeText(context, "현재 운영중인 병원이 없습니다.", Toast.LENGTH_SHORT).show()
+            } else {
+                mapMarkerAdapter.drawMarker(
+                    it,
+                    viewModel.tabChangeEvent.value ?: MarkerTypeEnum.HOSPITAL
+                )
+            }
+        })
+
         viewModel.tabChangeEvent.observe(viewLifecycleOwner, Observer {
-            viewModel.reqBounds(naverMap.contentBounds)
+            viewModel.reqBounds(naverMap.cameraPosition.target, naverMap.cameraPosition.zoom)
         })
 
         viewModel.currentLocation.observe(viewLifecycleOwner, Observer {
-            viewModel.reqBounds(it)
+            viewModel.reqBounds(it, viewModel.currentZoom.value ?: 15.0)
+        })
+
+        viewModel.currentZoom.observe(viewLifecycleOwner, Observer { zoom ->
+            viewModel.currentLocation.value?.let {
+                viewModel.reqBounds(it, zoom)
+            }
         })
     }
 
@@ -131,18 +173,31 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
             isCompassEnabled = false
             isRotateGesturesEnabled = false
             isZoomControlEnabled = false
-            isLocationButtonEnabled = true
+            isLocationButtonEnabled = false
+            isTiltGesturesEnabled = false
         }
         map.apply {
             locationSource = this@NaverMapFragment.locationSource
-            locationTrackingMode = LocationTrackingMode.Face
+            locationTrackingMode = LocationTrackingMode.Follow
             isNightModeEnabled = true
             setBackgroundResource(NaverMap.DEFAULT_BACKGROUND_DRWABLE_DARK)
             mapType = NaverMap.MapType.Navi
-            minZoom = 4.0
+            minZoom = 12.0
+            maxZoom = 17.0
         }
 
-        viewModel.onChangedLocation(map.contentBounds)
+        binding.tab.getTabAt(0)?.select()
+        mapMarkerAdapter = MapMarkerAdapter(context!!, naverMap)
+
+        binding.buttonLocation.apply {
+            setBackgroundResource(R.drawable.ic_current_location)
+            this.map = map
+        }
+
+        map.addOnCameraIdleListener {
+            viewModel.onChangedLocation(map.cameraPosition.target)
+            viewModel.onChangedZoom(map.cameraPosition.zoom)
+        }
     }
 
     private fun handleResponse(result: Result<ResMapAddress>) {
@@ -165,5 +220,10 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
                 binding.progressBar.isVisible = result.isLoading
             }
         }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        mapMarkerAdapter.onDestroy()
     }
 }
