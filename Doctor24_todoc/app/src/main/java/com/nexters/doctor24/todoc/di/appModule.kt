@@ -4,6 +4,7 @@ import android.content.res.Resources
 import com.nexters.doctor24.todoc.base.DefaultDispatcherProvider
 import com.nexters.doctor24.todoc.base.DispatcherProvider
 import com.nexters.doctor24.todoc.ui.map.NaverMapViewModel
+import com.nexters.doctor24.todoc.ui.map.TimeViewModel
 import org.koin.android.ext.koin.androidContext
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.core.module.Module
@@ -13,4 +14,5 @@ val appModule = module {
     single { androidContext().resources as Resources }
     factory { DefaultDispatcherProvider() as DispatcherProvider }
     viewModel { NaverMapViewModel(get(), get()) }
+    viewModel { TimeViewModel() }
 }

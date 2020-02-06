@@ -8,5 +8,7 @@ import com.nexters.doctor24.todoc.data.marker.response.ResMapMarker
 
 internal interface MarkerRepository {
     suspend fun getMarkers(lat:String, long:String, type: MarkerTypeEnum) : List<ResMapLocation>
+    suspend fun getTimeMarkers(lat:String, long:String, type: MarkerTypeEnum) : List<ResMapLocation>
+
     suspend fun getBounds(zLocation: LatLng, xLocation: LatLng, type: MarkerTypeEnum) : List<ResMapLocation>
 }

@@ -17,16 +17,6 @@ import okhttp3.internal.toImmutableList
 internal class NaverMapViewModel(private val dispatchers: DispatcherProvider,
                                  private val repo: MarkerRepository) : BaseViewModel() {
 
-    private val _startHour = MutableLiveData<Int>()
-    val startHour : LiveData<Int> get() = _startHour
-    private val _startMin = MutableLiveData<Int>()
-    val startMin : LiveData<Int> get() = _startMin
-
-    private val _endHour = MutableLiveData<Int>()
-    val endHour : LiveData<Int> get() = _endHour
-    private val _endMin = MutableLiveData<Int>()
-    val endMin : LiveData<Int> get() = _endMin
-
     private val _currentLocation = MutableLiveData<LatLngBounds>()
     val currentLocation : LiveData<LatLngBounds> get() = _currentLocation
 
@@ -80,29 +70,6 @@ internal class NaverMapViewModel(private val dispatchers: DispatcherProvider,
     fun onChangeTab(type: MarkerTypeEnum) {
         _tabChangeEvent.value = type
     }
-
-
-    private fun setAmPm(hour: Int): String {
-        return if (hour >= 12)
-            "PM"
-        else
-            "AM"
-    }
-
-    private fun setHour(hour: Int): String {
-        return if (hour >= 12)
-            (hour - 12).toString()
-        else
-            hour.toString()
-    }
-
-    private fun setMinute(min: Int): String {
-        return if (min >= 10)
-            min.toString() + ""
-        else
-            "0$min"
-    }
-
 }
 
 internal data class MarkerUIData(
