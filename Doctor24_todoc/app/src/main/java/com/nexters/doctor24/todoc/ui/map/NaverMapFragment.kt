@@ -2,7 +2,6 @@ package com.nexters.doctor24.todoc.ui.map
 
 import android.os.Bundle
 import android.view.View
-import android.widget.FrameLayout
 import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
@@ -24,6 +23,7 @@ import com.nexters.doctor24.todoc.databinding.NavermapFragmentBinding
 import kotlinx.android.synthetic.main.layout_set_time.*
 import kotlinx.android.synthetic.main.layout_time_picker.*
 import kotlinx.android.synthetic.main.navermap_fragment.*
+import okhttp3.internal.notifyAll
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import kotlin.properties.Delegates
 
@@ -89,8 +89,10 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
         var startHour by Delegates.notNull<Int>()
         var startMinute by Delegates.notNull<Int>()
 
+        //TODO : 바인딩!!
+
         ll_layout_set_end_time.setOnClickListener {
-            include_set_time_picker.visibility = View.VISIBLE
+            include_layout_set_time_picker.visibility = View.VISIBLE
             include_layout_set_time.visibility = View.GONE
 
             startHour = tp_time_picker.hour
@@ -100,32 +102,32 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
             btn_set_start_time.visibility = View.GONE
         }
 
-        btn_set_end_time.setOnClickListener {
+/*        btn_set_end_time.setOnClickListener {
             tv_end_time.text = "${setHour(tp_time_picker.hour)}:${setMinute(tp_time_picker.minute)}"
             tv_end_time_ampm.text = setAmPm(tp_time_picker.hour)
 
             validateEndTime(startHour, startMinute)
-        }
+        }*/
 
     }
 
     private fun setStartTime() {
         ll_layout_set_start_time.setOnClickListener {
-            include_set_time_picker.visibility = View.VISIBLE
+            include_layout_set_time_picker.visibility = View.VISIBLE
             include_layout_set_time.visibility = View.GONE
 
             btn_set_start_time.visibility = View.VISIBLE
             btn_set_end_time.visibility = View.GONE
         }
 
-        btn_set_start_time.setOnClickListener {
+/*        btn_set_start_time.setOnClickListener {
             tv_start_time.text =
                 "${setHour(tp_time_picker.hour)}:${setMinute(tp_time_picker.minute)}"
             tv_start_time_ampm.text = setAmPm(tp_time_picker.hour)
 
             include_layout_set_time.visibility = View.VISIBLE
-            include_set_time_picker.visibility = View.GONE
-        }
+            include_layout_set_time_picker.visibility = View.GONE
+        }*/
     }
 
     private fun validateEndTime(hour: Int, minute: Int) {
@@ -137,28 +139,7 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
             return
         }
         include_layout_set_time.visibility = View.VISIBLE
-        include_set_time_picker.visibility = View.GONE
-    }
-
-    private fun setAmPm(hour: Int): String {
-        return if (hour >= 12)
-            "PM"
-        else
-            "AM"
-    }
-
-    private fun setHour(hour: Int): String {
-        return if (hour >= 12)
-            (hour - 12).toString()
-        else
-            hour.toString()
-    }
-
-    private fun setMinute(min: Int): String {
-        return if (min >= 10)
-            min.toString() + ""
-        else
-            "0$min"
+        include_layout_set_time_picker.visibility = View.GONE
     }
 
     override fun onStart() {

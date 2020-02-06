@@ -1,80 +1,106 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <TextView
-        android:id="@+id/tv_set_time"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="진료 시간"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+    <data>
+        <variable
+            name="vm"
+            type="com.nexters.doctor24.todoc.ui.map.NaverMapViewModel" />
+    </data>
 
-    <LinearLayout
-        android:id="@+id/linearLayout"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tv_set_time">
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingBottom="32dp">
 
-        <LinearLayout
-            android:id="@+id/ll_layout_set_start_time"
+        <TextView
+            android:id="@+id/tv_set_time"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:text="진료 시간"
+            android:textStyle="bold"
+            android:layout_marginTop="24dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-            <TextView
-                android:id="@+id/tv_start_time"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="09:00"
-                android:textColor="@color/black"
-                android:textSize="30dp" />
-
-            <TextView
-                android:id="@+id/tv_start_time_ampm"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="4dp"
-                android:text="AM" />
-        </LinearLayout>
-
-        <View
-            android:layout_width="8dp"
-            android:layout_height="2dp"
-            android:layout_gravity="center"
-            android:layout_marginHorizontal="16dp"
-            android:background="#000000" />
-
-        <LinearLayout
-            android:id="@+id/ll_layout_set_end_time"
+        <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:layout_marginRight="24dp"
+            android:text="초기화"
+            android:padding="8dp"
+            android:textColor="@color/blue"
+            android:layout_marginTop="16dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-            <TextView
-                android:id="@+id/tv_end_time"
+        <LinearLayout
+            android:id="@+id/linearLayout"
+            android:layout_marginTop="28dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tv_set_time">
+
+            <LinearLayout
+                android:id="@+id/ll_layout_set_start_time"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="09:00"
-                android:textColor="@color/black"
-                android:textSize="30dp" />
+                android:orientation="horizontal">
 
-            <TextView
-                android:id="@+id/tv_end_time_ampm"
+                <TextView
+                    android:id="@+id/tv_start_time_ampm"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="오전 "
+                    android:textColor="@color/black"
+                    android:textSize="26dp" />
+
+                <TextView
+                    android:id="@+id/tv_start_time"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="08:00"
+                    android:textColor="@color/black"
+                    android:textSize="26dp" />
+
+
+            </LinearLayout>
+
+            <View
+                android:layout_width="8dp"
+                android:layout_height="2dp"
+                android:layout_gravity="center"
+                android:layout_marginHorizontal="16dp"
+                android:background="#000000" />
+
+            <LinearLayout
+                android:id="@+id/ll_layout_set_end_time"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="4dp"
-                android:text="AM" />
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/tv_end_time_ampm"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="오전 "
+                    android:textColor="@color/black"
+                    android:textSize="26dp" />
+                <TextView
+                    android:id="@+id/tv_end_time"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="09:00"
+                    android:textColor="@color/black"
+                    android:textSize="26dp" />
+
+            </LinearLayout>
+
+
         </LinearLayout>
 
-
-    </LinearLayout>
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

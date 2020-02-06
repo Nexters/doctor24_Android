@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:bind="http://schemas.android.com/tools">
 
     <data>
-
         <variable
             name="vm"
             type="com.nexters.doctor24.todoc.ui.map.NaverMapViewModel" />
@@ -82,11 +82,12 @@
             <include
                 android:id="@+id/include_layout_set_time"
                 layout="@layout/layout_set_time"
-                android:visibility="visible" />
+                bind:vm="@{vm}" />
 
             <include
-                android:id="@+id/include_set_time_picker"
+                android:id="@+id/include_layout_set_time_picker"
                 layout="@layout/layout_time_picker"
+                bind:vm="@{vm}"
                 android:visibility="gone" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 

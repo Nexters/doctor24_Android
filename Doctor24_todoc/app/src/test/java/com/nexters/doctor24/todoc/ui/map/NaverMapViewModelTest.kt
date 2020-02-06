@@ -92,6 +92,13 @@ class NaverMapViewModelTest {
         }
     }
 
+    @Test
+    fun `(Given) 시간 스피너에서 (When) 시작식간을 변경 확인버튼을 누르면 (Then) 시작시간 텍스트 변`() {
+        val expectedResult = "11:0"
+        //viewModel
+
+    }
+
     /*@Test
     fun `(Given) Map 화면에서 (When) 병원 탭을 눌렀을 때 (Then) 하단에 주변 병원 리스트 텍스트가 노출`() {
         val expectedResult = "주변 병원 리스트"
