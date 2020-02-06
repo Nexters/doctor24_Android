@@ -1,5 +1,6 @@
 package com.nexters.doctor24.todoc.ui.map
 
+import android.content.SharedPreferences
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
@@ -7,6 +8,7 @@ import com.naver.maps.geometry.LatLng
 import com.nexters.doctor24.todoc.base.BaseViewModel
 import com.nexters.doctor24.todoc.base.DispatcherProvider
 import com.nexters.doctor24.todoc.base.Event
+import com.nexters.doctor24.todoc.base.SingleLiveEvent
 import com.nexters.doctor24.todoc.data.marker.MarkerTypeEnum
 import com.nexters.doctor24.todoc.data.marker.response.ResMapLocation
 import com.nexters.doctor24.todoc.repository.MarkerRepository
@@ -15,7 +17,12 @@ import kotlinx.coroutines.withContext
 import okhttp3.internal.toImmutableList
 
 internal class NaverMapViewModel(private val dispatchers: DispatcherProvider,
+                                 private val sharedPreferences: SharedPreferences,
                                  private val repo: MarkerRepository) : BaseViewModel() {
+
+    companion object {
+        const val KEY_PREF_FILTER_CATEGORY = "KEY_PREF_FILTER_CATEGORY"
+    }
 
     private val _currentLocation = MutableLiveData<LatLng>()
     val currentLocation : LiveData<LatLng> get() = _currentLocation
@@ -41,20 +48,10 @@ internal class NaverMapViewModel(private val dispatchers: DispatcherProvider,
     private val _tabChangeEvent = MutableLiveData<MarkerTypeEnum>()
     val tabChangeEvent : LiveData<MarkerTypeEnum> get() = _tabChangeEvent
 
-    /*fun reqMarker(location: LatLng) {
-        uiScope.launch(dispatchers.io()) {
-            try {
-                val result = repo.getMarkers(location.latitude.toString(), location.longitude.toString(), MarkerTypeEnum.HOSPITAL)
-                withContext(dispatchers.main()) {
-                    _markerList.value = result
-                }
-            } catch (e:Exception) {
+    private val _categoryEvent = SingleLiveEvent<Int>()
+    val categoryEvent : LiveData<Int> get() = _categoryEvent
 
-            }
-        }
-    }*/
-
-    fun reqBounds(center: LatLng, zoomLevel: Double) {
+    fun reqMarker(center: LatLng, zoomLevel: Double) {
         uiScope.launch(dispatchers.io()) {
             try {
                 val result = repo.getMarkers(
@@ -93,6 +90,10 @@ internal class NaverMapViewModel(private val dispatchers: DispatcherProvider,
 
     fun onChangeTab(type: MarkerTypeEnum) {
         _tabChangeEvent.value = type
+    }
+
+    fun onClickFilter() {
+        _categoryEvent.value = sharedPreferences.getInt(KEY_PREF_FILTER_CATEGORY, 0)
     }
 }
 

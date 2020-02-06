@@ -1,9 +1,9 @@
 package com.nexters.doctor24.todoc.ui.map
 
+import android.content.SharedPreferences
 import android.content.res.Resources
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.naver.maps.geometry.LatLng
-import com.naver.maps.geometry.LatLngBounds
 import com.nexters.doctor24.todoc.data.marker.response.ResMapLocation
 
 import com.nexters.doctor24.todoc.data.marker.MarkerTypeEnum
@@ -11,6 +11,7 @@ import com.nexters.doctor24.todoc.data.marker.response.OperatingDate
 import com.nexters.doctor24.todoc.data.marker.response.ResMapMarker
 import com.nexters.doctor24.todoc.repository.MarkerRepository
 import com.nexters.doctor24.todoc.rule.CoroutineTestRule
+import com.nexters.doctor24.todoc.ui.map.category.CategoryViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Assert.assertEquals
@@ -18,6 +19,8 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.mockito.ArgumentMatchers.anyInt
+import org.mockito.ArgumentMatchers.anyString
 import org.mockito.Mock
 import org.mockito.Mockito
 import org.mockito.junit.MockitoJUnitRunner
@@ -34,17 +37,22 @@ class NaverMapViewModelTest {
     var testCoroutineRule = CoroutineTestRule()
 
     private lateinit var viewModel: NaverMapViewModel
+    private lateinit var categoryViewModel: CategoryViewModel
     @Mock
     private lateinit var markerRepo: MarkerRepository
 
     @Mock
     lateinit var resources: Resources
 
+    @Mock
+    lateinit var sharedPref : SharedPreferences
+
     @Before
     fun init() {
 //        MockitoAnnotations.initMocks(this)
 //        startKoin { modules(listOf(networkModule, repositoryModule)) }
         viewModel = NaverMapViewModel(testCoroutineRule.testDispatcherProvider, markerRepo)
+        categoryViewModel = CategoryViewModel()
     }
 
     @Test
@@ -52,12 +60,13 @@ class NaverMapViewModelTest {
         val expectedResult = listOf(
             MarkerUIData(
                 location = LatLng(0.0, 0.0),
-                count = 1
+                count = 1,
+                medicalType = "hospital"
             )
         )
 
         testCoroutineRule.testDispatcher.runBlockingTest {
-            Mockito.`when`(markerRepo.getBounds(LatLng(0.0, 0.0), LatLng(0.0, 0.0), MarkerTypeEnum.HOSPITAL)).thenReturn(
+            Mockito.`when`(markerRepo.getMarkers(LatLng(0.0, 0.0), MarkerTypeEnum.HOSPITAL, 2)).thenReturn(
                 listOf(
                     ResMapLocation(
                         latitude = 0.0,
@@ -84,10 +93,10 @@ class NaverMapViewModelTest {
                     )
                 )
             )
-            viewModel.reqBounds(LatLngBounds(LatLng(0.0, 0.0), LatLng(0.0, 0.0)))
+            viewModel.reqMarker(LatLng(0.0, 0.0), 14.0)
             viewModel.hospitalMarkerDatas.observeForever {
-                println("hospitalMarkerDatas : $it")
-                assertEquals(expectedResult, it)
+                println("hospitalMarkerDatas : ${it.peekContent()}")
+                assertEquals(expectedResult, it.peekContent())
             }
         }
     }
@@ -99,42 +108,15 @@ class NaverMapViewModelTest {
 
     }
 
-    /*@Test
-    fun `(Given) Map 화면에서 (When) 병원 탭을 눌렀을 때 (Then) 하단에 주변 병원 리스트 텍스트가 노출`() {
-        val expectedResult = "주변 병원 리스트"
-        viewModel.onChangeTab(0)
-        viewModel.tabChangeEvent.observeForever {
-            viewModel.onChangeBottomTitle(String.format("주변 %s 리스트", viewModel.tabList[it].title))
-        }
-        viewModel.bottomTitle.observeForever {
-            println("bottomTitle : $it")
+    @Test
+    fun `(Given) 필터버튼 클릭했을 때 (Then) 진료과목 선택 이력이 없으면 (When) 기본값 전체 선택`() {
+        val expectedResult = 0
+
+        Mockito.`when`(sharedPref.getInt(anyString(), anyInt())).thenReturn(0)
+        viewModel.onClickFilter(sharedPref.getInt("KEY_PREF_CATEGORY", -1))
+        viewModel.categoryEvent.observeForever {
             assertEquals(expectedResult, it)
         }
     }
 
-    @Test
-    fun `(Given) Map 화면에서 (When) 약국 탭을 눌렀을 때 (Then) 하단에 주변 약국 리스트 텍스트가 노출`() {
-        val expectedResult = "주변 약국 리스트"
-        viewModel.onChangeTab(1)
-        viewModel.tabChangeEvent.observeForever {
-            viewModel.onChangeBottomTitle(String.format("주변 %s 리스트", viewModel.tabList[it].title))
-        }
-        viewModel.bottomTitle.observeForever {
-            println("bottomTitle : $it")
-            assertEquals(expectedResult, it)
-        }
-    }
-
-    @Test
-    fun `(Given) Map 화면에서 (When) 동물병원 탭을 눌렀을 때 (Then) 하단에 주변 동물병원 리스트 텍스트가 노`() {
-        val expectedResult = "주변 동물병원 리스트"
-        viewModel.onChangeTab(2)
-        viewModel.tabChangeEvent.observeForever {
-            viewModel.onChangeBottomTitle(String.format("주변 %s 리스트", viewModel.tabList[it].title))
-        }
-        viewModel.bottomTitle.observeForever {
-            println("bottomTitle : $it")
-            assertEquals(expectedResult, it)
-        }
-    }*/
 }

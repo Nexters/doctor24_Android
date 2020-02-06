@@ -3,4 +3,24 @@
 
     <string name="time_set">%2$d:%2$d</string>
 
+    <string name="category_dialog_title">진료 과목</string>
+    <string name="category_dialog_reset">초기화</string>
+    <string name="category_item_all">전체</string>
+    <string name="category_item_baby">소아과</string>
+    <!--<item>내과</item>
+    <item>이비인후과</item>
+    <item>피부과</item>
+    <item>정형외과</item>
+    <item>안과</item>
+    <item>치과</item>
+    <item>한의원</item>
+    <item>산부인과</item>
+    <item>비뇨기과</item>
+    <item>정신의학과</item>
+    <item>성형외과</item>
+    <item>가정의학과</item>
+    <item>외과</item>
+    <item>신경외과</item>
+    <item>마취통증과</item>
+    <item>신경과</item>-->
 </resources>

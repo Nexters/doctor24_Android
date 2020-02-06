@@ -7,6 +7,9 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.tabs.TabLayout
 import com.naver.maps.map.LocationTrackingMode
 import com.naver.maps.map.NaverMap
@@ -18,6 +21,7 @@ import com.nexters.doctor24.todoc.base.*
 import com.nexters.doctor24.todoc.data.map.response.ResMapAddress
 import com.nexters.doctor24.todoc.data.marker.MarkerTypeEnum
 import com.nexters.doctor24.todoc.databinding.NavermapFragmentBinding
+import com.nexters.doctor24.todoc.ui.map.category.CategoryAdapter
 import com.nexters.doctor24.todoc.ui.map.marker.MapMarkerAdapter
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -27,6 +31,7 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
 
     companion object {
         private const val LOCATION_PERMISSION_REQUEST_CODE = 1000
+        private const val LAYOUT_SPAN_COUNT = 5
     }
 
     private lateinit var locationSource: FusedLocationSource
@@ -36,7 +41,9 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
     val viewModelTime: TimeViewModel by viewModel()
 
     private lateinit var naverMap: NaverMap
-    private lateinit var mapMarkerAdapter: MapMarkerAdapter
+    private lateinit var mapMarkerAdapter : MapMarkerAdapter
+    private val categoryAdapter : CategoryAdapter by lazy { CategoryAdapter(context!!) }
+    private val bottomSheetCategory : BottomSheetDialog by lazy { BottomSheetDialog(context!!) }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -92,6 +99,14 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
                 }
             })
         }
+
+        val view = layoutInflater.inflate(R.layout.bottom_category_dialog, null)
+        val categoryView = view.findViewById<RecyclerView>(R.id.recycler_view_category)
+        categoryView.apply {
+            adapter = categoryAdapter
+            layoutManager = GridLayoutManager(context, LAYOUT_SPAN_COUNT)
+        }
+        bottomSheetCategory.setContentView(view)
     }
 
     private fun initObserve() {
@@ -107,17 +122,21 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
         })
 
         viewModel.tabChangeEvent.observe(viewLifecycleOwner, Observer {
-            viewModel.reqBounds(naverMap.cameraPosition.target, naverMap.cameraPosition.zoom)
+            viewModel.reqMarker(naverMap.cameraPosition.target, naverMap.cameraPosition.zoom)
         })
 
         viewModel.currentLocation.observe(viewLifecycleOwner, Observer {
-            viewModel.reqBounds(it, viewModel.currentZoom.value ?: 15.0)
+            viewModel.reqMarker(it, viewModel.currentZoom.value ?: 15.0)
         })
 
         viewModel.currentZoom.observe(viewLifecycleOwner, Observer { zoom ->
             viewModel.currentLocation.value?.let {
-                viewModel.reqBounds(it, zoom)
+                viewModel.reqMarker(it, zoom)
             }
+        })
+
+        viewModel.categoryEvent.observe(viewLifecycleOwner, Observer {
+            bottomSheetCategory.show()
         })
     }
 
