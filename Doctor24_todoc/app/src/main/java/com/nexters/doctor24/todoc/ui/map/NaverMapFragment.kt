@@ -7,6 +7,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.tabs.TabLayout
 import com.naver.maps.map.LocationTrackingMode
 import com.naver.maps.map.NaverMap
@@ -55,6 +56,23 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
 
         initView()
         initObserve()
+        setBottomSheet()
+    }
+
+    fun setBottomSheet() {
+
+        val bottomSheetBehavior = BottomSheetBehavior.from<View>(binding.mapBottom)
+
+        bottomSheetBehavior.setBottomSheetCallback(object :
+            BottomSheetBehavior.BottomSheetCallback() {
+            override fun onStateChanged(bottomSheet: View, newState: Int) {
+
+            }
+
+            override fun onSlide(bottomSheet: View, slideOffset: Float) {
+
+            }
+        })
     }
 
     private fun initView() {

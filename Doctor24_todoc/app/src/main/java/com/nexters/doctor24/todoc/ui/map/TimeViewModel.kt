@@ -27,6 +27,9 @@ internal class TimeViewModel() : BaseViewModel() {
     private val _isPickerSelected = MutableLiveData<Boolean>().apply { postValue(false) }
     val isPickerSelected: LiveData<Boolean> get() = _isPickerSelected
 
+    private val _isCompletedTimeSetting = MutableLiveData<Boolean>().apply { postValue(false) }
+    val isCompletedTimeSetting: LiveData<Boolean> get() = _isCompletedTimeSetting
+
     init {
         getCurrentTime()
     }
