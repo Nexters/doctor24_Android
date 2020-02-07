@@ -7,12 +7,12 @@
     <string name="category_dialog_reset">초기화</string>
     <string name="category_item_all">전체</string>
     <string name="category_item_baby">소아과</string>
-    <!--<item>내과</item>
-    <item>이비인후과</item>
-    <item>피부과</item>
-    <item>정형외과</item>
-    <item>안과</item>
-    <item>치과</item>
+    <string name="category_item_internal">내과</string>
+    <string name="category_item_ent">이비인후과</string>
+    <string name="category_item_skin">피부과</string>
+    <string name="category_item_orthopedy">정형외과</string>
+    <string name="category_item_eyes">안과</string>
+    <!--<item>치과</item>
     <item>한의원</item>
     <item>산부인과</item>
     <item>비뇨기과</item>

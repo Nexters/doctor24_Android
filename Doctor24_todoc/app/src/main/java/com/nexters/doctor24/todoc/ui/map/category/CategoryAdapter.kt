@@ -19,7 +19,13 @@ internal class CategoryAdapter(private val context: Context) : RecyclerView.Adap
 
     val categoryItemList = arrayListOf<CategoryItem>(
         CategoryItem(0, R.drawable.selector_category_item_all, R.string.category_item_all),
-        CategoryItem(1, R.drawable.selector_category_item_baby, R.string.category_item_all)
+        CategoryItem(1, R.drawable.selector_category_item_baby, R.string.category_item_baby),
+        CategoryItem(2, R.drawable.selector_category_item_internal, R.string.category_item_internal),
+        CategoryItem(3, R.drawable.selector_category_item_ent, R.string.category_item_ent),
+        CategoryItem(4, R.drawable.selector_category_item_skin, R.string.category_item_skin),
+        CategoryItem(5, R.drawable.selector_category_item_orthopedy, R.string.category_item_orthopedy),
+        CategoryItem(6, R.drawable.selector_category_item_internal, R.string.category_item_internal),
+        CategoryItem(7, R.drawable.selector_category_item_eyes, R.string.category_item_eyes)
     )
 
     val listener : CategoryListener? = null
