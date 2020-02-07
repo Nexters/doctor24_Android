@@ -1,33 +1,65 @@
 package com.nexters.doctor24.todoc.ui.map
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.nexters.doctor24.todoc.base.BaseViewModel
+import java.text.SimpleDateFormat
+import java.util.*
+
 
 internal class TimeViewModel() : BaseViewModel() {
 
-    private val _startHour = MutableLiveData<Int>()
-    val startHour: LiveData<Int> get() = _startHour
-    private val _startMin = MutableLiveData<Int>()
-    val startMin: LiveData<Int> get() = _startMin
+    private val _startHour = MutableLiveData<String>()
+    val startHour: LiveData<String> get() = _startHour
+    private val _startMin = MutableLiveData<String>()
+    val startMin: LiveData<String> get() = _startMin
+    private val _startAmPm = MutableLiveData<String>()
+    val startAmPm: LiveData<String> get() = _startAmPm
 
-    private val _endHour = MutableLiveData<Int>()
-    val endHour: LiveData<Int> get() = _endHour
-    private val _endMin = MutableLiveData<Int>()
-    val endMin: LiveData<Int> get() = _endMin
+    private val _endHour = MutableLiveData<String>()
+    val endHour: LiveData<String> get() = _endHour
+    private val _endMin = MutableLiveData<String>()
+    val endMin: LiveData<String> get() = _endMin
+    private val _endAmPm = MutableLiveData<String>()
+    val endAmPm: LiveData<String> get() = _endAmPm
 
     private val _isPickerSelected = MutableLiveData<Boolean>().apply { postValue(false) }
-    val isPickerSelected :LiveData<Boolean> get() = _isPickerSelected
+    val isPickerSelected: LiveData<Boolean> get() = _isPickerSelected
 
-    fun onClickTimeSetting(){
-        _isPickerSelected.value = true
+    private val _isCompletedTimeSetting = MutableLiveData<Boolean>().apply { postValue(false) }
+    val isCompletedTimeSetting: LiveData<Boolean> get() = _isCompletedTimeSetting
+
+    init {
+        getCurrentTime()
+    }
+
+    fun onClickTimeSetting(boolean: Boolean) {
+        _isPickerSelected.value = boolean
+    }
+
+    fun getCurrentTime() {
+        val now = System.currentTimeMillis()
+        val mDate = Date(now)
+
+        val timeHour = SimpleDateFormat("hh").format(mDate).toInt()
+        val timeMin = SimpleDateFormat("mm").format(mDate).toInt()
+
+        _startAmPm.value = setAmPm(timeHour)
+        _startHour.value = setHour(timeHour)
+        _startMin.value = setMinute(timeMin)
+        Log.e("testtest00",startHour.value.toString()+startMin.value.toString())
+
+        _endAmPm.value = setAmPm(timeHour)
+        _endHour.value = setHour(timeHour + 1)
+        _endMin.value = setMinute(timeMin)
     }
 
     private fun setAmPm(hour: Int): String {
         return if (hour >= 12)
-            "PM"
+            "오후"
         else
-            "AM"
+            "오전"
     }
 
     private fun setHour(hour: Int): String {

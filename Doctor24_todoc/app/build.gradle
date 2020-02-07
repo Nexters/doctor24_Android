@@ -110,4 +110,9 @@ dependencies {
     testImplementation "org.koin:koin-test:$rootProject.koin_version"
     testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$rootProject.coroutine_version"
     androidTestImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$rootProject.coroutine_version"
+
+/*    //bottom sheet
+    classpath 'androidx.support.design.widget.AppBarLayout$ScrollingViewBehavior'
+    classpath 'androidx.support.design.widget.BottomSheetBehavior'*/
+
 }
