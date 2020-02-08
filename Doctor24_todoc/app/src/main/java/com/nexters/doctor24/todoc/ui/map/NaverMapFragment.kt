@@ -16,12 +16,14 @@ import com.naver.maps.map.LocationTrackingMode
 import com.naver.maps.map.NaverMap
 import com.naver.maps.map.OnMapReadyCallback
 import com.naver.maps.map.overlay.Marker
+import com.naver.maps.map.overlay.Overlay
 import com.naver.maps.map.util.FusedLocationSource
 import com.nexters.doctor24.todoc.R
 import com.nexters.doctor24.todoc.api.error.ErrorHandler
 import com.nexters.doctor24.todoc.base.*
 import com.nexters.doctor24.todoc.data.map.response.ResMapAddress
 import com.nexters.doctor24.todoc.data.marker.MarkerTypeEnum
+import com.nexters.doctor24.todoc.data.marker.MedicalMarkerBundleEnum
 import com.nexters.doctor24.todoc.databinding.NavermapFragmentBinding
 import com.nexters.doctor24.todoc.ui.map.category.CategoryAdapter
 import com.nexters.doctor24.todoc.ui.map.marker.MapMarkerAdapter
@@ -30,7 +32,7 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
 internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMapViewModel>(),
-    OnMapReadyCallback {
+    OnMapReadyCallback, MapMarkerManager.MarkerClickListener {
 
     companion object {
         private const val LOCATION_PERMISSION_REQUEST_CODE = 1000
@@ -157,6 +159,55 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
         })
     }
 
+    override fun markerClick(marker: Marker) {
+        deSelectMarker()
+        markerManager.getMarkerItem(marker)?.run {
+            when(marker.tag) {
+                is MedicalMarkerBundleEnum.Bundle -> {
+                    // 한 건물 병원 리스트
+                }
+                is MedicalMarkerBundleEnum.Piece -> {
+                    if (markerManager.isEqualsSelectMarker(this)) return
+                    selectMarker(this)
+                }
+            }
+
+//                moveMarkerBoundary(this)
+        }
+    }
+
+    override fun markerBundleClick(marker: Marker) {
+
+    }
+
+    private fun selectMarker(markerItem: MarkerUIData?) {
+        markerItem?.run {
+            markerManager.selectMarker(this)
+            /*when {
+                mapViewModel.currentState == ListState.Default -> mapViewModel.setListState(isMarkerClick = true)
+            }
+
+            geoJson?.run { mapViewModel.requestGeoAndListInfo(this) }
+
+            val currentZoom = gMap?.cameraPosition?.zoom?.toInt() ?: 13
+            val listType = getBottomCheckedType(this, mapListLayout.currentChecked())
+            val searchTitle = complexName?.let { it } ?: name ?: ""
+
+            if (!searchTitle.isNullOrEmpty()) mainSearchViewModel.setFilterSearchDesc(searchTitle)
+
+            mapListLayout.setRdButton(listType)
+            requestListAPI(listType, this, 1, currentZoom)
+
+            if (!UserInfo.getInstance().filterMgr.isAptType) {
+                mapViewModel.saveClusterClickHistory(this, currentZoom)
+            }*/
+        }
+    }
+
+    fun deSelectMarker() {
+        markerManager.deSelectMarker()
+    }
+
     override fun onStart() {
         super.onStart()
         binding.mapView.onStart()
@@ -223,7 +274,9 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
         }
 
         binding.tab.getTabAt(0)?.select()
-        markerManager = MapMarkerManager(context!!, naverMap)
+        markerManager = MapMarkerManager(context!!, naverMap).apply { listener = this@NaverMapFragment }
+
+        map.setOnMapClickListener { pointF, latLng -> deSelectMarker() }
 
         binding.buttonLocation.apply {
             setBackgroundResource(R.drawable.ic_current_location)
