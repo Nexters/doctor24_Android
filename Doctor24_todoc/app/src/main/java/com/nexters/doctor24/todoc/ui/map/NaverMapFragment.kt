@@ -15,6 +15,7 @@ import com.google.android.material.tabs.TabLayout
 import com.naver.maps.map.LocationTrackingMode
 import com.naver.maps.map.NaverMap
 import com.naver.maps.map.OnMapReadyCallback
+import com.naver.maps.map.overlay.Marker
 import com.naver.maps.map.util.FusedLocationSource
 import com.nexters.doctor24.todoc.R
 import com.nexters.doctor24.todoc.api.error.ErrorHandler
@@ -24,6 +25,7 @@ import com.nexters.doctor24.todoc.data.marker.MarkerTypeEnum
 import com.nexters.doctor24.todoc.databinding.NavermapFragmentBinding
 import com.nexters.doctor24.todoc.ui.map.category.CategoryAdapter
 import com.nexters.doctor24.todoc.ui.map.marker.MapMarkerAdapter
+import com.nexters.doctor24.todoc.ui.map.marker.MapMarkerManager
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
@@ -42,7 +44,7 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
     val viewModelTime: TimeViewModel by viewModel()
 
     private lateinit var naverMap: NaverMap
-    private lateinit var mapMarkerAdapter : MapMarkerAdapter
+    private lateinit var markerManager: MapMarkerManager
     private val categoryAdapter : CategoryAdapter by lazy { CategoryAdapter(context!!) }
     private val bottomSheetCategory : BottomSheetDialog by lazy { BottomSheetDialog(context!!) }
 
@@ -132,10 +134,7 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
             if (it.isEmpty()) {
                 Toast.makeText(context, "현재 운영중인 병원이 없습니다.", Toast.LENGTH_SHORT).show()
             } else {
-                mapMarkerAdapter.drawMarker(
-                    it,
-                    viewModel.tabChangeEvent.value ?: MarkerTypeEnum.HOSPITAL
-                )
+                markerManager.setMarker(it)
             }
         })
 
@@ -224,7 +223,7 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
         }
 
         binding.tab.getTabAt(0)?.select()
-        mapMarkerAdapter = MapMarkerAdapter(context!!, naverMap)
+        markerManager = MapMarkerManager(context!!, naverMap)
 
         binding.buttonLocation.apply {
             setBackgroundResource(R.drawable.ic_current_location)
@@ -261,6 +260,5 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
 
     override fun onDestroyView() {
         super.onDestroyView()
-        mapMarkerAdapter.onDestroy()
     }
 }

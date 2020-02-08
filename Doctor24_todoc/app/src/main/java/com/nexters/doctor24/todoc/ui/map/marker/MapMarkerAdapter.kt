@@ -7,8 +7,10 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.NaverMap
 import com.naver.maps.map.overlay.Marker
+import com.naver.maps.map.overlay.Overlay
 import com.naver.maps.map.overlay.OverlayImage
 import com.nexters.doctor24.todoc.R
 import com.nexters.doctor24.todoc.data.marker.MarkerTypeEnum
@@ -18,19 +20,43 @@ import kotlin.coroutines.CoroutineContext
 
 internal class MapMarkerAdapter(val context: Context, private val naverMap: NaverMap) : MapMarkerProvider {
 
+    interface MarkerClickListener {
+        fun markerClick(marker: Marker)
+    }
+
     private val ZINDEX_NORAML = 0
     private val ZINDEX_COUNT  = 100
 
     private val job = Job()     // 1
     private val uiScope = CoroutineScope(Dispatchers.Main + job)
 
+    var listener : MarkerClickListener? = null
+
     val view = LayoutInflater.from(context).inflate(R.layout.view_marker_hospital, null)
     val markerView = view.findViewById<ImageView>(R.id.image_marker)
     val countView = view.findViewById<TextView>(R.id.text_count)
 
     private var markers: MutableList<Marker> = mutableListOf()
+    private var newMarkerData: HashMap<LatLng, MarkerUIData> = hashMapOf()
+    private var currentMarkerData: HashMap<LatLng, Marker> = hashMapOf()
 
     override fun drawMarker(data: List<MarkerUIData>, type: MarkerTypeEnum) {
+        data.forEach {
+            if(currentMarkerData[it.location] != null) {
+                newMarkerData[it.location] = it
+
+//                currentMarkerData[it.location] = it
+            }
+        }
+       /* val removeData = currentMarkerData.filter {
+            !newMarkerData.contains(it.key)
+        }
+
+        markers.forEachIndexed { index, it ->
+            if(removeData[it.position] != null) it.map = null
+            markers.removeAt(index)
+        }*/
+
         markers.iterator().forEach { it.map = null }
         markers.clear()
 
@@ -39,18 +65,24 @@ internal class MapMarkerAdapter(val context: Context, private val naverMap: Nave
                 if(it.count > 1) {
                     Marker().apply {
                         position = it.location
-                        icon = drawCountMarkerIcon(it.count)
+                        icon = drawCountMarkerIcon(type, it.count)
                         zIndex = ZINDEX_COUNT
                     }
                 } else {
                     Marker().apply {
                         position = it.location
+                        tag = it.name
                         icon = drawMarkerIcon(
                             type,
                             it.isEmergency,
                             it.isNight
                         )
                         zIndex = ZINDEX_NORAML
+                        setOnClickListener {
+                            listener?.markerClick(this)
+                            updateMarker(this, type, true)
+                            true
+                        }
                     }
                 })
 
@@ -62,11 +94,26 @@ internal class MapMarkerAdapter(val context: Context, private val naverMap: Nave
 
     }
 
-    override fun updateMarker() {
-
+    override fun updateMarker(marker: Marker, type: MarkerTypeEnum, isSelected: Boolean) {
+        if(isSelected) {
+            marker.icon = drawSelectMarkerIcon(type)
+        }
     }
 
-    private fun drawCountMarkerIcon(total: Int): OverlayImage {
+    private fun drawSelectMarkerIcon(type: MarkerTypeEnum) : OverlayImage {
+        return OverlayImage.fromResource(
+            when(type) {
+                MarkerTypeEnum.HOSPITAL -> R.drawable.ic_marker_hospital_select
+                MarkerTypeEnum.PHARMACY -> R.drawable.ic_marker_pharmacy_select
+            }
+        )
+    }
+
+    private fun drawCountMarkerIcon(type: MarkerTypeEnum, total: Int): OverlayImage {
+        markerView.setImageResource(when(type) {
+            MarkerTypeEnum.HOSPITAL -> R.drawable.ic_marker_hospital_normal
+            MarkerTypeEnum.PHARMACY -> R.drawable.ic_marker_pharmacy
+        })
         countView.text = total.toString()
         return OverlayImage.fromView(view)
     }

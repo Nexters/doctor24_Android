@@ -31,19 +31,20 @@ internal class NaverMapViewModel(private val dispatchers: DispatcherProvider,
 
     private val _markerList = MutableLiveData<List<ResMapLocation>>()
     private val _hospitalMarkerDatas = Transformations.map(_markerList) {
-        val list = mutableListOf<MarkerUIData>()
+        val list = arrayListOf<MarkerUIData>()
         it.forEach {res->
             list.add(MarkerUIData(
                 location = LatLng(res.latitude, res.longitude),
                 count = res.total,
                 medicalType = res.facilities[0].medicalType,
                 isEmergency = res.facilities[0].emergency,
-                isNight = res.facilities[0].nightTimeServe
+                isNight = res.facilities[0].nightTimeServe,
+                name = res.facilities[0].placeName
             ))
         }
-        Event(list.toImmutableList())
+        Event(list)
     }
-    val hospitalMarkerDatas : LiveData<Event<List<MarkerUIData>>> get() = _hospitalMarkerDatas
+    val hospitalMarkerDatas : LiveData<Event<ArrayList<MarkerUIData>>> get() = _hospitalMarkerDatas
 
     private val _tabChangeEvent = MutableLiveData<MarkerTypeEnum>()
     val tabChangeEvent : LiveData<MarkerTypeEnum> get() = _tabChangeEvent
@@ -102,5 +103,6 @@ internal data class MarkerUIData(
     val count: Int,
     val medicalType: String,
     val isEmergency: Boolean = false,
-    val isNight: Boolean = false
+    val isNight: Boolean = false,
+    val name: String
 )
