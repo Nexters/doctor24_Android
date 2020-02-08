@@ -10,18 +10,28 @@ import com.naver.maps.map.overlay.OverlayImage
 import com.nexters.doctor24.todoc.R
 import com.nexters.doctor24.todoc.data.marker.MarkerTypeEnum
 import com.nexters.doctor24.todoc.data.marker.MarkerTypeEnum.Companion.getMarkerType
+import com.nexters.doctor24.todoc.data.marker.MedicalMarkerBundleEnum
+import com.nexters.doctor24.todoc.ui.custom.MapMarkerBounce
 import com.nexters.doctor24.todoc.ui.custom.MapMarkerFade
 import com.nexters.doctor24.todoc.ui.map.MarkerUIData
 import java.util.HashMap
 
 internal class MapMarkerManager(val context: Context, private val naverMap: NaverMap) {
 
+    interface MarkerClickListener {
+        fun markerClick(marker: Marker)
+        fun markerBundleClick(marker: Marker)
+    }
+
+    var listener : MarkerClickListener? = null
 
     private val ZINDEX_DISABLE = -100
     private val ZINDEX_NORAML = 0
     private val ZINDEX_COUNT  = 100
     private val ZINDEX_SELECTED = 200
 
+    private var selectMarkerItem: MarkerUIData? = null
+    private val markerBounce by lazy { MapMarkerBounce() }
     private val mapMarkers = HashMap<MarkerUIData, Marker>()
     private val mapMarkerItems = HashMap<Marker, MarkerUIData>()
 
@@ -88,6 +98,13 @@ internal class MapMarkerManager(val context: Context, private val naverMap: Nave
                             position = it.location
                             icon = drawCountMarkerIcon(type, it.count)
                             zIndex = ZINDEX_COUNT
+                            setOnClickListener { overlay ->
+                                overlay.tag = MedicalMarkerBundleEnum.Bundle(it.count)
+                                listener?.markerClick(overlay as Marker)
+//                                listener?.markerClick(this)
+//                                updateMarker(this, type, true)
+                                true
+                            }
                         }
                     }
                     else -> {
@@ -100,11 +117,13 @@ internal class MapMarkerManager(val context: Context, private val naverMap: Nave
                                 it.isNight
                             )
                             zIndex = ZINDEX_NORAML
-                            /*setOnClickListener {
-                                listener?.markerClick(this, )
-                                updateMarker(this, type, true)
+                            setOnClickListener { overlay ->
+                                overlay.tag = MedicalMarkerBundleEnum.Piece()
+                                listener?.markerClick(overlay as Marker)
+//                                listener?.markerClick(this)
+//                                updateMarker(this, type, true)
                                 true
-                            }*/
+                            }
                         }
                     }
                 }
@@ -137,4 +156,43 @@ internal class MapMarkerManager(val context: Context, private val naverMap: Nave
         countView.text = total.toString()
         return OverlayImage.fromView(view)
     }
+
+    private fun drawSelectMarkerIcon(type: MarkerTypeEnum) : OverlayImage {
+        return OverlayImage.fromResource(
+            when(type) {
+                MarkerTypeEnum.HOSPITAL -> R.drawable.ic_marker_hospital_select
+                MarkerTypeEnum.PHARMACY -> R.drawable.ic_marker_pharmacy_select
+            }
+        )
+    }
+
+    fun selectMarker(markerItem: MarkerUIData) {
+        val selectMarker = mapMarkers[markerItem]
+        selectMarker?.run {
+            selectMarkerItem = markerItem
+            getMarkerType(markerItem.medicalType)?.let {
+                selectMarker.icon = drawSelectMarkerIcon(it)
+            }
+            zIndex = ZINDEX_SELECTED
+            markerBounce.onMarkerClick(this, 1000L, 0.5f, 0.5f)
+        }
+    }
+
+    fun deSelectMarker() {
+        selectMarkerItem?.run {
+            val marker = mapMarkers[this]
+            if(marker?.tag is MedicalMarkerBundleEnum.Piece) {
+                getMarkerType(medicalType)?.let { type ->
+                    marker.icon = drawMarkerIcon(type, isEmergency, isNight)
+                }
+            }
+            selectMarkerItem = null
+        }
+    }
+
+    fun isEqualsSelectMarker(clickMarker: MarkerUIData): Boolean = (clickMarker == selectMarkerItem)
+
+    fun getMarkerItem(marker: Marker): MarkerUIData? = mapMarkerItems[marker]
+
+    fun getSelectMarkerItem(): MarkerUIData? = selectMarkerItem
 }

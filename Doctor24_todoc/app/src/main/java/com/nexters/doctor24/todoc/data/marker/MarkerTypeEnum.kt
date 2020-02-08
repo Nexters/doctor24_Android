@@ -17,3 +17,8 @@ enum class MarkerTypeEnum(val type: String, val title: String, val icon: Int) {
         }
     }
 }
+
+sealed class MedicalMarkerBundleEnum(val count: Int) {
+    class Bundle(total : Int) : MedicalMarkerBundleEnum(total)
+    class Piece() : MedicalMarkerBundleEnum(1)
+}
