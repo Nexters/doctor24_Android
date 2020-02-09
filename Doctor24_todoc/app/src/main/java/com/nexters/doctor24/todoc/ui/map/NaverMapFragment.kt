@@ -26,6 +26,7 @@ import com.nexters.doctor24.todoc.data.marker.MarkerTypeEnum
 import com.nexters.doctor24.todoc.data.marker.response.ResMapMarker
 import com.nexters.doctor24.todoc.databinding.NavermapFragmentBinding
 import com.nexters.doctor24.todoc.ui.map.category.CategoryAdapter
+import com.nexters.doctor24.todoc.ui.map.category.CategoryItem
 import com.nexters.doctor24.todoc.ui.map.marker.MapMarkerManager
 import com.nexters.doctor24.todoc.ui.map.marker.group.GroupMarkerListDialog
 import com.nexters.doctor24.todoc.ui.map.preview.PreviewFragment
@@ -185,21 +186,9 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
 
     override fun markerClick(marker: Marker) {
         deSelectMarker()
-        /*markerManager.getMarkerItem(marker)?.run {
+        markerManager.getMarkerItem(marker)?.run {
             if (markerManager.isEqualsSelectMarker(this)) return
             selectMarker(this)
-        }*/
-        Timber.d( "marker tag : ${marker.tag}")
-        marker.tag?.let {
-            if((it as ArrayList<ResMapMarker>).isNotEmpty()) {
-                val groupData = Bundle().apply {
-                    putParcelableArrayList(GroupMarkerListDialog.KEY_LIST, it)
-                }
-                GroupMarkerListDialog().apply {
-                    arguments = groupData
-                }.show(childFragmentManager, GroupMarkerListDialog.TAG)
-            }
-
         }
         moveMarkerBoundary(marker)
     }
