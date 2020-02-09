@@ -15,6 +15,7 @@ import com.nexters.doctor24.todoc.R
 import com.nexters.doctor24.todoc.data.marker.MarkerTypeEnum
 import com.nexters.doctor24.todoc.data.marker.MarkerTypeEnum.Companion.getMarkerType
 import com.nexters.doctor24.todoc.data.marker.MedicalMarkerBundleEnum
+import com.nexters.doctor24.todoc.data.marker.response.ResMapMarker
 import com.nexters.doctor24.todoc.ui.custom.MapMarkerBounce
 import com.nexters.doctor24.todoc.ui.custom.MapMarkerFade
 import com.nexters.doctor24.todoc.ui.map.MarkerUIData
@@ -103,7 +104,7 @@ internal class MapMarkerManager(val context: Context, private val naverMap: Nave
                             icon = drawCountMarkerIcon(type, it.count)
                             zIndex = ZINDEX_COUNT
                             setOnClickListener { overlay ->
-                                overlay.tag = MedicalMarkerBundleEnum.Bundle(it.count)
+                                overlay.tag = it.group
                                 listener?.markerBundleClick(overlay as Marker)
                                 true
                             }
@@ -120,7 +121,7 @@ internal class MapMarkerManager(val context: Context, private val naverMap: Nave
                             )
                             zIndex = ZINDEX_NORAML
                             setOnClickListener { overlay ->
-                                overlay.tag = MedicalMarkerBundleEnum.Piece()
+                                overlay.tag = it.group
                                 listener?.markerClick(overlay as Marker)
                                 true
                             }

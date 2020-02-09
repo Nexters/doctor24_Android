@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="item"
+            type="com.nexters.doctor24.todoc.ui.map.marker.group.GroupMarkerListDialog.GroupListHospitalUiData" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/image_badge_emergency"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15.5dp"
+            android:src="@drawable/ic_badge_emergency"
+            android:visibility="@{item.isEmergency}"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/image_badge_night"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15.5dp"
+            android:layout_marginStart="6dp"
+            app:layout_goneMarginStart="0dp"
+            android:src="@drawable/ic_badge_night"
+            android:visibility="@{item.isNight}"
+            app:layout_constraintStart_toEndOf="@id/image_badge_emergency"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/image_badge_normal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15.5dp"
+            android:layout_marginStart="6dp"
+            app:layout_goneMarginStart="0dp"
+            android:src="@drawable/ic_badge_normal"
+            android:visibility="@{item.isNormal}"
+            app:layout_constraintStart_toEndOf="@id/image_badge_night"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/text_name"
+            style="@style/AndH4LeftBold18"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="43.5dp"
+            android:text="@{item.placeName}"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="한방병원" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/text_today"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            style="@style/AndB1LeftBold16"
+            android:text="@string/map_marker_group_list_item_today"
+            app:layout_constraintTop_toBottomOf="@id/text_name"
+            app:layout_constraintStart_toStartOf="parent"
+            />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/text_today_hour"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            style="@style/AndB1LeftRegular16"
+            android:text="@{item.todayHour}"
+            app:layout_constraintTop_toTopOf="@id/text_today"
+            app:layout_constraintBottom_toBottomOf="@id/text_today"
+            app:layout_constraintStart_toEndOf="@id/text_today"
+            />
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_marginTop="15.5dp"
+            android:background="@color/grey_4"
+            app:layout_constraintTop_toBottomOf="@id/text_today"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>
