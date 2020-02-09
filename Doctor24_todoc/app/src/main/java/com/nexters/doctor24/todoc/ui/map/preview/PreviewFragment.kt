@@ -12,7 +12,7 @@ import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 
 internal class PreviewFragment : BottomSheetDialogFragment() {
 
-    val viewModel: NaverMapViewModel by sharedViewModel()
+    private val viewModel: NaverMapViewModel by sharedViewModel()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
