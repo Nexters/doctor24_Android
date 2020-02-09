@@ -27,8 +27,8 @@ internal class PreviewFragment : BottomSheetDialogFragment() {
         return inflater.inflate(R.layout.preview_fragment, container, false)
     }
 
-    override fun onDismiss(dialog: DialogInterface) {
-        super.onDismiss(dialog)
+    override fun dismiss() {
+        super.dismiss()
         viewModel.onClosePreview()
     }
 }

@@ -1,9 +1,10 @@
 package com.nexters.doctor24.todoc.ui.map
 
-import android.graphics.PointF
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
+import android.view.animation.Animation
+import android.view.animation.AnimationUtils
 import android.widget.TextView
 import android.widget.Toast
 import androidx.core.view.isVisible
@@ -14,8 +15,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.tabs.TabLayout
+import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.*
-import com.naver.maps.map.overlay.InfoWindow
 import com.naver.maps.map.overlay.Marker
 import com.naver.maps.map.util.FusedLocationSource
 import com.nexters.doctor24.todoc.R
@@ -23,11 +24,11 @@ import com.nexters.doctor24.todoc.api.error.ErrorHandler
 import com.nexters.doctor24.todoc.base.*
 import com.nexters.doctor24.todoc.data.map.response.ResMapAddress
 import com.nexters.doctor24.todoc.data.marker.MarkerTypeEnum
-import com.nexters.doctor24.todoc.data.marker.MedicalMarkerBundleEnum
 import com.nexters.doctor24.todoc.databinding.NavermapFragmentBinding
 import com.nexters.doctor24.todoc.ui.map.category.CategoryAdapter
 import com.nexters.doctor24.todoc.ui.map.marker.MapMarkerManager
 import com.nexters.doctor24.todoc.ui.map.preview.PreviewFragment
+import org.koin.android.ext.android.bind
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
@@ -150,13 +151,15 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
         })
 
         viewModel.currentLocation.observe(viewLifecycleOwner, Observer {
-            viewModel.reqMarker(it, viewModel.currentZoom.value ?: 15.0)
+//            viewModel.reqMarker(it, viewModel.currentZoom.value ?: 15.0)
+            showRefresh()
         })
 
         viewModel.currentZoom.observe(viewLifecycleOwner, Observer { zoom ->
-            viewModel.currentLocation.value?.let {
+            /*viewModel.currentLocation.value?.let {
                 viewModel.reqMarker(it, zoom)
-            }
+            }*/
+            showRefresh()
         })
 
         viewModel.categoryEvent.observe(viewLifecycleOwner, Observer {
@@ -166,7 +169,21 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
         viewModel.previewCloseEvent.observe(viewLifecycleOwner, Observer {
             deSelectMarker()
         })
+
+        viewModel.refreshEvent.observe(viewLifecycleOwner, Observer {
+            binding.btnRefresh.isVisible = false
+        })
     }
+
+    private fun showRefresh() {
+        if(!binding.btnRefresh.isVisible && !previewFragment.isVisible) {
+            binding.btnRefresh.apply {
+                isVisible = true
+                startAnimation((AnimationUtils.loadAnimation(context, R.anim.anim_slide_in_down)))
+            }
+        }
+    }
+
 
     override fun markerClick(marker: Marker) {
         deSelectMarker()
@@ -189,6 +206,7 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
 
     private fun selectMarker(markerItem: MarkerUIData?) {
         markerItem?.run {
+            binding.btnRefresh.isVisible = false
             markerManager.selectMarker(this)
             previewFragment.show(childFragmentManager, previewFragment.tag)
             /*when {

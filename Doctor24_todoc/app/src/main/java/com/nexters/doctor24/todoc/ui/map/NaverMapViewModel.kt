@@ -55,6 +55,9 @@ internal class NaverMapViewModel(private val dispatchers: DispatcherProvider,
     private val _previewCloseEvent = SingleLiveEvent<Unit>()
     val previewCloseEvent : LiveData<Unit> get() = _previewCloseEvent
 
+    private val _refreshEvent = SingleLiveEvent<Unit>()
+    val refreshEvent : LiveData<Unit> get() = _refreshEvent
+
     fun reqMarker(center: LatLng, zoomLevel: Double) {
         uiScope.launch(dispatchers.io()) {
             try {
@@ -102,6 +105,15 @@ internal class NaverMapViewModel(private val dispatchers: DispatcherProvider,
 
     fun onClosePreview() {
         _previewCloseEvent.call()
+    }
+
+    fun onClickRefresh() {
+        _refreshEvent.call()
+        _currentLocation.value?.let { location ->
+            _currentZoom.value?.let { zoom ->
+                reqMarker(location, zoom)
+            }
+        }
     }
 }
 

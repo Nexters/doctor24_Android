@@ -23,7 +23,7 @@ internal class CategoryAdapter(private val context: Context) : RecyclerView.Adap
         CategoryItem(2, R.drawable.selector_category_item_internal, R.string.category_item_internal),
         CategoryItem(3, R.drawable.selector_category_item_ent, R.string.category_item_ent),
         CategoryItem(4, R.drawable.selector_category_item_skin, R.string.category_item_skin),
-        CategoryItem(5, R.drawable.selector_category_item_orthopedy, R.string.category_item_orthopedy),
+        CategoryItem(5, R.drawable.selector_category_item_orthopedy, R.string.category_item_orthopedics),
         CategoryItem(6, R.drawable.selector_category_item_internal, R.string.category_item_internal),
         CategoryItem(7, R.drawable.selector_category_item_eyes, R.string.category_item_eyes)
     )
