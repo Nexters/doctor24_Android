@@ -1,6 +1,7 @@
 package com.nexters.doctor24.todoc.ui.map
 
 import android.content.SharedPreferences
+import android.os.Parcelable
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
@@ -11,6 +12,7 @@ import com.nexters.doctor24.todoc.base.Event
 import com.nexters.doctor24.todoc.base.SingleLiveEvent
 import com.nexters.doctor24.todoc.data.marker.MarkerTypeEnum
 import com.nexters.doctor24.todoc.data.marker.response.ResMapLocation
+import com.nexters.doctor24.todoc.data.marker.response.ResMapMarker
 import com.nexters.doctor24.todoc.repository.MarkerRepository
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -39,7 +41,8 @@ internal class NaverMapViewModel(private val dispatchers: DispatcherProvider,
                 medicalType = res.facilities[0].medicalType,
                 isEmergency = res.facilities[0].emergency,
                 isNight = res.facilities[0].nightTimeServe,
-                name = res.facilities[0].placeName
+                name = res.facilities[0].placeName,
+                group = res.facilities
             ))
         }
         Event(list)
@@ -57,6 +60,9 @@ internal class NaverMapViewModel(private val dispatchers: DispatcherProvider,
 
     private val _refreshEvent = SingleLiveEvent<Unit>()
     val refreshEvent : LiveData<Unit> get() = _refreshEvent
+
+    private val _dialogCloseEvent = SingleLiveEvent<Unit>()
+    val dialogCloseEvent : LiveData<Unit> get() = _dialogCloseEvent
 
     fun reqMarker(center: LatLng, zoomLevel: Double) {
         uiScope.launch(dispatchers.io()) {
@@ -115,6 +121,10 @@ internal class NaverMapViewModel(private val dispatchers: DispatcherProvider,
             }
         }
     }
+
+    fun onCloseDialog() {
+        _dialogCloseEvent.call()
+    }
 }
 
 internal data class MarkerUIData(
@@ -123,5 +133,6 @@ internal data class MarkerUIData(
     val medicalType: String,
     val isEmergency: Boolean = false,
     val isNight: Boolean = false,
-    val name: String
+    val name: String,
+    val group: ArrayList<ResMapMarker>
 )

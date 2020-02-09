@@ -1,9 +1,9 @@
 package com.nexters.doctor24.todoc.ui.map
 
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
-import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import android.widget.TextView
 import android.widget.Toast
@@ -15,7 +15,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.tabs.TabLayout
-import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.*
 import com.naver.maps.map.overlay.Marker
 import com.naver.maps.map.util.FusedLocationSource
@@ -24,12 +23,15 @@ import com.nexters.doctor24.todoc.api.error.ErrorHandler
 import com.nexters.doctor24.todoc.base.*
 import com.nexters.doctor24.todoc.data.map.response.ResMapAddress
 import com.nexters.doctor24.todoc.data.marker.MarkerTypeEnum
+import com.nexters.doctor24.todoc.data.marker.response.ResMapMarker
 import com.nexters.doctor24.todoc.databinding.NavermapFragmentBinding
 import com.nexters.doctor24.todoc.ui.map.category.CategoryAdapter
+import com.nexters.doctor24.todoc.ui.map.category.CategoryItem
 import com.nexters.doctor24.todoc.ui.map.marker.MapMarkerManager
+import com.nexters.doctor24.todoc.ui.map.marker.group.GroupMarkerListDialog
 import com.nexters.doctor24.todoc.ui.map.preview.PreviewFragment
-import org.koin.android.ext.android.bind
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import timber.log.Timber
 
 
 internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMapViewModel>(),
@@ -151,14 +153,10 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
         })
 
         viewModel.currentLocation.observe(viewLifecycleOwner, Observer {
-//            viewModel.reqMarker(it, viewModel.currentZoom.value ?: 15.0)
             showRefresh()
         })
 
-        viewModel.currentZoom.observe(viewLifecycleOwner, Observer { zoom ->
-            /*viewModel.currentLocation.value?.let {
-                viewModel.reqMarker(it, zoom)
-            }*/
+        viewModel.currentZoom.observe(viewLifecycleOwner, Observer {
             showRefresh()
         })
 
@@ -177,6 +175,7 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
 
     private fun showRefresh() {
         if(!binding.btnRefresh.isVisible && !previewFragment.isVisible) {
+            deSelectMarker()
             binding.btnRefresh.apply {
                 isVisible = true
                 startAnimation((AnimationUtils.loadAnimation(context, R.anim.anim_slide_in_down)))
@@ -195,6 +194,21 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
     }
 
     override fun markerBundleClick(marker: Marker) {
+        deSelectMarker()
+
+        Timber.d( "marker tag : ${marker.tag}")
+        marker.tag?.let {
+            if((it as ArrayList<ResMapMarker>).isNotEmpty()) {
+                val groupData = Bundle().apply {
+                    putParcelableArrayList(GroupMarkerListDialog.KEY_LIST, it)
+                }
+                GroupMarkerListDialog().apply {
+                    arguments = groupData
+                }.show(childFragmentManager, GroupMarkerListDialog.TAG)
+            }
+
+        }
+        moveMarkerBoundary(marker)
 
     }
 

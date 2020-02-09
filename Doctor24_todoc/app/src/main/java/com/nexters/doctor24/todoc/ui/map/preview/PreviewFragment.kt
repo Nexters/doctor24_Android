@@ -1,6 +1,8 @@
 package com.nexters.doctor24.todoc.ui.map.preview
 
 import android.content.DialogInterface
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -25,6 +27,14 @@ internal class PreviewFragment : BottomSheetDialogFragment() {
     ): View? {
         super.onCreateView(inflater, container, savedInstanceState)
         return inflater.inflate(R.layout.preview_fragment, container, false)
+    }
+
+    override fun onStart() {
+        super.onStart()
+        dialog?.let {
+            it.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+            it.setCanceledOnTouchOutside(true)
+        }
     }
 
     override fun dismiss() {
