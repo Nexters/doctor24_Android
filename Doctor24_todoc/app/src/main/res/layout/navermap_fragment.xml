@@ -15,8 +15,7 @@
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:id="@+id/ml_map_container"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:layoutDescription="@xml/scene_map_bottom">
+        android:layout_height="match_parent">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -64,6 +63,25 @@
                     app:tabTextAppearance="@style/TabTextAppearance" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
+            
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/btn_refresh"
+                android:layout_width="112dp"
+                android:layout_height="44dp"
+                android:layout_marginTop="34dp"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:gravity="center_vertical"
+                android:background="@drawable/background_tablayout"
+                android:text="@string/map_refresh"
+                style="@style/AndB1CenterRegular16"
+                android:drawableStart="@drawable/ic_refresh"
+                android:drawablePadding="11dp"
+                android:onClick="@{()->vm.onClickRefresh()}"
+                app:layout_constraintTop_toBottomOf="@id/layout_tab"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                />
 
             <com.naver.maps.map.widget.LocationButtonView
                 android:id="@+id/button_location"

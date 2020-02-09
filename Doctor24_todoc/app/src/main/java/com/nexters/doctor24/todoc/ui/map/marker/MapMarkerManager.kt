@@ -1,10 +1,14 @@
 package com.nexters.doctor24.todoc.ui.map.marker
 
 import android.content.Context
+import android.graphics.PointF
 import android.view.LayoutInflater
+import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import com.naver.maps.map.NaverMap
+import com.naver.maps.map.overlay.Align
+import com.naver.maps.map.overlay.InfoWindow
 import com.naver.maps.map.overlay.Marker
 import com.naver.maps.map.overlay.OverlayImage
 import com.nexters.doctor24.todoc.R
@@ -100,9 +104,7 @@ internal class MapMarkerManager(val context: Context, private val naverMap: Nave
                             zIndex = ZINDEX_COUNT
                             setOnClickListener { overlay ->
                                 overlay.tag = MedicalMarkerBundleEnum.Bundle(it.count)
-                                listener?.markerClick(overlay as Marker)
-//                                listener?.markerClick(this)
-//                                updateMarker(this, type, true)
+                                listener?.markerBundleClick(overlay as Marker)
                                 true
                             }
                         }
@@ -120,8 +122,6 @@ internal class MapMarkerManager(val context: Context, private val naverMap: Nave
                             setOnClickListener { overlay ->
                                 overlay.tag = MedicalMarkerBundleEnum.Piece()
                                 listener?.markerClick(overlay as Marker)
-//                                listener?.markerClick(this)
-//                                updateMarker(this, type, true)
                                 true
                             }
                         }
@@ -172,6 +172,10 @@ internal class MapMarkerManager(val context: Context, private val naverMap: Nave
             selectMarkerItem = markerItem
             getMarkerType(markerItem.medicalType)?.let {
                 selectMarker.icon = drawSelectMarkerIcon(it)
+                InfoWindow().apply {
+                    adapter = MarkerTagAdapter(markerItem)
+                    offsetY = -80
+                }.open(selectMarker, Align.Bottom)
             }
             zIndex = ZINDEX_SELECTED
             markerBounce.onMarkerClick(this, 1000L, 0.5f, 0.5f)
@@ -184,6 +188,7 @@ internal class MapMarkerManager(val context: Context, private val naverMap: Nave
             if(marker?.tag is MedicalMarkerBundleEnum.Piece) {
                 getMarkerType(medicalType)?.let { type ->
                     marker.icon = drawMarkerIcon(type, isEmergency, isNight)
+                    marker.infoWindow?.close()
                 }
             }
             selectMarkerItem = null
@@ -195,4 +200,14 @@ internal class MapMarkerManager(val context: Context, private val naverMap: Nave
     fun getMarkerItem(marker: Marker): MarkerUIData? = mapMarkerItems[marker]
 
     fun getSelectMarkerItem(): MarkerUIData? = selectMarkerItem
+
+    inner class MarkerTagAdapter(private val markerItem: MarkerUIData) : InfoWindow.ViewAdapter() {
+        private val view = LayoutInflater.from(context).inflate(R.layout.item_marker_name, null)
+        private val name = view.findViewById<TextView>(R.id.text_name)
+
+        override fun getView(window: InfoWindow): View {
+            name.text = markerItem.name
+            return view
+        }
+    }
 }

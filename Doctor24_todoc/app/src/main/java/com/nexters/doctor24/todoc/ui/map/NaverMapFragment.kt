@@ -3,31 +3,32 @@ package com.nexters.doctor24.todoc.ui.map
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
+import android.view.animation.Animation
+import android.view.animation.AnimationUtils
 import android.widget.TextView
 import android.widget.Toast
 import androidx.core.view.isVisible
+import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.tabs.TabLayout
-import com.naver.maps.map.LocationTrackingMode
-import com.naver.maps.map.NaverMap
-import com.naver.maps.map.OnMapReadyCallback
+import com.naver.maps.geometry.LatLng
+import com.naver.maps.map.*
 import com.naver.maps.map.overlay.Marker
-import com.naver.maps.map.overlay.Overlay
 import com.naver.maps.map.util.FusedLocationSource
 import com.nexters.doctor24.todoc.R
 import com.nexters.doctor24.todoc.api.error.ErrorHandler
 import com.nexters.doctor24.todoc.base.*
 import com.nexters.doctor24.todoc.data.map.response.ResMapAddress
 import com.nexters.doctor24.todoc.data.marker.MarkerTypeEnum
-import com.nexters.doctor24.todoc.data.marker.MedicalMarkerBundleEnum
 import com.nexters.doctor24.todoc.databinding.NavermapFragmentBinding
 import com.nexters.doctor24.todoc.ui.map.category.CategoryAdapter
-import com.nexters.doctor24.todoc.ui.map.marker.MapMarkerAdapter
 import com.nexters.doctor24.todoc.ui.map.marker.MapMarkerManager
+import com.nexters.doctor24.todoc.ui.map.preview.PreviewFragment
+import org.koin.android.ext.android.bind
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
@@ -49,6 +50,11 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
     private lateinit var markerManager: MapMarkerManager
     private val categoryAdapter : CategoryAdapter by lazy { CategoryAdapter(context!!) }
     private val bottomSheetCategory : BottomSheetDialog by lazy { BottomSheetDialog(context!!) }
+    private val previewFragment : PreviewFragment by lazy {
+        PreviewFragment().apply {
+            setStyle(DialogFragment.STYLE_NORMAL, R.style.PreviewBottomSheetDialog)
+        }
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -145,44 +151,64 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
         })
 
         viewModel.currentLocation.observe(viewLifecycleOwner, Observer {
-            viewModel.reqMarker(it, viewModel.currentZoom.value ?: 15.0)
+//            viewModel.reqMarker(it, viewModel.currentZoom.value ?: 15.0)
+            showRefresh()
         })
 
         viewModel.currentZoom.observe(viewLifecycleOwner, Observer { zoom ->
-            viewModel.currentLocation.value?.let {
+            /*viewModel.currentLocation.value?.let {
                 viewModel.reqMarker(it, zoom)
-            }
+            }*/
+            showRefresh()
         })
 
         viewModel.categoryEvent.observe(viewLifecycleOwner, Observer {
             bottomSheetCategory.show()
         })
+
+        viewModel.previewCloseEvent.observe(viewLifecycleOwner, Observer {
+            deSelectMarker()
+        })
+
+        viewModel.refreshEvent.observe(viewLifecycleOwner, Observer {
+            binding.btnRefresh.isVisible = false
+        })
     }
+
+    private fun showRefresh() {
+        if(!binding.btnRefresh.isVisible && !previewFragment.isVisible) {
+            binding.btnRefresh.apply {
+                isVisible = true
+                startAnimation((AnimationUtils.loadAnimation(context, R.anim.anim_slide_in_down)))
+            }
+        }
+    }
+
 
     override fun markerClick(marker: Marker) {
         deSelectMarker()
         markerManager.getMarkerItem(marker)?.run {
-            when(marker.tag) {
-                is MedicalMarkerBundleEnum.Bundle -> {
-                    // 한 건물 병원 리스트
-                }
-                is MedicalMarkerBundleEnum.Piece -> {
-                    if (markerManager.isEqualsSelectMarker(this)) return
-                    selectMarker(this)
-                }
-            }
-
-//                moveMarkerBoundary(this)
+            if (markerManager.isEqualsSelectMarker(this)) return
+            selectMarker(this)
         }
+        moveMarkerBoundary(marker)
     }
 
     override fun markerBundleClick(marker: Marker) {
 
     }
 
+    private fun moveMarkerBoundary(marker: Marker) {
+        val cameraUpdate = CameraUpdate.scrollTo(marker.position).animate(CameraAnimation.Easing)
+        naverMap.setContentPadding(0,0,0,550)
+        naverMap.moveCamera(cameraUpdate)
+    }
+
     private fun selectMarker(markerItem: MarkerUIData?) {
         markerItem?.run {
+            binding.btnRefresh.isVisible = false
             markerManager.selectMarker(this)
+            previewFragment.show(childFragmentManager, previewFragment.tag)
             /*when {
                 mapViewModel.currentState == ListState.Default -> mapViewModel.setListState(isMarkerClick = true)
             }
@@ -204,8 +230,9 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
         }
     }
 
-    fun deSelectMarker() {
+    private fun deSelectMarker() {
         markerManager.deSelectMarker()
+        naverMap.setContentPadding(0, 0, 0, 0)
     }
 
     override fun onStart() {
@@ -274,15 +301,13 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
         }
 
         binding.tab.getTabAt(0)?.select()
-        markerManager = MapMarkerManager(context!!, naverMap).apply { listener = this@NaverMapFragment }
-
-        map.setOnMapClickListener { pointF, latLng -> deSelectMarker() }
-
         binding.buttonLocation.apply {
             setBackgroundResource(R.drawable.ic_current_location)
             this.map = map
         }
+        markerManager = MapMarkerManager(context!!, naverMap).apply { listener = this@NaverMapFragment }
 
+        map.setOnMapClickListener { pointF, latLng -> deSelectMarker() }
         map.addOnCameraIdleListener {
             viewModel.onChangedLocation(map.cameraPosition.target)
             viewModel.onChangedZoom(map.cameraPosition.zoom)
@@ -311,7 +336,4 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
         }
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-    }
 }
