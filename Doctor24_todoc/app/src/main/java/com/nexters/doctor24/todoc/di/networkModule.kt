@@ -2,6 +2,8 @@ package com.nexters.doctor24.todoc.di
 
 import com.nexters.doctor24.todoc.BuildConfig
 import com.nexters.doctor24.todoc.api.DefaultAPIInfo
+import com.nexters.doctor24.todoc.data.detailed.DetailedDataSource
+import com.nexters.doctor24.todoc.data.detailed.DetailedDataSourceImpl
 import com.nexters.doctor24.todoc.data.marker.MarkerDataSource
 import com.nexters.doctor24.todoc.data.marker.MarkerDataSourceImpl
 import okhttp3.OkHttpClient
@@ -32,4 +34,5 @@ val networkModule: Module = module {
     }
 
     single{ MarkerDataSourceImpl(get(named("todocApi"))) as MarkerDataSource }
+    single{ DetailedDataSourceImpl(get(named("todocApi"))) as DetailedDataSource }
 }

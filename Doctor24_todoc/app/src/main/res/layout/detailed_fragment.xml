@@ -121,7 +121,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_margin="8dp"
-                        android:today_open="@{vm.detailedData.today}"
+                        app:todayOpen="@{vm.detailedData.today}"
                         app:layout_constraintStart_toEndOf="@+id/rv_today_comment"
                         app:layout_constraintTop_toBottomOf="@+id/tv_detailed_frag_name" />
 
@@ -157,7 +157,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="6dp"
                         android:layout_marginTop="1dp"
-                        android:category_text="@{vm.detailedData.categories}"
+                        app:categoryText="@{vm.detailedData.categories}"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toEndOf="@+id/iv_detailed_frag_hospital_ic"
                         app:layout_constraintTop_toTopOf="parent" />

@@ -1,5 +1,6 @@
 package com.nexters.doctor24.todoc.ui.detailed
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.nexters.doctor24.todoc.base.BaseViewModel
@@ -21,6 +22,8 @@ internal class DetailedViewModel(private val dispatchers: DispatcherProvider, pr
                     type = type,
                     facilityId = facilityId
                 )
+
+                Log.e("detailedViewModel : ", result.toString())
                 withContext(dispatchers.main()) {
                     _detailedData.value = result.body()
                 }

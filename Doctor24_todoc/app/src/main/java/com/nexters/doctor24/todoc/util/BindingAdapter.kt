@@ -14,16 +14,25 @@ fun setVisibility(view: View, isVisible: Boolean) {
         view.visibility = View.GONE
 }
 
-@BindingAdapter("android:today_open")
-fun setOpenDay(view: TextView, today : Today) {
-    view.text = "${today.startTime} ~ ${today.endTime}"
+@BindingAdapter("todayOpen")
+fun setOpenDay(view: TextView, today : Today?) {
+
+     var result =""
+
+    today?.let {
+        result = "${today.startTime} ~ ${today.endTime}"
+    }
+    view.text = result
 }
 
-@BindingAdapter("android:category_text")
-fun setCategoryText(view: TextView, categories : List<String>) {
+@BindingAdapter("categoryText")
+fun setCategoryText(view: TextView, categories : List<String>?) {
     var category_text = ""
-    for (i in categories){
-        category_text += "$i ,"
+
+    categories?.let {
+        for (i in categories){
+            category_text += "$i ,"
+        }
     }
     view.text = category_text
 }

@@ -3,6 +3,7 @@ package com.nexters.doctor24.todoc.ui
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.nexters.doctor24.todoc.R
+import com.nexters.doctor24.todoc.ui.detailed.DetailedFragment
 import com.nexters.doctor24.todoc.ui.map.NaverMapFragment
 
 class MainActivity : AppCompatActivity() {
@@ -12,7 +13,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         supportFragmentManager.beginTransaction().replace(
             R.id.mapFragment,
-            NaverMapFragment()
+            DetailedFragment()
         ).commit()
     }
 }
