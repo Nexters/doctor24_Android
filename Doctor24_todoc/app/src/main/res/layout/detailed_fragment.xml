@@ -5,8 +5,8 @@
 
     <data>
         <variable
-            name="hospitalData"
-            type="com.nexters.doctor24.todoc.data.detailed.response.DetailedInfoData" />
+            name="vm"
+            type="com.nexters.doctor24.todoc.ui.detailed.DetailedViewModel" />
     </data>
 
     <ScrollView
@@ -21,6 +21,7 @@
             <include
                 android:id="@+id/include"
                 layout="@layout/top_navi"
+                android:hospitaName= "@{vm.detailedData.name}"
                 tools:layout_editor_absoluteX="0dp"
                 tools:layout_editor_absoluteY="0dp" />
 
@@ -63,7 +64,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginEnd="6dp"
                             android:src="@drawable/nomal"
-                            android:visibility="@{!(hospitalData.emergency &amp;&amp; hospitalData.nightTimeServe)}" />
+                            android:visibility="@{!(vm.detailedData.emergency &amp;&amp; vm.detailedData.nightTimeServe)}" />
 
                         <ImageView
                             android:id="@+id/iv_detailed_frag_emergency"
@@ -71,14 +72,14 @@
                             android:layout_height="wrap_content"
                             android:layout_marginEnd="6dp"
                             android:src="@drawable/emergency"
-                            android:visibility="@{hospitalData.emergency}" />
+                            android:visibility="@{vm.detailedData.emergency}" />
 
                         <ImageView
                             android:id="@+id/iv_detailed_frag_night"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:src="@drawable/night"
-                            android:visibility="@{hospitalData.nightTimeServe}" />
+                            android:visibility="@{vm.detailedData.nightTimeServe}" />
 
                     </LinearLayout>
 
@@ -89,7 +90,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginVertical="8dp"
                         android:layout_marginEnd="16dp"
-                        android:text="@{hospitalData.name}"
+                        android:text="@{vm.detailedData.name}"
                         app:layout_constraintEnd_toStartOf="@+id/iv_detailed_frag_goto_map"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/ll_detailed_frag_label_container" />
@@ -120,7 +121,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_margin="8dp"
-                        android:today_open="@{hospitalData.today}"
+                        android:today_open="@{vm.detailedData.today}"
                         app:layout_constraintStart_toEndOf="@+id/rv_today_comment"
                         app:layout_constraintTop_toBottomOf="@+id/tv_detailed_frag_name" />
 
@@ -156,7 +157,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="6dp"
                         android:layout_marginTop="1dp"
-                        android:category_text="@{hospitalData.categories}"
+                        android:category_text="@{vm.detailedData.categories}"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toEndOf="@+id/iv_detailed_frag_hospital_ic"
                         app:layout_constraintTop_toTopOf="parent" />
@@ -226,7 +227,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="6dp"
                         android:layout_marginTop="1dp"
-                        android:text="@{hospitalData.phone}"
+                        android:text="@{vm.detailedData.phone}"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toEndOf="@+id/iv_detailed_frag_call_ic"
                         app:layout_constraintTop_toTopOf="parent" />
@@ -263,7 +264,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="6dp"
                         android:layout_marginTop="1dp"
-                        android:text="@{hospitalData.address}"
+                        android:text="@{vm.detailedData.address}"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toEndOf="@+id/iv_detailed_frag_address_ic"
                         app:layout_constraintTop_toTopOf="parent" />
@@ -275,7 +276,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="6dp"
                         android:layout_marginTop="4dp"
-                        android:text="@{hospitalData.address}"
+                        android:text="@{vm.detailedData.address}"
                         app:layout_constraintStart_toEndOf="@+id/iv_detailed_frag_address_ic"
                         app:layout_constraintTop_toBottomOf="@+id/tv_detailed_frag_address_distance" />
 

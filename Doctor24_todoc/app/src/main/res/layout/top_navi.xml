@@ -5,8 +5,8 @@
     <data>
 
         <variable
-            name="hospitalData"
-            type="com.nexters.doctor24.todoc.data.detailed.response.DetailedInfoData" />
+            name="hospitaName"
+            type="String" />
 
     </data>
 
@@ -32,7 +32,7 @@
             android:layout_marginEnd="24dp"
             android:ellipsize="end"
             android:maxLines="1"
-            android:text="@{hospitalData.name}"
+            android:text="@{hospitaName}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"

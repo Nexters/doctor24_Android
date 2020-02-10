@@ -16,5 +16,5 @@ val appModule = module {
     factory { DefaultDispatcherProvider() as DispatcherProvider }
     viewModel { NaverMapViewModel(get(), get(named("filterPrefs")), get()) }
     viewModel { TimeViewModel() }
-    viewModel { DetailedViewModel() }
+    viewModel { DetailedViewModel(get(),get()) }
 }

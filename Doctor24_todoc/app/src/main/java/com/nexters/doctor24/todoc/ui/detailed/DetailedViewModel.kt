@@ -9,10 +9,7 @@ import com.nexters.doctor24.todoc.repository.DetailedInfoRepository
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-internal class DetailedViewModel(
-    private val dispatchers: DispatcherProvider,
-    private val repo: DetailedInfoRepository
-) : BaseViewModel() {
+internal class DetailedViewModel(private val dispatchers: DispatcherProvider, private val repo: DetailedInfoRepository) : BaseViewModel() {
 
     private val _detailedData = MutableLiveData<DetailedInfoData>()
     val detailedData: LiveData<DetailedInfoData> get() = _detailedData
