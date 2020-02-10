@@ -47,7 +47,7 @@ fun setOpenDay(view: TextView, day: Day?) {
         val end = day.endTime.split(":")
 
         result =
-            "${setHour(start[0].toInt())}:${start[1].toInt()} ~ ${setHour(end[0].toInt())}:${end[1].toInt()}"
+            "${start[0].toInt()}:${start[1]} ~ ${end[0].toInt()}:${end[1]}"
     }
 
     view.text = result
