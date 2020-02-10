@@ -1,6 +1,8 @@
 package com.nexters.doctor24.todoc.ui.map
 
 import android.content.Context
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -54,7 +56,9 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
     private lateinit var naverMap: NaverMap
     private lateinit var markerManager: MapMarkerManager
     private val categoryAdapter : CategoryAdapter by lazy { CategoryAdapter() }
-    private val bottomSheetCategory : BottomSheetDialog by lazy { BottomSheetDialog(context!!) }
+    private val bottomSheetCategory : BottomSheetDialog by lazy {
+        BottomSheetDialog(context!!, R.style.PreviewBottomSheetDialog)
+    }
     private val previewFragment : PreviewFragment by lazy {
         PreviewFragment().apply {
             setStyle(DialogFragment.STYLE_NORMAL, R.style.PreviewBottomSheetDialog)
@@ -139,6 +143,8 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
     private fun initCategoryView() {
         val view = layoutInflater.inflate(R.layout.bottom_category_dialog, null)
         val categoryView = view.findViewById<RecyclerView>(R.id.recycler_view_category)
+        val refresh = view.findViewById<TextView>(R.id.text_category_reset)
+        val btnClose = view.findViewById<ImageView>(R.id.button_close)
         categoryView.apply {
             adapter = categoryAdapter.apply {
                 listener = this@NaverMapFragment
@@ -146,7 +152,7 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
             }
             layoutManager = GridLayoutManager(context, LAYOUT_SPAN_COUNT)
         }
-        val btnClose = view.findViewById<ImageView>(R.id.button_close)
+        refresh.setOnClickListener { categoryViewModel.onClickRefresh() }
         btnClose.setOnClickListener { categoryViewModel.onClickClose() }
         bottomSheetCategory.setContentView(view)
     }
@@ -187,6 +193,10 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
         categoryViewModel.currentSelectItem.observe(viewLifecycleOwner, Observer {
             // api 호출
             bottomSheetCategory.dismiss()
+        })
+
+        categoryViewModel.refreshEvent.observe(viewLifecycleOwner, Observer {
+            categoryAdapter.childViewList[0].isChecked = true
         })
 
         categoryViewModel.categoryCloseEvent.observe(viewLifecycleOwner, Observer {
