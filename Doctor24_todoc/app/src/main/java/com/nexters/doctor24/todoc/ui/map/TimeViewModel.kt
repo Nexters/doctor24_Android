@@ -1,6 +1,5 @@
 package com.nexters.doctor24.todoc.ui.map
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.nexters.doctor24.todoc.base.BaseViewModel
@@ -10,6 +9,11 @@ import java.util.*
 
 internal class TimeViewModel() : BaseViewModel() {
 
+    private val _nowTime = MutableLiveData<String>()
+    val nowTime: LiveData<String> get() = _nowTime
+
+    private val _startTime = MutableLiveData<String>()
+    val startTime: LiveData<String> get() = _startTime
     private val _startHour = MutableLiveData<String>()
     val startHour: LiveData<String> get() = _startHour
     private val _startMin = MutableLiveData<String>()
@@ -17,6 +21,8 @@ internal class TimeViewModel() : BaseViewModel() {
     private val _startAmPm = MutableLiveData<String>()
     val startAmPm: LiveData<String> get() = _startAmPm
 
+    private val _endTime = MutableLiveData<String>()
+    val endTime: LiveData<String> get() = _endTime
     private val _endHour = MutableLiveData<String>()
     val endHour: LiveData<String> get() = _endHour
     private val _endMin = MutableLiveData<String>()
@@ -36,6 +42,7 @@ internal class TimeViewModel() : BaseViewModel() {
 
     fun onClickTimeSetting(boolean: Boolean) {
         _isPickerSelected.value = boolean
+        _isPickerSelected.postValue(boolean)
     }
 
     fun getCurrentTime() {
@@ -45,21 +52,15 @@ internal class TimeViewModel() : BaseViewModel() {
         val timeHour = SimpleDateFormat("hh").format(mDate).toInt()
         val timeMin = SimpleDateFormat("mm").format(mDate).toInt()
 
-        _startAmPm.value = setAmPm(timeHour)
-        _startHour.value = setHour(timeHour)
-        _startMin.value = setMinute(timeMin)
-        Log.e("testtest00",startHour.value.toString()+startMin.value.toString())
-
-        _endAmPm.value = setAmPm(timeHour)
-        _endHour.value = setHour(timeHour + 1)
-        _endMin.value = setMinute(timeMin)
+        _startTime.value = setTime(timeHour,timeMin)
+        _endTime.value = setTime(timeHour+1,timeMin)
     }
 
     private fun setAmPm(hour: Int): String {
         return if (hour >= 12)
-            "오후"
-        else
             "오전"
+        else
+            "오후"
     }
 
     private fun setHour(hour: Int): String {
@@ -74,6 +75,10 @@ internal class TimeViewModel() : BaseViewModel() {
             min.toString() + ""
         else
             "0$min"
+    }
+
+    private fun setTime(hour: Int, minute: Int): String {
+        return """${setAmPm(hour)} ${setHour(hour)}:${setMinute(minute)}"""
     }
 
     private fun validateEndTime(hour: Int, minute: Int) {
