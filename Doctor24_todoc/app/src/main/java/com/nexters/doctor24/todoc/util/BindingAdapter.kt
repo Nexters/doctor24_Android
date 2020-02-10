@@ -2,6 +2,7 @@ package com.nexters.doctor24.todoc.util
 
 import android.view.View
 import android.widget.TextView
+import androidx.annotation.DrawableRes
 import androidx.databinding.BindingAdapter
 import com.nexters.doctor24.todoc.data.detailed.Today
 
@@ -25,4 +26,11 @@ fun setCategoryText(view: TextView, categories : List<String>) {
         category_text += "$i ,"
     }
     view.text = category_text
+}
+
+@BindingAdapter("android:background")
+fun setBackground(view: View, @DrawableRes resId: Int?) {
+    resId?.let {
+        view.setBackgroundResource(it)
+    }
 }

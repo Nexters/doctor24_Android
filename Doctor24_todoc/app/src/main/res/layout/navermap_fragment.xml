@@ -15,70 +15,108 @@
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:id="@+id/ml_map_container"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:layoutDescription="@xml/scene_map_bottom">
-
-        <com.naver.maps.map.MapView
-            android:id="@+id/mapView"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginBottom="40dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" >
-        </com.naver.maps.map.MapView>
+        android:layout_height="match_parent">
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/layout_tab"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="24dp"
-            android:layout_marginTop="64dp"
-            android:background="@drawable/background_tablayout"
-            android:padding="6dp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            >
 
-            <com.google.android.material.tabs.TabLayout
-                android:id="@+id/tab"
-                android:layout_width="180dp"
-                android:layout_height="46dp"
-                android:background="@drawable/background_tablayout"
+            <com.naver.maps.map.MapView
+                android:id="@+id/mapView"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:tabGravity="fill"
-                app:tabIndicator="@drawable/background_tablayout"
-                app:tabIndicatorColor="@color/blue"
-                app:tabIndicatorGravity="stretch"
-                app:tabIndicatorHeight="0dp"
-                app:tabMode="fixed"
-                app:tabPaddingEnd="16dp"
-                app:tabPaddingStart="16dp"
-                app:tabRippleColor="@null"
-                app:tabSelectedTextColor="#ffffff"
-                app:tabTextAppearance="@style/TabTextAppearance" />
+                app:layout_constraintTop_toTopOf="parent" >
+            </com.naver.maps.map.MapView>
 
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/layout_tab"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="24dp"
+                android:layout_marginTop="64dp"
+                android:background="@drawable/background_tablayout"
+                android:padding="6dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <com.google.android.material.tabs.TabLayout
+                    android:id="@+id/tab"
+                    android:layout_width="180dp"
+                    android:layout_height="46dp"
+                    android:background="@drawable/background_tablayout"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:tabGravity="fill"
+                    app:tabIndicator="@drawable/background_tablayout"
+                    app:tabIndicatorColor="@color/blue"
+                    app:tabIndicatorGravity="stretch"
+                    app:tabIndicatorHeight="0dp"
+                    app:tabMode="fixed"
+                    app:tabPaddingEnd="16dp"
+                    app:tabPaddingStart="16dp"
+                    app:tabRippleColor="@null"
+                    app:tabSelectedTextColor="#ffffff"
+                    app:tabTextAppearance="@style/TabTextAppearance" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+            
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/btn_refresh"
+                android:layout_width="112dp"
+                android:layout_height="44dp"
+                android:layout_marginTop="34dp"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:gravity="center_vertical"
+                android:background="@drawable/background_tablayout"
+                android:text="@string/map_refresh"
+                style="@style/AndB1CenterRegular16"
+                android:drawableStart="@drawable/ic_refresh"
+                android:drawablePadding="11dp"
+                android:onClick="@{()->vm.onClickRefresh()}"
+                app:layout_constraintTop_toBottomOf="@id/layout_tab"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                />
+
+            <com.naver.maps.map.widget.LocationButtonView
+                android:id="@+id/button_location"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="24dp"
+                android:layout_marginBottom="180dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                />
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/image_button_category"
+                android:layout_width="58dp"
+                android:layout_height="58dp"
+                android:padding="16dp"
+                android:layout_marginStart="24dp"
+                android:layout_marginBottom="180dp"
+                android:src="@drawable/ic_filter"
+                android:background="@drawable/background_round_button"
+                android:onClick="@{()-> vm.onClickFilter()}"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                />
+
+            <ProgressBar
+                android:id="@+id/progressBar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
         </androidx.constraintlayout.widget.ConstraintLayout>
-
-
-        <com.naver.maps.map.widget.LocationButtonView
-            android:id="@+id/button_location"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="24dp"
-            app:layout_anchor="@id/map_bottom"
-            app:layout_anchorGravity="top|end" />
-
-        <ProgressBar
-            android:id="@+id/progressBar"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:visibility="gone"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/map_bottom"

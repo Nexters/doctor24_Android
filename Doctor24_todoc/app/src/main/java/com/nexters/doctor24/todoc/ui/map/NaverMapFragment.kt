@@ -1,33 +1,45 @@
 package com.nexters.doctor24.todoc.ui.map
 
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
+import android.view.animation.AnimationUtils
 import android.widget.TextView
 import android.widget.Toast
 import androidx.core.view.isVisible
+import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.Observer
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.tabs.TabLayout
-import com.naver.maps.map.LocationTrackingMode
-import com.naver.maps.map.NaverMap
-import com.naver.maps.map.OnMapReadyCallback
+import com.naver.maps.map.*
+import com.naver.maps.map.overlay.Marker
 import com.naver.maps.map.util.FusedLocationSource
 import com.nexters.doctor24.todoc.R
 import com.nexters.doctor24.todoc.api.error.ErrorHandler
 import com.nexters.doctor24.todoc.base.*
 import com.nexters.doctor24.todoc.data.map.response.ResMapAddress
 import com.nexters.doctor24.todoc.data.marker.MarkerTypeEnum
+import com.nexters.doctor24.todoc.data.marker.response.ResMapMarker
 import com.nexters.doctor24.todoc.databinding.NavermapFragmentBinding
-import com.nexters.doctor24.todoc.ui.map.marker.MapMarkerAdapter
+import com.nexters.doctor24.todoc.ui.map.category.CategoryAdapter
+import com.nexters.doctor24.todoc.ui.map.category.CategoryItem
+import com.nexters.doctor24.todoc.ui.map.marker.MapMarkerManager
+import com.nexters.doctor24.todoc.ui.map.marker.group.GroupMarkerListDialog
+import com.nexters.doctor24.todoc.ui.map.preview.PreviewFragment
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import timber.log.Timber
 
 
 internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMapViewModel>(),
-    OnMapReadyCallback {
+    OnMapReadyCallback, MapMarkerManager.MarkerClickListener {
 
     companion object {
         private const val LOCATION_PERMISSION_REQUEST_CODE = 1000
+        private const val LAYOUT_SPAN_COUNT = 5
     }
 
     private lateinit var locationSource: FusedLocationSource
@@ -37,7 +49,14 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
     val viewModelTime: TimeViewModel by viewModel()
 
     private lateinit var naverMap: NaverMap
-    private lateinit var mapMarkerAdapter: MapMarkerAdapter
+    private lateinit var markerManager: MapMarkerManager
+    private val categoryAdapter : CategoryAdapter by lazy { CategoryAdapter(context!!) }
+    private val bottomSheetCategory : BottomSheetDialog by lazy { BottomSheetDialog(context!!) }
+    private val previewFragment : PreviewFragment by lazy {
+        PreviewFragment().apply {
+            setStyle(DialogFragment.STYLE_NORMAL, R.style.PreviewBottomSheetDialog)
+        }
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -63,7 +82,7 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
 
         val bottomSheetBehavior = BottomSheetBehavior.from<View>(binding.mapBottom)
 
-        bottomSheetBehavior.setBottomSheetCallback(object :
+        bottomSheetBehavior.addBottomSheetCallback(object :
             BottomSheetBehavior.BottomSheetCallback() {
             override fun onStateChanged(bottomSheet: View, newState: Int) {
 
@@ -110,6 +129,14 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
                 }
             })
         }
+
+        val view = layoutInflater.inflate(R.layout.bottom_category_dialog, null)
+        val categoryView = view.findViewById<RecyclerView>(R.id.recycler_view_category)
+        categoryView.apply {
+            adapter = categoryAdapter
+            layoutManager = GridLayoutManager(context, LAYOUT_SPAN_COUNT)
+        }
+        bottomSheetCategory.setContentView(view)
     }
 
     private fun initObserve() {
@@ -117,26 +144,109 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
             if (it.isEmpty()) {
                 Toast.makeText(context, "현재 운영중인 병원이 없습니다.", Toast.LENGTH_SHORT).show()
             } else {
-                mapMarkerAdapter.drawMarker(
-                    it,
-                    viewModel.tabChangeEvent.value ?: MarkerTypeEnum.HOSPITAL
-                )
+                markerManager.setMarker(it)
             }
         })
 
         viewModel.tabChangeEvent.observe(viewLifecycleOwner, Observer {
-            viewModel.reqBounds(naverMap.cameraPosition.target, naverMap.cameraPosition.zoom)
+            viewModel.reqMarker(naverMap.cameraPosition.target, naverMap.cameraPosition.zoom)
         })
 
         viewModel.currentLocation.observe(viewLifecycleOwner, Observer {
-            viewModel.reqBounds(it, viewModel.currentZoom.value ?: 15.0)
+            showRefresh()
         })
 
-        viewModel.currentZoom.observe(viewLifecycleOwner, Observer { zoom ->
-            viewModel.currentLocation.value?.let {
-                viewModel.reqBounds(it, zoom)
-            }
+        viewModel.currentZoom.observe(viewLifecycleOwner, Observer {
+            showRefresh()
         })
+
+        viewModel.categoryEvent.observe(viewLifecycleOwner, Observer {
+            bottomSheetCategory.show()
+        })
+
+        viewModel.previewCloseEvent.observe(viewLifecycleOwner, Observer {
+            deSelectMarker()
+        })
+
+        viewModel.refreshEvent.observe(viewLifecycleOwner, Observer {
+            binding.btnRefresh.isVisible = false
+        })
+    }
+
+    private fun showRefresh() {
+        if(!binding.btnRefresh.isVisible && !previewFragment.isVisible) {
+            deSelectMarker()
+            binding.btnRefresh.apply {
+                isVisible = true
+                startAnimation((AnimationUtils.loadAnimation(context, R.anim.anim_slide_in_down)))
+            }
+        }
+    }
+
+
+    override fun markerClick(marker: Marker) {
+        deSelectMarker()
+        markerManager.getMarkerItem(marker)?.run {
+            if (markerManager.isEqualsSelectMarker(this)) return
+            selectMarker(this)
+        }
+        moveMarkerBoundary(marker)
+    }
+
+    override fun markerBundleClick(marker: Marker) {
+        deSelectMarker()
+
+        Timber.d( "marker tag : ${marker.tag}")
+        marker.tag?.let {
+            if((it as ArrayList<ResMapMarker>).isNotEmpty()) {
+                val groupData = Bundle().apply {
+                    putParcelableArrayList(GroupMarkerListDialog.KEY_LIST, it)
+                }
+                GroupMarkerListDialog().apply {
+                    arguments = groupData
+                }.show(childFragmentManager, GroupMarkerListDialog.TAG)
+            }
+
+        }
+        moveMarkerBoundary(marker)
+
+    }
+
+    private fun moveMarkerBoundary(marker: Marker) {
+        val cameraUpdate = CameraUpdate.scrollTo(marker.position).animate(CameraAnimation.Easing)
+        naverMap.setContentPadding(0,0,0,550)
+        naverMap.moveCamera(cameraUpdate)
+    }
+
+    private fun selectMarker(markerItem: MarkerUIData?) {
+        markerItem?.run {
+            binding.btnRefresh.isVisible = false
+            markerManager.selectMarker(this)
+            previewFragment.show(childFragmentManager, previewFragment.tag)
+            /*when {
+                mapViewModel.currentState == ListState.Default -> mapViewModel.setListState(isMarkerClick = true)
+            }
+
+            geoJson?.run { mapViewModel.requestGeoAndListInfo(this) }
+
+            val currentZoom = gMap?.cameraPosition?.zoom?.toInt() ?: 13
+            val listType = getBottomCheckedType(this, mapListLayout.currentChecked())
+            val searchTitle = complexName?.let { it } ?: name ?: ""
+
+            if (!searchTitle.isNullOrEmpty()) mainSearchViewModel.setFilterSearchDesc(searchTitle)
+
+            mapListLayout.setRdButton(listType)
+            requestListAPI(listType, this, 1, currentZoom)
+
+            if (!UserInfo.getInstance().filterMgr.isAptType) {
+                mapViewModel.saveClusterClickHistory(this, currentZoom)
+            }*/
+        }
+    }
+
+    private fun deSelectMarker() {
+        markerManager.deSelectMarker()
+        naverMap.setContentPadding(0, 0, 0, 0)
     }
 
     override fun onStart() {
@@ -205,13 +315,13 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
         }
 
         binding.tab.getTabAt(0)?.select()
-        mapMarkerAdapter = MapMarkerAdapter(context!!, naverMap)
-
         binding.buttonLocation.apply {
             setBackgroundResource(R.drawable.ic_current_location)
             this.map = map
         }
+        markerManager = MapMarkerManager(context!!, naverMap).apply { listener = this@NaverMapFragment }
 
+        map.setOnMapClickListener { pointF, latLng -> deSelectMarker() }
         map.addOnCameraIdleListener {
             viewModel.onChangedLocation(map.cameraPosition.target)
             viewModel.onChangedZoom(map.cameraPosition.zoom)
@@ -240,8 +350,4 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
         }
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        mapMarkerAdapter.onDestroy()
-    }
 }

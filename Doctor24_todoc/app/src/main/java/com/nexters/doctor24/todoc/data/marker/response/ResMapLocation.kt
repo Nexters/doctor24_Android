@@ -8,7 +8,7 @@ internal data class ResMapLocation (
     @SerializedName("longitude")
     val longitude: Double = 0.0,
     @SerializedName("facilities")
-    val facilities: List<ResMapMarker> = emptyList(),
+    val facilities: ArrayList<ResMapMarker> = arrayListOf(),
     @SerializedName("total")
     val total: Int = 0
 )

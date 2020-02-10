@@ -1,3 +1,29 @@
 <resources>
     <string name="app_name">토닥토닥</string>
+    <string name="time_set">%2$s %2$s:%2$s</string>
+
+    <string name="category_dialog_title">진료 과목</string>
+    <string name="category_dialog_reset">초기화</string>
+    <string name="category_item_all">전체</string>
+    <string name="category_item_baby">소아과</string>
+    <string name="category_item_internal">내과</string>
+    <string name="category_item_ent">이비인후과</string>
+    <string name="category_item_skin">피부과</string>
+    <string name="category_item_orthopedics">정형외과</string>
+    <string name="category_item_eyes">안과</string>
+    <string name="category_item_dental">치과</string>
+    <string name="category_item_oriental">한의원</string>
+    <string name="category_item_maternity">산부인과</string>
+    <string name="category_item_urology">비뇨기과</string>
+    <string name="category_item_psychiatry">정신의학과</string>
+    <string name="category_item_plastic">성형외과</string>
+    <string name="category_item_family">가정의학과</string>
+    <string name="category_item_surgery">외과</string>
+    <string name="category_item_neurosurgery">신경외과</string>
+    <string name="category_item_anesthesia">마취통증과</string>
+    <string name="category_item_neurology">신경과</string>
+
+    <string name="map_refresh">재검색</string>
+    <string name="map_marker_group_list">병원 리스트</string>
+    <string name="map_marker_group_list_item_today">오늘</string>
 </resources>

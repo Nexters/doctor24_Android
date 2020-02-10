@@ -27,7 +27,7 @@
     <item name="android:gravity">center_horizontal</item>
     <item name="android:textSize">22sp</item>
     <item name="android:lineSpacingExtra">0sp</item>
-    <item name="android:textColor">@color/grey_2</item>
+    <item name="android:textColor">@color/grey_3</item>
   </style>
 
   <style name="AndH2CenterMedium22">
@@ -49,6 +49,12 @@
     <item name="android:lineSpacingExtra">6sp</item>
     <item name="android:textColor">@color/black</item>
     <item name="android:textStyle">bold</item>
+  </style>
+
+  <style name="AndT1LeftRegular18">
+    <item name="android:textSize">18sp</item>
+    <item name="android:lineSpacingExtra">17sp</item>
+    <item name="android:textColor">@color/black</item>
   </style>
 
   <style name="AndT1CenterRegular18">
@@ -82,7 +88,8 @@
   <style name="AndT2CenterBoldEnable16">
     <item name="android:gravity">center_horizontal</item>
     <item name="android:textSize">16sp</item>
-    <item name="android:textColor">@color/grey_2</item>
+    <item name="android:textColor">@color/grey_3</item>
+    <item name="android:textStyle">bold</item>
   </style>
 
   <style name="AndT2CenterBoldWhite16">
@@ -97,6 +104,20 @@
     <item name="android:textSize">16sp</item>
     <item name="android:lineSpacingExtra">6sp</item>
     <item name="android:textColor">@color/black</item>
+  </style>
+
+  <style name="AndB1CenterRegularPressed16">
+    <item name="android:gravity">center_horizontal</item>
+    <item name="android:textSize">16sp</item>
+    <item name="android:lineSpacingExtra">6sp</item>
+    <item name="android:textColor">@color/grey_3</item>
+  </style>
+
+  <style name="AndB1CenterRegular16">
+    <item name="android:gravity">center_horizontal</item>
+    <item name="android:textSize">16sp</item>
+    <item name="android:lineSpacingExtra">6sp</item>
+    <item name="android:textColor">@color/grey_1</item>
   </style>
 
   <style name="AndB1LeftRegular16">
@@ -118,6 +139,12 @@
     <item name="android:textSize">14sp</item>
     <item name="android:lineSpacingExtra">8sp</item>
     <item name="android:textColor">@color/blue</item>
+  </style>
+
+  <style name="AndSt1LeftRegular14">
+    <item name="android:textSize">14sp</item>
+    <item name="android:lineSpacingExtra">8sp</item>
+    <item name="android:textColor">@color/grey_1</item>
   </style>
 
   <style name="AndSt2CenterRegular12">
