@@ -188,10 +188,13 @@
 
                     <androidx.recyclerview.widget.RecyclerView
                         android:id="@+id/rv_detailed_frag_time"
+                        tools:itemCount="3"
+                        tools:listitem="@layout/rv_item_open_time_black"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="6dp"
                         android:layout_marginTop="1dp"
+                        app:setOpenData="@{vm.detailedData.days}"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toEndOf="@+id/iv_detailed_frag_time_ic"
                         app:layout_constraintTop_toTopOf="parent" />

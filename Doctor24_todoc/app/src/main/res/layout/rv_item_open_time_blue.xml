@@ -3,6 +3,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
+        <variable
+            name="dayData"
+            type="com.nexters.doctor24.todoc.data.detailed.response.Day" />
 
     </data>
 
@@ -15,7 +18,7 @@
             style="@style/AndB1LeftBoldBlue16"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="토요일"
+            app:dayType="@{dayData.dayType}"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -25,7 +28,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
-            android:text="10:00 ~ 17:00"
+            app:dayOpen="@{dayData}"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tv_rv_item_blue_day" />
 
