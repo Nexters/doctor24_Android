@@ -23,9 +23,9 @@ internal class DetailedViewModel(private val dispatchers: DispatcherProvider, pr
                     facilityId = facilityId
                 )
 
-                Log.e("detailedViewModel : ", result.toString())
                 withContext(dispatchers.main()) {
-                    _detailedData.value = result.body()
+                    _detailedData.value = result
+                    Log.e("detailedViewModel : ", result.toString())
                 }
             } catch (e: Exception) {
 

@@ -20,7 +20,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 private val BASE_URL = "http://todoc.me/api/${DefaultAPIInfo.API_VERSION}/"
 
 val networkModule: Module = module {
-    single(named("todocApi")) {
+    single() {
         Retrofit.Builder()
             .client(
                 OkHttpClient.Builder()
@@ -33,6 +33,6 @@ val networkModule: Module = module {
             .build()
     }
 
-    single{ MarkerDataSourceImpl(get(named("todocApi"))) as MarkerDataSource }
-    single{ DetailedDataSourceImpl(get(named("todocApi"))) as DetailedDataSource }
+    single{ MarkerDataSourceImpl(get()) as MarkerDataSource }
+    single{ DetailedDataSourceImpl(get()) as DetailedDataSource }
 }

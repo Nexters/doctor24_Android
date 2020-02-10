@@ -9,7 +9,7 @@ internal class DetailedDataSourceImpl(val retrofit: Retrofit) : DetailedDataSour
     override suspend fun getDetailedInfo(
         type: String,
         facilityId: String
-    ): Response<DetailedInfoData> = retrofit.create(APIDetailed::class.java)
+    ): DetailedInfoData = retrofit.create(APIDetailed::class.java)
         .getDetailedInfo(
             type = type, facilityId = facilityId
         )

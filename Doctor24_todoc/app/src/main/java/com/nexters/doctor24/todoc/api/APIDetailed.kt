@@ -10,5 +10,5 @@ internal interface APIDetailed {
     suspend fun getDetailedInfo(
         @Path("type") type: String,
         @Path("facilityId") facilityId: String
-    ): Response<DetailedInfoData>
+    ): DetailedInfoData
 }
