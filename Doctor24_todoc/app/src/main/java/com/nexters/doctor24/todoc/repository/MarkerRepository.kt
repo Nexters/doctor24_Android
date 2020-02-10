@@ -5,6 +5,6 @@ import com.nexters.doctor24.todoc.data.marker.MarkerTypeEnum
 import com.nexters.doctor24.todoc.data.marker.response.ResMapLocation
 
 internal interface MarkerRepository {
-    suspend fun getMarkers(center : LatLng, type: MarkerTypeEnum, level: Int?) : List<ResMapLocation>
+    suspend fun getMarkers(center : LatLng, type: MarkerTypeEnum, level: Int?, category: String?) : List<ResMapLocation>
     suspend fun getBounds(zLocation: LatLng, xLocation: LatLng, type: MarkerTypeEnum) : List<ResMapLocation>
 }

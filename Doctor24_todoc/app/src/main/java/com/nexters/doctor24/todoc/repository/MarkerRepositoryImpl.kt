@@ -7,8 +7,8 @@ import com.nexters.doctor24.todoc.data.marker.response.ResMapLocation
 
 internal class MarkerRepositoryImpl(private val dataSource: MarkerDataSource): MarkerRepository {
 
-    override suspend fun getMarkers(center : LatLng, type: MarkerTypeEnum, level: Int?): List<ResMapLocation> {
-        return dataSource.getMarkers(center, type, level)
+    override suspend fun getMarkers(center : LatLng, type: MarkerTypeEnum, level: Int?, category: String?): List<ResMapLocation> {
+        return dataSource.getMarkers(center, type, level, category)
     }
 
     override suspend fun getBounds(

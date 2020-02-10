@@ -57,7 +57,7 @@ internal class CategoryAdapter : ListAdapter<CategoryItem, CategoryAdapter.Categ
     val childViewList: MutableList<CheckBox> = mutableListOf()
 
     interface CategoryListener {
-        fun onClickCategory(position : Int)
+        fun onClickCategory(category : String)
     }
 
     override fun onBindViewHolder(holder: CategoryViewHolder, position: Int) {
@@ -79,7 +79,7 @@ internal class CategoryAdapter : ListAdapter<CategoryItem, CategoryAdapter.Categ
                         childViewList.forEachIndexed { index, checkBox ->
                             if (checkBox == this) {
                                 Timber.d("CategoryViewHolder : ${context.resources.getString(item.name)} 이것은 선택되었다.")
-                                listener?.onClickCategory(item.id)
+                                listener?.onClickCategory(context.resources.getString(item.name))
                             } else {
                                 checkBox.isChecked = false
                             }

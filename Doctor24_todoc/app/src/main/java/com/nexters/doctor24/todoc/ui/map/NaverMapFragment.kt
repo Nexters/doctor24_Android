@@ -190,8 +190,12 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
             binding.btnRefresh.isVisible = false
         })
 
+        viewModel.currentCategory.observe(viewLifecycleOwner, Observer {
+            if(it == null || it.isEmpty()) categoryAdapter.childViewList[0].isChecked = true
+        })
+
         categoryViewModel.currentSelectItem.observe(viewLifecycleOwner, Observer {
-            // api 호출
+            viewModel.reqMarkerWithCategory(it)
             bottomSheetCategory.dismiss()
         })
 
@@ -214,8 +218,8 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
         }
     }
 
-    override fun onClickCategory(position: Int) {
-        categoryViewModel.onSelectCategory(position)
+    override fun onClickCategory(category: String) {
+        categoryViewModel.onSelectCategory(category)
     }
 
     override fun markerClick(marker: Marker) {
