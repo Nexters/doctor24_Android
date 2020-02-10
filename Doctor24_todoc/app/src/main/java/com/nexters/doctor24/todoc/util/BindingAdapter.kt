@@ -4,7 +4,7 @@ import android.view.View
 import android.widget.TextView
 import androidx.annotation.DrawableRes
 import androidx.databinding.BindingAdapter
-import com.nexters.doctor24.todoc.data.detailed.Today
+import com.nexters.doctor24.todoc.data.detailed.response.Today
 
 @BindingAdapter("android:visibility")
 fun setVisibility(view: View, isVisible: Boolean) {

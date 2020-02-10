@@ -6,7 +6,7 @@
     <data>
         <variable
             name="hospitalData"
-            type="com.nexters.doctor24.todoc.data.detailed.DetailedInfoData" />
+            type="com.nexters.doctor24.todoc.data.detailed.response.DetailedInfoData" />
     </data>
 
     <ScrollView
@@ -63,7 +63,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginEnd="6dp"
                             android:src="@drawable/nomal"
-                            android:visibility="@{!(hospitalData.emergency &amp; hospitalData.nightTimeServe)}" />
+                            android:visibility="@{!(hospitalData.emergency &amp;&amp; hospitalData.nightTimeServe)}" />
 
                         <ImageView
                             android:id="@+id/iv_detailed_frag_emergency"

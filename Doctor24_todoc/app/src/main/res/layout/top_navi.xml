@@ -6,7 +6,7 @@
 
         <variable
             name="hospitalData"
-            type="com.nexters.doctor24.todoc.data.detailed.DetailedInfoData" />
+            type="com.nexters.doctor24.todoc.data.detailed.response.DetailedInfoData" />
 
     </data>
 

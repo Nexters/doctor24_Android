@@ -1,8 +1,8 @@
-package com.nexters.doctor24.todoc.data.detailed
+package com.nexters.doctor24.todoc.data.detailed.response
 
 import com.google.gson.annotations.SerializedName
 
-data class Day(
+data class Today(
     @SerializedName("dayType")
     val dayType: String,
     @SerializedName("startTime")

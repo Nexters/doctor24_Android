@@ -4,7 +4,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.nexters.doctor24.todoc.R
-import com.nexters.doctor24.todoc.data.detailed.Day
+import com.nexters.doctor24.todoc.data.detailed.response.Day
 import com.nexters.doctor24.todoc.databinding.RvItemOpenTimeBlackBinding
 import com.nexters.doctor24.todoc.databinding.RvItemOpenTimeBlueBinding
 import com.nexters.doctor24.todoc.databinding.RvItemOpenTimeRedBinding
