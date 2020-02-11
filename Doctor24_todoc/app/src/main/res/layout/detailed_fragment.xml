@@ -132,7 +132,7 @@
                     android:id="@+id/view0"
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
-                    android:background="@color/grey_2"
+                    android:background="@color/grey_4"
                     app:layout_constraintBottom_toTopOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent" />
@@ -140,7 +140,7 @@
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:paddingVertical="11.5dp">
+                    android:paddingVertical="12dp">
 
                     <ImageView
                         android:id="@+id/iv_detailed_frag_hospital_ic"
@@ -176,7 +176,8 @@
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:paddingVertical="11.5dp">
+                    android:paddingBottom="4dp"
+                    android:paddingTop="12dp">
 
                     <ImageView
                         android:id="@+id/iv_detailed_frag_time_ic"
@@ -205,7 +206,7 @@
                     android:id="@+id/view2"
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
-                    android:background="@color/grey_2"
+                    android:background="@color/grey_4"
                     app:layout_constraintBottom_toTopOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent" />
@@ -214,7 +215,7 @@
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:paddingVertical="11.5dp">
+                    android:paddingVertical="12dp">
 
                     <ImageView
                         android:id="@+id/iv_detailed_frag_call_ic"
@@ -241,7 +242,7 @@
                     android:id="@+id/view3"
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
-                    android:background="@color/grey_2"
+                    android:background="@color/grey_4"
                     app:layout_constraintBottom_toTopOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent" />
@@ -250,7 +251,7 @@
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:paddingVertical="11.5dp">
+                    android:paddingVertical="12dp">
 
                     <ImageView
                         android:id="@+id/iv_detailed_frag_address_ic"
