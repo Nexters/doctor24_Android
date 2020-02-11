@@ -6,7 +6,7 @@ data class Today(
     @SerializedName("dayType")
     val dayType: String,
     @SerializedName("startTime")
-    val startTime: StartTime,
+    val startTime: String,
     @SerializedName("endTime")
-    val endTime: EndTime
+    val endTime: String
 )

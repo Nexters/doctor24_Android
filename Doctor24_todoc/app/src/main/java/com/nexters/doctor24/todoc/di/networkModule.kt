@@ -2,6 +2,8 @@ package com.nexters.doctor24.todoc.di
 
 import com.nexters.doctor24.todoc.BuildConfig
 import com.nexters.doctor24.todoc.api.DefaultAPIInfo
+import com.nexters.doctor24.todoc.data.detailed.DetailedDataSource
+import com.nexters.doctor24.todoc.data.detailed.DetailedDataSourceImpl
 import com.nexters.doctor24.todoc.data.marker.MarkerDataSource
 import com.nexters.doctor24.todoc.data.marker.MarkerDataSourceImpl
 import okhttp3.OkHttpClient
@@ -18,7 +20,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 private val BASE_URL = "http://todoc.me/api/${DefaultAPIInfo.API_VERSION}/"
 
 val networkModule: Module = module {
-    single(named("todocApi")) {
+    single() {
         Retrofit.Builder()
             .client(
                 OkHttpClient.Builder()
@@ -31,5 +33,6 @@ val networkModule: Module = module {
             .build()
     }
 
-    single{ MarkerDataSourceImpl(get(named("todocApi"))) as MarkerDataSource }
+    single{ MarkerDataSourceImpl(get()) as MarkerDataSource }
+    single{ DetailedDataSourceImpl(get()) as DetailedDataSource }
 }

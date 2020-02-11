@@ -121,7 +121,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_margin="8dp"
-                        android:today_open="@{vm.detailedData.today}"
+                        app:todayOpen="@{vm.detailedData.today}"
                         app:layout_constraintStart_toEndOf="@+id/rv_today_comment"
                         app:layout_constraintTop_toBottomOf="@+id/tv_detailed_frag_name" />
 
@@ -132,7 +132,7 @@
                     android:id="@+id/view0"
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
-                    android:background="@color/grey_2"
+                    android:background="@color/grey_4"
                     app:layout_constraintBottom_toTopOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent" />
@@ -140,7 +140,7 @@
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:paddingVertical="11.5dp">
+                    android:paddingVertical="12dp">
 
                     <ImageView
                         android:id="@+id/iv_detailed_frag_hospital_ic"
@@ -157,7 +157,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="6dp"
                         android:layout_marginTop="1dp"
-                        android:category_text="@{vm.detailedData.categories}"
+                        app:categoryText="@{vm.detailedData.categories}"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toEndOf="@+id/iv_detailed_frag_hospital_ic"
                         app:layout_constraintTop_toTopOf="parent" />
@@ -168,7 +168,7 @@
                     android:id="@+id/view1"
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
-                    android:background="@color/grey_2"
+                    android:background="@color/grey_4"
                     app:layout_constraintBottom_toTopOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent" />
@@ -176,7 +176,8 @@
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:paddingVertical="11.5dp">
+                    android:paddingBottom="4dp"
+                    android:paddingTop="12dp">
 
                     <ImageView
                         android:id="@+id/iv_detailed_frag_time_ic"
@@ -188,10 +189,13 @@
 
                     <androidx.recyclerview.widget.RecyclerView
                         android:id="@+id/rv_detailed_frag_time"
+                        tools:itemCount="3"
+                        tools:listitem="@layout/rv_item_open_time_black"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="6dp"
                         android:layout_marginTop="1dp"
+                        app:setOpenData="@{vm.detailedData.days}"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toEndOf="@+id/iv_detailed_frag_time_ic"
                         app:layout_constraintTop_toTopOf="parent" />
@@ -202,7 +206,7 @@
                     android:id="@+id/view2"
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
-                    android:background="@color/grey_2"
+                    android:background="@color/grey_4"
                     app:layout_constraintBottom_toTopOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent" />
@@ -211,7 +215,7 @@
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:paddingVertical="11.5dp">
+                    android:paddingVertical="12dp">
 
                     <ImageView
                         android:id="@+id/iv_detailed_frag_call_ic"
@@ -238,7 +242,7 @@
                     android:id="@+id/view3"
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
-                    android:background="@color/grey_2"
+                    android:background="@color/grey_4"
                     app:layout_constraintBottom_toTopOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent" />
@@ -247,7 +251,7 @@
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:paddingVertical="11.5dp">
+                    android:paddingVertical="12dp">
 
                     <ImageView
                         android:id="@+id/iv_detailed_frag_address_ic"

@@ -6,7 +6,7 @@ import retrofit2.Response
 
 internal class DetailedInfoRepositoryImpl(private val dataSource: DetailedDataSource) :
     DetailedInfoRepository {
-    override suspend fun getDetailedInfo(type: String, facilityId: String): Response<DetailedInfoData> {
+    override suspend fun getDetailedInfo(type: String, facilityId: String): DetailedInfoData {
         return dataSource.getDetailedInfo(type = type, facilityId = facilityId)
     }
 }

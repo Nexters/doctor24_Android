@@ -11,6 +11,19 @@ import com.nexters.doctor24.todoc.databinding.RvItemOpenTimeRedBinding
 
 class DayAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
+    fun clearData() {
+        data.clear()
+    }
+
+    fun addItem(DayList: List<Day>?) {
+        if (DayList == null) return
+
+        with(data) {
+            addAll(DayList)
+        }
+        notifyDataSetChanged()
+    }
+
     class BlackDayViewHolder(val binding: RvItemOpenTimeBlackBinding) :
         RecyclerView.ViewHolder(binding.root)
 
@@ -70,16 +83,15 @@ class DayAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
 
         when (holder) {
-/*            is BlackDayViewHolder -> {
-                holder.binding.dayDate= data[position]
-
+            is BlackDayViewHolder -> {
+                holder.binding.dayData = data[position]
             }
             is BlueDayViewHolder -> {
-                holder.binding.chatData = data[position]
+                holder.binding.dayData = data[position]
             }
             is RedDayViewHolder -> {
-                holder.binding.chatData = data[position]
-            }*/
+                holder.binding.dayData = data[position]
+            }
         }
     }
 }

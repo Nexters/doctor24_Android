@@ -14,9 +14,9 @@ data class DetailedInfoData(
     @SerializedName("id")
     val id: String,
     @SerializedName("latitude")
-    val latitude: Int,
+    val latitude: Double,
     @SerializedName("longitude")
-    val longitude: Int,
+    val longitude: Double,
     @SerializedName("medicalType")
     val medicalType: String,
     @SerializedName("name")
