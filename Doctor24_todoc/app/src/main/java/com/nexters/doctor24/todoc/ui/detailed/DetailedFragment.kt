@@ -9,12 +9,14 @@ import androidx.recyclerview.widget.GridLayoutManager
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.NaverMap
 import com.naver.maps.map.OnMapReadyCallback
+import com.naver.maps.map.overlay.Align
 import com.naver.maps.map.overlay.InfoWindow
 import com.naver.maps.map.overlay.Marker
 import com.naver.maps.map.overlay.OverlayImage
 import com.nexters.doctor24.todoc.R
 import com.nexters.doctor24.todoc.base.BaseFragment
 import com.nexters.doctor24.todoc.data.detailed.response.DetailedInfoData
+import com.nexters.doctor24.todoc.data.marker.MarkerTypeEnum.Companion.getMarkerType
 import com.nexters.doctor24.todoc.databinding.DetailedFragmentBinding
 import com.nexters.doctor24.todoc.ui.detailed.adapter.DayAdapter
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -23,6 +25,7 @@ internal class DetailedFragment : BaseFragment<DetailedFragmentBinding, Detailed
     OnMapReadyCallback {
 
     private lateinit var naverMap: NaverMap
+    lateinit var marker : Marker
 
     override val layoutResId: Int
         get() = R.layout.detailed_fragment
@@ -47,6 +50,8 @@ internal class DetailedFragment : BaseFragment<DetailedFragmentBinding, Detailed
     }
 
     override fun onMapReady(map: NaverMap) {
+        map.isNightModeEnabled = true
+
         setSelectedMarker(map, viewModel.detailedData)
     }
 
@@ -60,7 +65,6 @@ internal class DetailedFragment : BaseFragment<DetailedFragmentBinding, Detailed
         }
     }
 
-
     fun setSelectedMarker(map: NaverMap, selected: LiveData<DetailedInfoData>) {
         naverMap = map
 
@@ -68,6 +72,15 @@ internal class DetailedFragment : BaseFragment<DetailedFragmentBinding, Detailed
         marker.position = LatLng(selected.value!!.latitude, selected.value!!.longitude)
         marker.map = naverMap
         marker.icon = drawSelectMarkerIcon(selected.value!!.medicalType)
+
+        var selectedMarker = DetailedViewModel.SelectedMarkerUIData(LatLng(selected.value!!.latitude,selected.value!!.longitude),selected.value!!.medicalType,selected.value!!.name)
+        getMarkerType(selected.value!!.medicalType)?.let {
+            marker.icon = drawSelectMarkerIcon(selected.value!!.medicalType)
+            InfoWindow().apply {
+                adapter = MarkerTagAdapter(selectedMarker)
+                offsetY = -80
+            }.open(marker, Align.Bottom)
+        }
     }
 
     private fun drawSelectMarkerIcon(type: String): OverlayImage {
