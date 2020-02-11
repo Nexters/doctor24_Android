@@ -8,18 +8,41 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.Observer
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.nexters.doctor24.todoc.R
-import com.nexters.doctor24.todoc.ui.map.NaverMapViewModel
+import com.nexters.doctor24.todoc.data.marker.response.ResMapMarker
+import com.nexters.doctor24.todoc.databinding.PreviewFragmentBinding
 import kotlinx.android.synthetic.main.preview_fragment.*
-import org.koin.androidx.viewmodel.ext.android.sharedViewModel
+import timber.log.Timber
 
 internal class PreviewFragment : BottomSheetDialogFragment() {
+    companion object {
+        @JvmField
+        val TAG: String = this::class.java.simpleName
 
-    private val viewModel: NaverMapViewModel by sharedViewModel()
+        const val KEY_MEDICAL: String = "KEY_MEDICAL"
+    }
+    private lateinit var binding : PreviewFragmentBinding
+    private var previewData: PreviewUiData? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val data = arguments?.let{
+            it.getParcelable<ResMapMarker>(KEY_MEDICAL)
+        }
+        data?.let {
+            previewData = PreviewUiData(
+                id = it.id,
+                isEmergency = it.emergency,
+                isNight = it.nightTimeServe,
+                placeName = it.placeName,
+                todayHour = "${it.day?.startTime} ~ ${it.day?.endTime}",
+                phoneNumber = it.placePhone ?: "",
+                address = it.placeAddress ?: ""
+            )
+        }
     }
 
     override fun onCreateView(
@@ -28,7 +51,8 @@ internal class PreviewFragment : BottomSheetDialogFragment() {
         savedInstanceState: Bundle?
     ): View? {
         super.onCreateView(inflater, container, savedInstanceState)
-        return inflater.inflate(R.layout.preview_fragment, container, false)
+        binding = DataBindingUtil.inflate<PreviewFragmentBinding>(inflater, R.layout.preview_fragment, container, false)
+        return binding.root//inflater.inflate(R.layout.preview_fragment, container, false)
     }
 
     override fun onStart() {
@@ -41,7 +65,8 @@ internal class PreviewFragment : BottomSheetDialogFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        btn_daum_map.setOnClickListener {
+        binding.item = previewData
+        /*btn_daum_map.setOnClickListener {
             startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("daummaps://route?sp=37.4640070,37.4640070&ep=37.4764356,126.9618302&by=FOOT")))
         }
         btn_naver_map.setOnClickListener {
@@ -49,11 +74,24 @@ internal class PreviewFragment : BottomSheetDialogFragment() {
         }
         btn_google_map.setOnClickListener {
             startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("geo:37.537229,127.005515?q=34.99,-106.61(Treasure)")))
-        }
+        }*/
+
     }
 
     override fun dismiss() {
         super.dismiss()
-        viewModel.onClosePreview()
     }
+
+    data class PreviewUiData(
+        val id: String,
+        val isEmergency : Boolean = false,
+        val isNight : Boolean = false,
+        val isNormal : Boolean = !isEmergency && !isNight,
+        val placeName : String = "",
+        val todayHour : String = "",
+        val categories : String = "",
+        val phoneNumber : String = "",
+        val address : String = "",
+        val distance : String = "${1}km"
+    )
 }
