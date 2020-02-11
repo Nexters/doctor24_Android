@@ -4,7 +4,7 @@
 
     <string name="category_dialog_title">진료 과목</string>
     <string name="category_dialog_reset">초기화</string>
-    <string name="category_item_all">전체</string>
+    <string name="category_item_all">""</string>
     <string name="category_item_baby">소아과</string>
     <string name="category_item_internal">내과</string>
     <string name="category_item_ent">이비인후과</string>

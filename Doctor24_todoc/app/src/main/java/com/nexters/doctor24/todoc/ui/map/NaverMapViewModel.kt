@@ -30,6 +30,8 @@ internal class NaverMapViewModel(private val dispatchers: DispatcherProvider,
     val currentLocation : LiveData<LatLng> get() = _currentLocation
     private val _currentZoom = MutableLiveData<Double>()
     val currentZoom : LiveData<Double> get() = _currentZoom
+    private val _currentCategory = MutableLiveData<String>()
+    val currentCategory : LiveData<String> get() = _currentCategory
 
     private val _markerList = MutableLiveData<List<ResMapLocation>>()
     private val _hospitalMarkerDatas = Transformations.map(_markerList) {
@@ -52,6 +54,9 @@ internal class NaverMapViewModel(private val dispatchers: DispatcherProvider,
     private val _tabChangeEvent = MutableLiveData<MarkerTypeEnum>()
     val tabChangeEvent : LiveData<MarkerTypeEnum> get() = _tabChangeEvent
 
+    private val _categoryShow = MutableLiveData<Boolean>()
+    val categoryShow : LiveData<Boolean> get() = _categoryShow
+
     private val _categoryEvent = SingleLiveEvent<Int>()
     val categoryEvent : LiveData<Int> get() = _categoryEvent
 
@@ -70,13 +75,23 @@ internal class NaverMapViewModel(private val dispatchers: DispatcherProvider,
                 val result = repo.getMarkers(
                     center = center,
                     type = tabChangeEvent.value ?: MarkerTypeEnum.HOSPITAL,
-                    level = getRadiusLevel(zoomLevel)
+                    level = getRadiusLevel(zoomLevel),
+                    category = if(tabChangeEvent.value == MarkerTypeEnum.PHARMACY) null else _currentCategory.value
                 )
                 withContext(dispatchers.main()) {
                     _markerList.value = result
                 }
             } catch (e:Exception) {
 
+            }
+        }
+    }
+
+    fun reqMarkerWithCategory(category: String) {
+        _currentCategory.value = category
+        _currentLocation.value?.let { location ->
+            _currentZoom.value?.let { zoom ->
+                reqMarker(location, zoom)
             }
         }
     }
@@ -103,6 +118,12 @@ internal class NaverMapViewModel(private val dispatchers: DispatcherProvider,
 
     fun onChangeTab(type: MarkerTypeEnum) {
         _tabChangeEvent.value = type
+        if(type == MarkerTypeEnum.PHARMACY) {
+            _currentCategory.value = null
+            _categoryShow.value = false
+        } else {
+            _categoryShow.value = true
+        }
     }
 
     fun onClickFilter() {

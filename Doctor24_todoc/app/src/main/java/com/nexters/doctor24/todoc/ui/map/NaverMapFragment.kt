@@ -1,10 +1,13 @@
 package com.nexters.doctor24.todoc.ui.map
 
 import android.content.Context
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.animation.AnimationUtils
+import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.core.view.isVisible
@@ -26,6 +29,8 @@ import com.nexters.doctor24.todoc.data.marker.MarkerTypeEnum
 import com.nexters.doctor24.todoc.data.marker.response.ResMapMarker
 import com.nexters.doctor24.todoc.databinding.NavermapFragmentBinding
 import com.nexters.doctor24.todoc.ui.map.category.CategoryAdapter
+import com.nexters.doctor24.todoc.ui.map.category.CategoryViewModel
+import com.nexters.doctor24.todoc.ui.map.category.categoryItemList
 import com.nexters.doctor24.todoc.ui.map.marker.MapMarkerManager
 import com.nexters.doctor24.todoc.ui.map.marker.group.GroupMarkerListDialog
 import com.nexters.doctor24.todoc.ui.map.preview.PreviewFragment
@@ -34,7 +39,7 @@ import timber.log.Timber
 
 
 internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMapViewModel>(),
-    OnMapReadyCallback, MapMarkerManager.MarkerClickListener {
+    OnMapReadyCallback, MapMarkerManager.MarkerClickListener, CategoryAdapter.CategoryListener {
 
     companion object {
         private const val LOCATION_PERMISSION_REQUEST_CODE = 1000
@@ -46,11 +51,14 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
         get() = R.layout.navermap_fragment
     override val viewModel: NaverMapViewModel by viewModel()
     val viewModelTime: TimeViewModel by viewModel()
+    private val categoryViewModel : CategoryViewModel by viewModel()
 
     private lateinit var naverMap: NaverMap
     private lateinit var markerManager: MapMarkerManager
-    private val categoryAdapter : CategoryAdapter by lazy { CategoryAdapter(context!!) }
-    private val bottomSheetCategory : BottomSheetDialog by lazy { BottomSheetDialog(context!!) }
+    private val categoryAdapter : CategoryAdapter by lazy { CategoryAdapter() }
+    private val bottomSheetCategory : BottomSheetDialog by lazy {
+        BottomSheetDialog(context!!, R.style.PreviewBottomSheetDialog)
+    }
     private val previewFragment : PreviewFragment by lazy {
         PreviewFragment().apply {
             setStyle(DialogFragment.STYLE_NORMAL, R.style.PreviewBottomSheetDialog)
@@ -129,12 +137,23 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
             })
         }
 
+        initCategoryView()
+    }
+
+    private fun initCategoryView() {
         val view = layoutInflater.inflate(R.layout.bottom_category_dialog, null)
         val categoryView = view.findViewById<RecyclerView>(R.id.recycler_view_category)
+        val refresh = view.findViewById<TextView>(R.id.text_category_reset)
+        val btnClose = view.findViewById<ImageView>(R.id.button_close)
         categoryView.apply {
-            adapter = categoryAdapter
+            adapter = categoryAdapter.apply {
+                listener = this@NaverMapFragment
+                submitList(categoryItemList)
+            }
             layoutManager = GridLayoutManager(context, LAYOUT_SPAN_COUNT)
         }
+        refresh.setOnClickListener { categoryViewModel.onClickRefresh() }
+        btnClose.setOnClickListener { categoryViewModel.onClickClose() }
         bottomSheetCategory.setContentView(view)
     }
 
@@ -170,6 +189,23 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
         viewModel.refreshEvent.observe(viewLifecycleOwner, Observer {
             binding.btnRefresh.isVisible = false
         })
+
+        viewModel.currentCategory.observe(viewLifecycleOwner, Observer {
+            if(it == null || it.isEmpty()) categoryAdapter.childViewList[0].isChecked = true
+        })
+
+        categoryViewModel.currentSelectItem.observe(viewLifecycleOwner, Observer {
+            viewModel.reqMarkerWithCategory(it)
+            bottomSheetCategory.dismiss()
+        })
+
+        categoryViewModel.refreshEvent.observe(viewLifecycleOwner, Observer {
+            categoryAdapter.childViewList[0].isChecked = true
+        })
+
+        categoryViewModel.categoryCloseEvent.observe(viewLifecycleOwner, Observer {
+            bottomSheetCategory.dismiss()
+        })
     }
 
     private fun showRefresh() {
@@ -182,6 +218,9 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
         }
     }
 
+    override fun onClickCategory(category: String) {
+        categoryViewModel.onSelectCategory(category)
+    }
 
     override fun markerClick(marker: Marker) {
         deSelectMarker()

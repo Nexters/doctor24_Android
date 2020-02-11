@@ -186,10 +186,10 @@ internal class MapMarkerManager(val context: Context, private val naverMap: Nave
     fun deSelectMarker() {
         selectMarkerItem?.run {
             val marker = mapMarkers[this]
-            if(marker?.tag is MedicalMarkerBundleEnum.Piece) {
+            marker?.let {
                 getMarkerType(medicalType)?.let { type ->
-                    marker.icon = drawMarkerIcon(type, isEmergency, isNight)
-                    marker.infoWindow?.close()
+                    it.icon = drawMarkerIcon(type, isEmergency, isNight)
+                    it.infoWindow?.close()
                 }
             }
             selectMarkerItem = null

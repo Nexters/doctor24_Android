@@ -7,14 +7,21 @@ import com.nexters.doctor24.todoc.base.SingleLiveEvent
 
 internal class CategoryViewModel : BaseViewModel() {
 
-    private val _categorySelectedEvent = MutableLiveData<Int>()
-    val categorySelectedEvent : LiveData<Int> get() = _categorySelectedEvent
+    private val _currentSelectItem = MutableLiveData<String>()
+    val currentSelectItem : LiveData<String> get() = _currentSelectItem
+
+    private val _refreshEvent = SingleLiveEvent<Unit>()
+    val refreshEvent : LiveData<Unit> get() = _refreshEvent
 
     private val _categoryCloseEvent = SingleLiveEvent<Unit>()
     val categoryCloseEvent : LiveData<Unit> get() = _categoryCloseEvent
 
-    fun onSelectCategory(index : Int) {
-        _categorySelectedEvent.value = index
+    fun onSelectCategory(category : String) {
+        _currentSelectItem.value = category
+    }
+
+    fun onClickRefresh() {
+        _refreshEvent.call()
     }
 
     fun onClickClose(){
