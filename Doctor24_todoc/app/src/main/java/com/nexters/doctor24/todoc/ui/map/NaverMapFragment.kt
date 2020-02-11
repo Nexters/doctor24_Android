@@ -191,7 +191,11 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
         })
 
         viewModel.currentCategory.observe(viewLifecycleOwner, Observer {
-            if(it == null || it.isEmpty()) categoryAdapter.childViewList[0].isChecked = true
+            if(it == null || it.isEmpty()) {
+                if(categoryAdapter.childViewList.isNotEmpty()){
+                    categoryAdapter.childViewList[0].isChecked = true
+                }
+            }
         })
 
         categoryViewModel.currentSelectItem.observe(viewLifecycleOwner, Observer {

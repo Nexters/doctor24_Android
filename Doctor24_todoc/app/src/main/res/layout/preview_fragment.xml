@@ -29,4 +29,30 @@
         app:layout_constraintEnd_toEndOf="parent"
         />
 
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btn_daum_map"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="다음 길찾기"
+        app:layout_constraintTop_toBottomOf="@id/view_tip"
+        app:layout_constraintStart_toStartOf="parent"
+        />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btn_naver_map"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="네이버 길찾기"
+        app:layout_constraintTop_toBottomOf="@id/btn_daum_map"
+        app:layout_constraintStart_toStartOf="parent"
+        />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btn_google_map"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="맵 찾기"
+        app:layout_constraintTop_toBottomOf="@id/btn_naver_map"
+        app:layout_constraintStart_toStartOf="parent"
+        />
 </androidx.constraintlayout.widget.ConstraintLayout>
