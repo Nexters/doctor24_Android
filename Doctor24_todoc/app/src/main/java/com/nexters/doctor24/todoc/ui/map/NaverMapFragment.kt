@@ -228,6 +228,14 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
 
     override fun markerClick(marker: Marker) {
         deSelectMarker()
+        marker.tag?.let{
+            if((it as ArrayList<ResMapMarker>).isNotEmpty()) {
+                val medicalData = Bundle().apply {
+                    putParcelable(PreviewFragment.KEY_MEDICAL, it[0])
+                }
+                previewFragment.arguments = medicalData
+            }
+        }
         markerManager.getMarkerItem(marker)?.run {
             if (markerManager.isEqualsSelectMarker(this)) return
             selectMarker(this)

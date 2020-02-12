@@ -51,6 +51,8 @@ internal class NaverMapViewModel(private val dispatchers: DispatcherProvider,
     }
     val hospitalMarkerDatas : LiveData<Event<ArrayList<MarkerUIData>>> get() = _hospitalMarkerDatas
 
+    val selectedMarkerData = MutableLiveData<ResMapMarker>()
+
     private val _tabChangeEvent = MutableLiveData<MarkerTypeEnum>()
     val tabChangeEvent : LiveData<MarkerTypeEnum> get() = _tabChangeEvent
 
