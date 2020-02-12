@@ -111,12 +111,12 @@
                     app:layout_constraintTop_toBottomOf="@+id/tv_detailed_frag_name" />
 
                 <TextView
-                    android:id="@+id/tv_detilaed_frag_time_today"
+                    android:id="@+id/tv_detailed_frag_time_today"
                     style="@style/AndB1LeftRegular16"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_margin="8dp"
-                    android:text="@{item.todayHour}"
+                    app:todayOpen="@{item.todayHour}"
                     app:layout_constraintStart_toEndOf="@+id/rv_today_comment"
                     app:layout_constraintTop_toBottomOf="@+id/tv_detailed_frag_name" />
 

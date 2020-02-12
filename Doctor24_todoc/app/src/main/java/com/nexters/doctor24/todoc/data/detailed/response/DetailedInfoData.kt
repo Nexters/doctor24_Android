@@ -1,8 +1,9 @@
 package com.nexters.doctor24.todoc.data.detailed.response
 
 import com.google.gson.annotations.SerializedName
+import com.nexters.doctor24.todoc.data.marker.response.OperatingDate
 
-data class DetailedInfoData(
+internal data class DetailedInfoData(
     @SerializedName("address")
     val address: String,
     @SerializedName("categories")
@@ -26,5 +27,5 @@ data class DetailedInfoData(
     @SerializedName("phone")
     val phone: String,
     @SerializedName("today")
-    val today: Today
+    val today: OperatingDate
 )

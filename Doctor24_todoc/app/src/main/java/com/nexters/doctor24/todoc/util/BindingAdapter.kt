@@ -6,7 +6,7 @@ import androidx.annotation.DrawableRes
 import androidx.databinding.BindingAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.nexters.doctor24.todoc.data.detailed.response.Day
-import com.nexters.doctor24.todoc.data.detailed.response.Today
+import com.nexters.doctor24.todoc.data.marker.response.OperatingDate
 import com.nexters.doctor24.todoc.ui.detailed.adapter.DayAdapter
 
 @BindingAdapter("android:visibility")
@@ -18,7 +18,7 @@ fun setVisibility(view: View, isVisible: Boolean) {
 }
 
 @BindingAdapter("todayOpen")
-fun setOpenDay(view: TextView, today: Today?) {
+internal fun setOpenDay(view: TextView, today: OperatingDate?) {
 
     var result = ""
 
