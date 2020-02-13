@@ -30,8 +30,8 @@ internal class NaverMapViewModel(private val dispatchers: DispatcherProvider,
     val currentLocation : LiveData<LatLng> get() = _currentLocation
     private val _currentZoom = MutableLiveData<Double>()
     val currentZoom : LiveData<Double> get() = _currentZoom
-    private val _currentCategory = MutableLiveData<String>()
-    val currentCategory : LiveData<String> get() = _currentCategory
+    private val _currentCategory = MutableLiveData<String?>().apply { postValue(null) }
+    val currentCategory : LiveData<String?> get() = _currentCategory
 
     private val _markerList = MutableLiveData<List<ResMapLocation>>()
     private val _hospitalMarkerDatas = Transformations.map(_markerList) {
@@ -50,6 +50,8 @@ internal class NaverMapViewModel(private val dispatchers: DispatcherProvider,
         Event(list)
     }
     val hospitalMarkerDatas : LiveData<Event<ArrayList<MarkerUIData>>> get() = _hospitalMarkerDatas
+
+    val selectedMarkerData = MutableLiveData<ResMapMarker>()
 
     private val _tabChangeEvent = MutableLiveData<MarkerTypeEnum>()
     val tabChangeEvent : LiveData<MarkerTypeEnum> get() = _tabChangeEvent
