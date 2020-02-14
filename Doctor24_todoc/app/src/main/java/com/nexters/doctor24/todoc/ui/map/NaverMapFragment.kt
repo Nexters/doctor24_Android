@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.tabs.TabLayout
+import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.*
 import com.naver.maps.map.overlay.Marker
 import com.naver.maps.map.util.FusedLocationSource
@@ -34,6 +35,7 @@ import com.nexters.doctor24.todoc.ui.map.category.categoryItemList
 import com.nexters.doctor24.todoc.ui.map.marker.MapMarkerManager
 import com.nexters.doctor24.todoc.ui.map.marker.group.GroupMarkerListDialog
 import com.nexters.doctor24.todoc.ui.map.preview.PreviewFragment
+import com.nexters.doctor24.todoc.ui.map.preview.PreviewViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import timber.log.Timber
 
@@ -52,6 +54,7 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
     override val viewModel: NaverMapViewModel by viewModel()
     val viewModelTime: TimeViewModel by viewModel()
     private val categoryViewModel : CategoryViewModel by viewModel()
+    private val previewViewModel : PreviewViewModel by viewModel()
 
     private lateinit var naverMap: NaverMap
     private lateinit var markerManager: MapMarkerManager
@@ -59,11 +62,8 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
     private val bottomSheetCategory : BottomSheetDialog by lazy {
         BottomSheetDialog(context!!, R.style.PreviewBottomSheetDialog)
     }
-    private val previewFragment : PreviewFragment by lazy {
-        PreviewFragment().apply {
-            setStyle(DialogFragment.STYLE_NORMAL, R.style.PreviewBottomSheetDialog)
-        }
-    }
+
+    private var isSelected = false
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -213,7 +213,7 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
     }
 
     private fun showRefresh() {
-        if(!binding.btnRefresh.isVisible && !previewFragment.isVisible) {
+        if(!binding.btnRefresh.isVisible && !isSelected) {
             deSelectMarker()
             binding.btnRefresh.apply {
                 isVisible = true
@@ -232,8 +232,15 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
             if((it as ArrayList<ResMapMarker>).isNotEmpty()) {
                 val medicalData = Bundle().apply {
                     putParcelable(PreviewFragment.KEY_MEDICAL, it[0])
+                    viewModel.currentMyLocation?.let { loc->
+                        Timber.d("MapApps - $loc")
+                        putDoubleArray(PreviewFragment.KEY_MY_LOCATION, doubleArrayOf(loc.latitude, loc.longitude))
+                    }
                 }
-                previewFragment.arguments = medicalData
+                PreviewFragment().apply {
+                    setStyle(DialogFragment.STYLE_NORMAL, R.style.PreviewBottomSheetDialog)
+                    arguments = medicalData
+                }.show(childFragmentManager, PreviewFragment.TAG)
             }
         }
         markerManager.getMarkerItem(marker)?.run {
@@ -271,8 +278,8 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
     private fun selectMarker(markerItem: MarkerUIData?) {
         markerItem?.run {
             binding.btnRefresh.isVisible = false
+            isSelected = true
             markerManager.selectMarker(this)
-            previewFragment.show(childFragmentManager, previewFragment.tag)
             /*when {
                 mapViewModel.currentState == ListState.Default -> mapViewModel.setListState(isMarkerClick = true)
             }
@@ -375,6 +382,9 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
         map.addOnCameraIdleListener {
             viewModel.onChangedLocation(map.cameraPosition.target)
             viewModel.onChangedZoom(map.cameraPosition.zoom)
+        }
+        map.addOnLocationChangeListener {
+            viewModel.onChangedMyLocation(it)
         }
     }
 

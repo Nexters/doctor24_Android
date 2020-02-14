@@ -1,17 +1,30 @@
 package com.nexters.doctor24.todoc.ui.map.preview
 
+import android.Manifest
+import android.content.Context
+import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
+import android.location.LocationManager
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AlertDialog
+import androidx.core.app.ActivityCompat
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.Observer
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import com.naver.maps.geometry.LatLng
 import com.nexters.doctor24.todoc.R
 import com.nexters.doctor24.todoc.data.marker.response.OperatingDate
 import com.nexters.doctor24.todoc.data.marker.response.ResMapMarker
 import com.nexters.doctor24.todoc.databinding.PreviewFragmentBinding
+import com.nexters.doctor24.todoc.ui.findload.FindLoadDialog
+import com.nexters.doctor24.todoc.ui.findload.FindLoadViewModel
+import org.koin.androidx.viewmodel.ext.android.sharedViewModel
+import org.koin.androidx.viewmodel.ext.android.viewModel
 import timber.log.Timber
 
 internal class PreviewFragment : BottomSheetDialogFragment() {
@@ -20,15 +33,25 @@ internal class PreviewFragment : BottomSheetDialogFragment() {
         val TAG: String = this::class.java.simpleName
 
         const val KEY_MEDICAL: String = "KEY_MEDICAL"
+        const val KEY_MY_LOCATION: String = "KEY_MY_LOCATION"
     }
     private lateinit var binding : PreviewFragmentBinding
     private var previewData: PreviewUiData? = null
+    private lateinit var currentLocation : LatLng
+    private val previewViewModel : PreviewViewModel by sharedViewModel()
+    private val findLoadViewModel : FindLoadViewModel by viewModel()
+    private val findLoadDialog : FindLoadDialog by lazy { FindLoadDialog(findLoadViewModel) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val data = arguments?.let{
             it.getParcelable<ResMapMarker>(KEY_MEDICAL)
         }
+        val loc = arguments?.let {
+            it.getDoubleArray(KEY_MY_LOCATION)
+        }
+        loc?.let { findLoadViewModel.currentLocation = LatLng(it[0], it[1]) }
+
         data?.let {
             previewData = PreviewUiData(
                 id = it.id,
@@ -40,7 +63,18 @@ internal class PreviewFragment : BottomSheetDialogFragment() {
                 address = it.placeAddress ?: "",
                 categories = getCategories(it.categories)
             )
+            findLoadViewModel.centerName = it.placeName
+            findLoadViewModel.determineLocation = LatLng(data.latitude, data.longitude)
         }
+
+        /*val list = mapAppsList.map { it.title }.toTypedArray()
+        findLoadDialog.setItems(list) { dialog, index ->
+            Timber.d("길찾기 맵 :${mapAppsList[index].scheme}")
+            startActivity(Intent(Intent.ACTION_VIEW, mapAppsList[index].scheme).apply {
+                `package` = mapAppsList[index].packageName
+                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            })
+        }*/
         Timber.d("PreviewUiData : $previewData")
     }
 
@@ -83,6 +117,20 @@ internal class PreviewFragment : BottomSheetDialogFragment() {
         btn_google_map.setOnClickListener {
             startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("geo:37.537229,127.005515?q=34.99,-106.61(Treasure)")))
         }*/
+        initObserve()
+
+        binding.ivDetailedFragGotoMap.setOnClickListener {
+            findLoadDialog.show(childFragmentManager, FindLoadDialog.TAG)
+        }
+
+    }
+
+    private fun initObserve() {
+        /*previewViewModel.currentLocation.observe(parentFragment!!.viewLifecycleOwner, Observer {
+            Timber.d("MapApps - preview : currentMyLocation $it")
+            findLoadViewModel.setCurrentLocation(it)
+        })*/
+
     }
 
     override fun dismiss() {

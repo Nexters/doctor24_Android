@@ -26,4 +26,9 @@
     <string name="map_refresh">재검색</string>
     <string name="map_marker_group_list">병원 리스트</string>
     <string name="map_marker_group_list_item_today">오늘</string>
+
+    <string name="load_map_dialog_title">길찾기 선택</string>
+    <string name="load_map_dialog_google">구글맵스</string>
+    <string name="load_map_dialog_naver">네이버지도</string>
+    <string name="load_map_dialog_kakao">카카오맵</string>
 </resources>

@@ -1,6 +1,7 @@
 package com.nexters.doctor24.todoc.ui.map
 
 import android.content.SharedPreferences
+import android.location.Location
 import android.os.Parcelable
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -26,7 +27,8 @@ internal class NaverMapViewModel(private val dispatchers: DispatcherProvider,
         const val KEY_PREF_FILTER_CATEGORY = "KEY_PREF_FILTER_CATEGORY"
     }
 
-    private val _currentLocation = MutableLiveData<LatLng>()
+    var currentMyLocation : LatLng? = null // 현재 사용자의 위치
+    private val _currentLocation = MutableLiveData<LatLng>() // 현재 보고있는 지도의 center 좌표
     val currentLocation : LiveData<LatLng> get() = _currentLocation
     private val _currentZoom = MutableLiveData<Double>()
     val currentZoom : LiveData<Double> get() = _currentZoom
@@ -104,6 +106,13 @@ internal class NaverMapViewModel(private val dispatchers: DispatcherProvider,
         zoom <= 14 -> 2
         zoom <= 15 -> 1
         else -> 1
+    }
+
+    fun onChangedMyLocation(location : Location) {
+        val loc = LatLng(location.latitude, location.longitude)
+        if(currentMyLocation == null || currentMyLocation != loc) {
+            currentMyLocation = loc
+        }
     }
 
     fun onChangedLocation(location: LatLng) {
