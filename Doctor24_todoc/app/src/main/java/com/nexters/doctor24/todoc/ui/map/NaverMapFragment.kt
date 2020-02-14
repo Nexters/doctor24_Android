@@ -302,6 +302,10 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
             if ((it as ArrayList<ResMapMarker>).isNotEmpty()) {
                 val groupData = Bundle().apply {
                     putParcelableArrayList(GroupMarkerListDialog.KEY_LIST, it)
+                    viewModel.currentMyLocation?.let { loc->
+                        Timber.d("MapApps - $loc")
+                        putDoubleArray(GroupMarkerListDialog.KEY_MY_LOCATION, doubleArrayOf(loc.latitude, loc.longitude))
+                    }
                 }
                 GroupMarkerListDialog().apply {
                     arguments = groupData

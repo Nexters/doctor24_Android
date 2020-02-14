@@ -11,13 +11,13 @@ import timber.log.Timber
 
 
 sealed class MapApps(val scheme: Uri, val packageName: String?) {
-    class GoogleMap(mediName: String, startLoc: LatLng, endLoc: LatLng) : MapApps(
-        "http://maps.google.com/maps?saddr=${startLoc.latitude},${startLoc.longitude}&daddr=${endLoc.latitude},${endLoc.longitude}".toUri(),
+    class GoogleMap(mediName: String, endLoc: LatLng) : MapApps(
+        "http://maps.google.com/maps?daddr=${endLoc.latitude},${endLoc.longitude}".toUri(),
         "com.google.android.apps.maps")
-    class NaverMap(mediName: String, startLoc: LatLng, endLoc: LatLng) :MapApps(
+    class NaverMap(mediName: String, endLoc: LatLng) :MapApps(
         "nmap://route/walk?dlat=${endLoc.latitude}&dlng=${endLoc.longitude}&dname=${mediName}&appname=com.nexters.doctor24.todoc".toUri(),
         "com.nhn.android.nmap")
-    class KakaoMap(mediName: String, startLoc: LatLng, endLoc: LatLng) : MapApps(
+    class KakaoMap(mediName: String, endLoc: LatLng) : MapApps(
         "kakaomap://route?ep=${endLoc.latitude},${endLoc.longitude}&by=FOOT".toUri(),
         "net.daum.android.map")
 }
@@ -35,11 +35,12 @@ class FindLoadViewModel : ViewModel() {
     val closeEvent : LiveData<Unit> get() = _closeEvent
 
 
+
     fun onCheckedGoogleMap() {
         currentLocation?.let { my ->
             determineLocation?.let { medi ->
                 Timber.d("Checked MapApps - google")
-                _checkedMapAppEvent.value = MapApps.GoogleMap(centerName, my, medi)
+                _checkedMapAppEvent.value = MapApps.GoogleMap(centerName, medi)
             }
         }
     }
@@ -48,7 +49,7 @@ class FindLoadViewModel : ViewModel() {
         currentLocation?.let { my ->
             determineLocation?.let { medi ->
                 Timber.d("Checked MapApps - naver")
-                _checkedMapAppEvent.value = MapApps.NaverMap(centerName, my, medi)
+                _checkedMapAppEvent.value = MapApps.NaverMap(centerName, medi)
             }
         }
     }
@@ -57,7 +58,7 @@ class FindLoadViewModel : ViewModel() {
         currentLocation?.let { my ->
             determineLocation?.let { medi ->
                 Timber.d("Checked MapApps - kakao")
-                _checkedMapAppEvent.value = MapApps.KakaoMap(centerName, my, medi)
+                _checkedMapAppEvent.value = MapApps.KakaoMap(centerName, medi)
             }
         }
     }

@@ -195,6 +195,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="6dp"
                         android:layout_marginTop="1dp"
+                        android:overScrollMode="never"
                         app:setOpenData="@{vm.detailedData.days}"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toEndOf="@+id/iv_detailed_frag_time_ic"
@@ -268,7 +269,6 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="6dp"
                         android:layout_marginTop="1dp"
-                        android:text="@{vm.detailedData.address}"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toEndOf="@+id/iv_detailed_frag_address_ic"
                         app:layout_constraintTop_toTopOf="parent" />
@@ -291,6 +291,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="56dp"
                     android:layout_marginTop="6dp"
+                    android:layout_marginBottom="16dp"
                     android:background="@drawable/background_call_round"
                     android:gravity="center"
                     android:lineSpacingExtra="6sp"

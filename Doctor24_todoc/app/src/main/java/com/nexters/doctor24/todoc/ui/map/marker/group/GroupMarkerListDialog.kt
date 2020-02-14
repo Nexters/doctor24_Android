@@ -1,6 +1,7 @@
 package com.nexters.doctor24.todoc.ui.map.marker.group
 
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.util.DisplayMetrics
 import android.util.Log
@@ -17,6 +18,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewbinding.ViewBinding
+import com.naver.maps.geometry.LatLng
 import com.nexters.doctor24.todoc.R
 import com.nexters.doctor24.todoc.base.BaseDialogFragment
 import com.nexters.doctor24.todoc.data.marker.response.OperatingDate
@@ -24,7 +26,10 @@ import com.nexters.doctor24.todoc.data.marker.response.ResMapMarker
 import com.nexters.doctor24.todoc.databinding.GroupMarkerListDialogBinding
 import com.nexters.doctor24.todoc.databinding.ItemListHospitalBinding
 import com.nexters.doctor24.todoc.ext.dpToPixel
+import com.nexters.doctor24.todoc.ui.detailed.DetailedActivity
 import com.nexters.doctor24.todoc.ui.map.NaverMapViewModel
+import com.nexters.doctor24.todoc.ui.map.preview.PreviewFragment
+import com.nexters.doctor24.todoc.util.toDistance
 import kotlinx.android.extensions.LayoutContainer
 import kotlinx.android.synthetic.main.item_list_hospital.*
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
@@ -37,18 +42,24 @@ class GroupMarkerListDialog : BaseDialogFragment<GroupMarkerListDialogBinding>()
         val TAG: String = this::class.java.simpleName
 
         const val KEY_LIST: String = "KEY_LIST"
+        const val KEY_MY_LOCATION: String = "KEY_MY_LOCATION"
     }
 
     override val layoutResId: Int = R.layout.group_marker_list_dialog
 
     private val viewModel: NaverMapViewModel by sharedViewModel()
     private var groupData: ArrayList<ResMapMarker>? = arrayListOf()
+    private var location : LatLng? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         groupData = arguments?.let{
             it.getParcelableArrayList<ResMapMarker>(KEY_LIST) as ArrayList<ResMapMarker>
         }
+        val loc = arguments?.let {
+            it.getDoubleArray(KEY_MY_LOCATION)
+        }
+        location = loc?.let { LatLng(it[0], it[1]) }
     }
 
     override fun onResume() {
@@ -72,10 +83,12 @@ class GroupMarkerListDialog : BaseDialogFragment<GroupMarkerListDialogBinding>()
         val groupUIData = groupData?.map {
             GroupListHospitalUiData(
                 id = it.id,
+                type = it.medicalType,
                 isEmergency = it.emergency,
                 isNight = it.nightTimeServe,
                 placeName = it.placeName,
-                todayHour = it.day
+                todayHour = it.day,
+                distance = location?.toDistance(LatLng(it.latitude, it.longitude)) ?: ""
             )
         }
         binding.recyclerViewMarkerList.apply {
@@ -121,15 +134,25 @@ class GroupMarkerListDialog : BaseDialogFragment<GroupMarkerListDialogBinding>()
         internal fun bind(item: GroupListHospitalUiData) {
             binding.item = item
             binding.executePendingBindings()
+
+            binding.root.setOnClickListener {
+                startActivity(Intent(context, DetailedActivity::class.java).apply {
+                    putExtra(DetailedActivity.KEY_MEDICAL_TYPE, item.type)
+                    putExtra(DetailedActivity.KEY_MEDICAL_ID, item.id)
+                    putExtra(DetailedActivity.KEY_DISTANCE, item.distance)
+                })
+            }
         }
     }
 
     internal data class GroupListHospitalUiData(
         val id: String,
+        val type: String,
         val isEmergency : Boolean = false,
         val isNight : Boolean = false,
         val isNormal : Boolean = !isEmergency && !isNight,
         val placeName : String = "",
-        val todayHour : OperatingDate?
+        val todayHour : OperatingDate?,
+        val distance : String
     )
 }
