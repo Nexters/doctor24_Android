@@ -14,14 +14,14 @@ import com.naver.maps.map.overlay.InfoWindow
 import com.naver.maps.map.overlay.Marker
 import com.naver.maps.map.overlay.OverlayImage
 import com.nexters.doctor24.todoc.R
-import com.nexters.doctor24.todoc.base.BaseFragment
+import com.nexters.doctor24.todoc.base.BaseActivity
 import com.nexters.doctor24.todoc.data.detailed.response.DetailedInfoData
 import com.nexters.doctor24.todoc.data.marker.MarkerTypeEnum.Companion.getMarkerType
 import com.nexters.doctor24.todoc.databinding.DetailedFragmentBinding
 import com.nexters.doctor24.todoc.ui.detailed.adapter.DayAdapter
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-internal class DetailedFragment : BaseFragment<DetailedFragmentBinding, DetailedViewModel>(),
+internal class DetailedActivity : BaseActivity<DetailedFragmentBinding, DetailedViewModel>(),
     OnMapReadyCallback {
 
     private lateinit var naverMap: NaverMap
@@ -32,9 +32,9 @@ internal class DetailedFragment : BaseFragment<DetailedFragmentBinding, Detailed
     override val viewModel: DetailedViewModel by viewModel()
     private val dayAdapter by lazy { DayAdapter() }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        overridePendingTransition(R.anim.act_slide_up, R.anim.no_animation)
         viewModel.reqDetailedInfo("hospital", "A1119764")
 
         binding.apply {
@@ -43,7 +43,7 @@ internal class DetailedFragment : BaseFragment<DetailedFragmentBinding, Detailed
 
         binding.mvDetailedFragMapView.apply {
             onCreate(savedInstanceState)
-            getMapAsync(this@DetailedFragment)
+            getMapAsync(this@DetailedActivity)
         }
 
         setMovieRecyclerView()
@@ -95,7 +95,7 @@ internal class DetailedFragment : BaseFragment<DetailedFragmentBinding, Detailed
 
     inner class MarkerTagAdapter(private val selectedMarkerUIData: DetailedViewModel.SelectedMarkerUIData) :
         InfoWindow.ViewAdapter() {
-        private val view = LayoutInflater.from(context).inflate(R.layout.item_marker_name, null)
+        private val view = LayoutInflater.from(this@DetailedActivity).inflate(R.layout.item_marker_name, null)
         private val name = view.findViewById<TextView>(R.id.text_name)
 
         override fun getView(window: InfoWindow): View {
@@ -137,5 +137,11 @@ internal class DetailedFragment : BaseFragment<DetailedFragmentBinding, Detailed
     override fun onLowMemory() {
         super.onLowMemory()
         binding.mvDetailedFragMapView.onLowMemory()
+    }
+
+    override fun finish() {
+        super.finish()
+
+        overridePendingTransition(R.anim.no_animation, R.anim.act_slide_down)
     }
 }

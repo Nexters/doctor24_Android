@@ -3,7 +3,6 @@ package com.nexters.doctor24.todoc.ui
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.nexters.doctor24.todoc.R
-import com.nexters.doctor24.todoc.ui.detailed.DetailedFragment
 import com.nexters.doctor24.todoc.ui.map.NaverMapFragment
 
 class MainActivity : AppCompatActivity() {
