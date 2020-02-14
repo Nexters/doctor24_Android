@@ -1,5 +1,7 @@
 package com.nexters.doctor24.todoc.ui.detailed
 
+import android.annotation.SuppressLint
+import android.content.pm.ActivityInfo
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -32,8 +34,10 @@ internal class DetailedActivity : BaseActivity<DetailedFragmentBinding, Detailed
     override val viewModel: DetailedViewModel by viewModel()
     private val dayAdapter by lazy { DayAdapter() }
 
+    @SuppressLint("SourceLockedOrientationActivity")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
         overridePendingTransition(R.anim.act_slide_up, R.anim.no_animation)
         viewModel.reqDetailedInfo("hospital", "A1119764")
 
