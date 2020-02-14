@@ -51,6 +51,7 @@ internal class PreviewFragment : BottomSheetDialogFragment() {
             val to = LatLng(data.latitude, data.longitude)
             previewData = PreviewUiData(
                 id = it.id,
+                type = it.medicalType,
                 isEmergency = it.emergency,
                 isNight = it.nightTimeServe,
                 placeName = it.placeName,
@@ -101,7 +102,11 @@ internal class PreviewFragment : BottomSheetDialogFragment() {
         initObserve()
 
         binding.clDetailedFragHospitalInfo.setOnClickListener {
-            startActivity(Intent(context, DetailedActivity::class.java))
+            startActivity(Intent(context, DetailedActivity::class.java).apply {
+                putExtra(DetailedActivity.KEY_MEDICAL_TYPE, previewData?.type)
+                putExtra(DetailedActivity.KEY_MEDICAL_ID, previewData?.id)
+                putExtra(DetailedActivity.KEY_DISTANCE, previewData?.distance)
+            })
 
         }
 
@@ -125,6 +130,7 @@ internal class PreviewFragment : BottomSheetDialogFragment() {
 
     data class PreviewUiData(
         val id: String,
+        val type: String,
         val isEmergency : Boolean = false,
         val isNight : Boolean = false,
         val isNormal : Boolean = !isEmergency && !isNight,

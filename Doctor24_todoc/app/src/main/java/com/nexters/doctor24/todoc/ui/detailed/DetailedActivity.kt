@@ -1,11 +1,13 @@
 package com.nexters.doctor24.todoc.ui.detailed
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.TextView
+import androidx.core.net.toUri
 import androidx.lifecycle.LiveData
 import androidx.recyclerview.widget.GridLayoutManager
 import com.naver.maps.geometry.LatLng
@@ -21,11 +23,20 @@ import com.nexters.doctor24.todoc.data.detailed.response.DetailedInfoData
 import com.nexters.doctor24.todoc.data.marker.MarkerTypeEnum.Companion.getMarkerType
 import com.nexters.doctor24.todoc.databinding.DetailedFragmentBinding
 import com.nexters.doctor24.todoc.ui.detailed.adapter.DayAdapter
+import com.nexters.doctor24.todoc.ui.findload.FindLoadDialog
+import com.nexters.doctor24.todoc.ui.findload.FindLoadViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 internal class DetailedActivity : BaseActivity<DetailedFragmentBinding, DetailedViewModel>(),
     OnMapReadyCallback {
+    companion object {
+        @JvmField
+        val TAG: String = this::class.java.simpleName
 
+        const val KEY_MEDICAL_TYPE : String = "KEY_MEDICAL_TYPE"
+        const val KEY_MEDICAL_ID : String = "KEY_MEDICAL_ID"
+        const val KEY_DISTANCE : String = "KEY_DISTANCE"
+    }
     private lateinit var naverMap: NaverMap
     lateinit var marker : Marker
 
@@ -33,13 +44,20 @@ internal class DetailedActivity : BaseActivity<DetailedFragmentBinding, Detailed
         get() = R.layout.detailed_fragment
     override val viewModel: DetailedViewModel by viewModel()
     private val dayAdapter by lazy { DayAdapter() }
+    private val findLoadViewModel : FindLoadViewModel by viewModel()
+    private val findLoadDialog : FindLoadDialog by lazy { FindLoadDialog(findLoadViewModel) }
 
     @SuppressLint("SourceLockedOrientationActivity")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
         overridePendingTransition(R.anim.act_slide_up, R.anim.no_animation)
-        viewModel.reqDetailedInfo("hospital", "A1119764")
+
+        val type = intent.extras?.getString(KEY_MEDICAL_TYPE) ?: "hospital"
+        val id = intent.extras?.getString(KEY_MEDICAL_ID) ?: ""
+        val distance = intent.extras?.getString(KEY_DISTANCE) ?: ""
+
+        viewModel.reqDetailedInfo(type, id)
 
         binding.apply {
             vm = viewModel
@@ -49,6 +67,17 @@ internal class DetailedActivity : BaseActivity<DetailedFragmentBinding, Detailed
             onCreate(savedInstanceState)
             getMapAsync(this@DetailedActivity)
         }
+
+        binding.tvDetailedFragAddressDistance.text = distance
+//        findLoadViewModel.determineLocation =
+//        findLoadViewModel.centerName =
+        binding.ivDetailedFragGotoMap.setOnClickListener {
+            findLoadDialog.show(supportFragmentManager, FindLoadDialog.TAG)
+        }
+
+//        binding.tvDetailedFragCallBtn.setOnClickListener {
+//            startActivity(Intent(Intent.ACTION_DIAL, ("tel:${previewData?.phoneNumber ?: ""}").toUri()))
+//        }
 
         setMovieRecyclerView()
     }
