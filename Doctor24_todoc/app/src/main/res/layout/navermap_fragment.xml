@@ -3,6 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
+
         <variable
             name="vm"
             type="com.nexters.doctor24.todoc.ui.map.NaverMapViewModel" />
@@ -18,9 +19,9 @@
         android:layout_height="match_parent">
 
         <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/constraintLayout"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            >
+            android:layout_height="match_parent">
 
             <com.naver.maps.map.MapView
                 android:id="@+id/mapView"
@@ -29,8 +30,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" >
-            </com.naver.maps.map.MapView>
+                app:layout_constraintTop_toTopOf="parent"></com.naver.maps.map.MapView>
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/layout_tab"
@@ -63,25 +63,24 @@
                     app:tabTextAppearance="@style/TabTextAppearance" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
-            
+
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/btn_refresh"
+                style="@style/AndB1CenterRegular16"
                 android:layout_width="112dp"
                 android:layout_height="44dp"
                 android:layout_marginTop="34dp"
-                android:paddingStart="16dp"
-                android:paddingEnd="16dp"
-                android:gravity="center_vertical"
                 android:background="@drawable/background_tablayout"
-                android:text="@string/map_refresh"
-                style="@style/AndB1CenterRegular16"
                 android:drawableStart="@drawable/ic_refresh"
                 android:drawablePadding="11dp"
+                android:gravity="center_vertical"
                 android:onClick="@{()->vm.onClickRefresh()}"
-                app:layout_constraintTop_toBottomOf="@id/layout_tab"
-                app:layout_constraintStart_toStartOf="parent"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:text="@string/map_refresh"
                 app:layout_constraintEnd_toEndOf="parent"
-                />
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/layout_tab" />
 
             <com.naver.maps.map.widget.LocationButtonView
                 android:id="@+id/button_location"
@@ -90,23 +89,21 @@
                 android:layout_marginEnd="24dp"
                 android:layout_marginBottom="180dp"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                />
+                app:layout_constraintEnd_toEndOf="parent" />
 
             <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/image_button_category"
                 android:layout_width="58dp"
                 android:layout_height="58dp"
-                android:padding="16dp"
                 android:layout_marginStart="24dp"
                 android:layout_marginBottom="180dp"
-                android:src="@drawable/ic_filter"
                 android:background="@drawable/background_round_button"
-                android:visibility="@{vm.categoryShow}"
                 android:onClick="@{()-> vm.onClickFilter()}"
+                android:padding="16dp"
+                android:src="@drawable/ic_filter"
+                android:visibility="@{vm.categoryShow}"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                />
+                app:layout_constraintStart_toStartOf="parent" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/badge_category"
@@ -114,9 +111,8 @@
                 android:layout_height="20dp"
                 android:background="@drawable/ic_marker_count"
                 android:visibility="@{vm.currentCategory!=null &amp;&amp; vm.currentCategory.length() > 0}"
-                app:layout_constraintTop_toTopOf="@id/image_button_category"
                 app:layout_constraintEnd_toEndOf="@id/image_button_category"
-                />
+                app:layout_constraintTop_toTopOf="@id/image_button_category" />
 
             <ProgressBar
                 android:id="@+id/progressBar"
@@ -134,24 +130,24 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@drawable/background_bottom_round"
-            app:layout_behavior="@string/bottom_sheet_behavior"
-            app:behavior_peekHeight="180dp"
-            app:behavior_hideable="false">
+            app:behavior_hideable="false"
+            app:behavior_peekHeight="132dp"
+            app:layout_behavior="@string/bottom_sheet_behavior">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:paddingBottom="32dp"
-                android:visibility="@{!vmTime.isPickerSelected}">
+                android:visibility="gone">
 
                 <View
                     android:layout_width="28dp"
                     android:layout_height="4dp"
-                    android:background="@drawable/background_bottom_sheet_holder"
                     android:layout_marginTop="12dp"
-                    app:layout_constraintTop_toTopOf="parent"
+                    android:background="@drawable/background_bottom_sheet_holder"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent" />
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
 
                 <TextView
                     android:id="@+id/tv_set_time_comment"
@@ -226,34 +222,36 @@
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:visibility="@{vmTime.isPickerSelected}">
+                android:layout_height="match_parent">
 
                 <View
+                    android:id="@+id/bottom_sheet_btn"
                     android:layout_width="28dp"
                     android:layout_height="4dp"
+                    android:layout_marginVertical="12dp"
                     android:background="@drawable/background_bottom_sheet_holder"
-                    android:layout_marginTop="12dp"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent" />
-
-                <TextView
-                    android:id="@+id/tv_set_time"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="28dp"
-                    android:text="진료 시간"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <TextView
+                    android:id="@+id/tv_set_time"
+                    style="@style/AndSt1CenterBold14"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:text="진료 시간"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/bottom_sheet_btn" />
+
+                <TextView
+                    android:id="@+id/tv_map_frag_reset"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="20dp"
                     android:layout_marginRight="24dp"
-                    android:onClick="@{()->vmTime.getCurrentTime()}"
+                    android:onClick="@{()->vmTime.setInitialTime()}"
                     android:padding="8dp"
                     android:text="초기화"
                     android:textColor="@color/blue"
@@ -263,21 +261,25 @@
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:id="@+id/linearLayout"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="52dp"
                     android:layout_marginHorizontal="24dp"
                     android:layout_marginTop="60dp"
+                    android:layout_marginBottom="20dp"
                     android:background="@drawable/background_setting_time_round"
-                    android:paddingVertical="14dp"
                     app:layout_constraintBottom_toTopOf="@+id/tp_time_picker"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent">
 
                     <TextView
+                        android:id="@+id/tv_map_frag_start_time"
+                        style="@style/AndH1CenterMedium26"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:onClick="@{()->vmTime.setTimeSelected(true)}"
+                        android:selected_text="@{vmTime.isSelected}"
+                        android:set_default_text_color="@{!(vmTime.isOpen &amp;&amp; !vmTime.isSelected)}"
                         android:text="@{vmTime.startTime}"
-                        android:textSize="22dp"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toStartOf="@+id/view2"
                         app:layout_constraintStart_toStartOf="parent"
@@ -296,11 +298,14 @@
                         app:layout_constraintTop_toTopOf="parent" />
 
                     <TextView
-                        android:id="@+id/textView"
+                        android:id="@+id/tv_map_frag_end_time"
+                        style="@style/AndH1CenterMedium26"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:onClick="@{()->vmTime.setTimeSelected(false)}"
+                        android:selected_text="@{!vmTime.isSelected}"
+                        android:set_default_text_color="@{!(vmTime.isOpen &amp;&amp; vmTime.isSelected)}"
                         android:text="@{vmTime.endTime}"
-                        android:textSize="22dp"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toEndOf="@+id/view2"
@@ -308,16 +313,18 @@
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
+
                 <TimePicker
                     android:id="@+id/tp_time_picker"
-                    android:layout_width="match_parent"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="20dp"
+                    android:set_picker_default="@{vmTime.isSelected? vmTime.startTime : vmTime.endTime}"
                     android:timePickerMode="spinner"
                     app:layout_constraintBottom_toTopOf="@+id/cl_bottom_view"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
+                    app:layout_constraintTop_toBottomOf="@+id/linearLayout"
+                    app:onTimeChangedListener="@{(view,hour,min)->vmTime.setChangeTime(view, vmTime.isSelected)}" />
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:id="@+id/cl_bottom_view"

@@ -1,8 +1,7 @@
 package com.nexters.doctor24.todoc.ui.map
 
-import android.content.Context
 import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
+import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -58,8 +57,8 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
 
     private lateinit var naverMap: NaverMap
     private lateinit var markerManager: MapMarkerManager
-    private val categoryAdapter : CategoryAdapter by lazy { CategoryAdapter() }
-    private val bottomSheetCategory : BottomSheetDialog by lazy {
+    private val categoryAdapter: CategoryAdapter by lazy { CategoryAdapter() }
+    private val bottomSheetCategory: BottomSheetDialog by lazy {
         BottomSheetDialog(context!!, R.style.PreviewBottomSheetDialog)
     }
 
@@ -85,20 +84,45 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
         setBottomSheet()
     }
 
-    fun setBottomSheet() {
+    private fun setBottomSheet() {
 
         val bottomSheetBehavior = BottomSheetBehavior.from<View>(binding.mapBottom)
+        var bgShape: GradientDrawable = binding.linearLayout.background as GradientDrawable
+
+        bgShape.setColor(Color.WHITE)
 
         bottomSheetBehavior.addBottomSheetCallback(object :
             BottomSheetBehavior.BottomSheetCallback() {
-            override fun onStateChanged(bottomSheet: View, newState: Int) {
-
+            override fun onStateChanged(bottomSheet: View, newState: Int){
+                when(newState) {
+                    BottomSheetBehavior.STATE_EXPANDED ->{
+                        viewModelTime.setBottomSheetState(newState)
+                    }
+                    BottomSheetBehavior.STATE_COLLAPSED ->{
+                        viewModelTime.setBottomSheetState(newState)
+                    }
+                }
+                if (newState == BottomSheetBehavior.STATE_COLLAPSED) {
+                    bgShape.setColor(Color.WHITE)
+                } else {
+                    bgShape.setColor(Color.argb((100*2.55).toInt(),239, 242, 248))
+                }
             }
 
             override fun onSlide(bottomSheet: View, slideOffset: Float) {
+                if (slideOffset > 0 && slideOffset < 1) {
+                    bgShape.setColor(Color.argb((100*2.55).toInt(),239, 242, 248))
+                    bgShape.alpha = floatToAlpha(slideOffset)
+                }
 
+                if(slideOffset == 0.toFloat())
+                    bgShape.setColor(Color.WHITE)
             }
         })
+    }
+
+    private fun floatToAlpha(float : Float) : Int {
+        return (((float * 100).toInt()) * 2.55).toInt()
     }
 
     private fun initView() {
@@ -191,6 +215,7 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
         })
 
         viewModel.currentCategory.observe(viewLifecycleOwner, Observer {
+
             if(it == null || it.isEmpty()) {
                 if(categoryAdapter.childViewList.isNotEmpty()){
                     categoryAdapter.childViewList[0].isChecked = true
@@ -253,9 +278,9 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
     override fun markerBundleClick(marker: Marker) {
         deSelectMarker()
 
-        Timber.d( "marker tag : ${marker.tag}")
+        Timber.d("marker tag : ${marker.tag}")
         marker.tag?.let {
-            if((it as ArrayList<ResMapMarker>).isNotEmpty()) {
+            if ((it as ArrayList<ResMapMarker>).isNotEmpty()) {
                 val groupData = Bundle().apply {
                     putParcelableArrayList(GroupMarkerListDialog.KEY_LIST, it)
                 }
@@ -271,7 +296,7 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
 
     private fun moveMarkerBoundary(marker: Marker) {
         val cameraUpdate = CameraUpdate.scrollTo(marker.position).animate(CameraAnimation.Easing)
-        naverMap.setContentPadding(0,0,0,550)
+        naverMap.setContentPadding(0, 0, 0, 550)
         naverMap.moveCamera(cameraUpdate)
     }
 
@@ -376,7 +401,8 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
             setBackgroundResource(R.drawable.ic_current_location)
             this.map = map
         }
-        markerManager = MapMarkerManager(context!!, naverMap).apply { listener = this@NaverMapFragment }
+        markerManager =
+            MapMarkerManager(context!!, naverMap).apply { listener = this@NaverMapFragment }
 
         map.setOnMapClickListener { pointF, latLng -> deSelectMarker() }
         map.addOnCameraIdleListener {

@@ -1,13 +1,18 @@
 package com.nexters.doctor24.todoc.util
 
+import android.graphics.Color
 import android.view.View
+import android.widget.TextClock
 import android.widget.TextView
+import android.widget.TimePicker
 import androidx.annotation.DrawableRes
 import androidx.databinding.BindingAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.nexters.doctor24.todoc.data.detailed.response.Day
 import com.nexters.doctor24.todoc.data.marker.response.OperatingDate
 import com.nexters.doctor24.todoc.ui.detailed.adapter.DayAdapter
+import timber.log.Timber
 
 @BindingAdapter("android:visibility")
 fun setVisibility(view: View, isVisible: Boolean) {
@@ -28,11 +33,9 @@ internal fun setOpenDay(view: TextView, today: OperatingDate?) {
         val end = today.endTime.split(":")
 
         result = "${setTime(start[0].toInt(), start[1].toInt())} ~ ${setTime(
-            end[0].toInt(),
-            end[1].toInt()
+            end[0].toInt(), end[1].toInt()
         )}"
     }
-
     view.text = result
 }
 
@@ -95,7 +98,38 @@ fun setBackground(view: View, @DrawableRes resId: Int?) {
     }
 }
 
+@BindingAdapter("android:selected_text")
+fun setSelectedText(view: TextView, isVisible: Boolean) {
+    if (isVisible) {
+        view.setTextColor(Color.BLACK)
+    } else
+        view.setTextColor(Color.LTGRAY)
+}
 
+@BindingAdapter("android:set_picker_default")
+fun setPickerDefault(view: TimePicker, time: String) {
+
+    val ampm = time.split(" ")
+    val setTime = ampm[1].split(":")
+    var hour = setTime[0].toInt()
+
+    if (ampm[0] == "오후") {
+        hour += 12
+    }
+
+    view.hour = hour
+    view.minute = setTime[1].toInt()
+}
+
+
+@BindingAdapter("android:set_default_text_color")
+fun setDefaultTextColor(view: TextView, state: Boolean) {
+    if(state){
+        view.setTextColor(Color.BLACK)
+    }else{
+        view.setTextColor(Color.LTGRAY)
+    }
+}
 
 fun setAmPm(hour: Int): String {
     return if (hour >= 12)
@@ -108,12 +142,12 @@ fun setHour(hour: Int): String {
     return if (hour >= 12)
         (hour - 12).toString()
     else
-        hour.toString()
+        "$hour"
 }
 
 fun setMinute(min: Int): String {
     return if (min >= 10)
-        min.toString() + ""
+        "$min"
     else
         "0$min"
 }
