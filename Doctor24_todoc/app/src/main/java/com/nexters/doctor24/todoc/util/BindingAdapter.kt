@@ -2,11 +2,13 @@ package com.nexters.doctor24.todoc.util
 
 import android.graphics.Color
 import android.view.View
+import android.widget.TextClock
 import android.widget.TextView
 import android.widget.TimePicker
 import androidx.annotation.DrawableRes
 import androidx.databinding.BindingAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.nexters.doctor24.todoc.data.detailed.response.Day
 import com.nexters.doctor24.todoc.data.marker.response.OperatingDate
 import com.nexters.doctor24.todoc.ui.detailed.adapter.DayAdapter
@@ -117,6 +119,16 @@ fun setPickerDefault(view: TimePicker, time: String) {
 
     view.hour = hour
     view.minute = setTime[1].toInt()
+}
+
+
+@BindingAdapter("android:set_default_text_color")
+fun setDefaultTextColor(view: TextView, state: Boolean) {
+    if(state){
+        view.setTextColor(Color.BLACK)
+    }else{
+        view.setTextColor(Color.LTGRAY)
+    }
 }
 
 fun setAmPm(hour: Int): String {

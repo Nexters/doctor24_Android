@@ -3,6 +3,7 @@ package com.nexters.doctor24.todoc.ui.map
 import android.widget.TimePicker
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.nexters.doctor24.todoc.base.BaseViewModel
 import timber.log.Timber
 import java.text.SimpleDateFormat
@@ -65,6 +66,13 @@ internal class TimeViewModel() : BaseViewModel() {
         }else{
             _endTempTime.value = _endTime.value
         }
+    }
+
+    fun setBottomSheetState(state : Int){
+        if(state == BottomSheetBehavior.STATE_COLLAPSED)
+            _isOpen.value = false
+        else
+            _isOpen.value = true
     }
 
     fun setChangeTime(view : TimePicker, isStart: Boolean) {

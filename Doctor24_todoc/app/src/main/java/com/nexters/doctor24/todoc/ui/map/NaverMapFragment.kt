@@ -96,10 +96,13 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
             override fun onStateChanged(bottomSheet: View, newState: Int){
                 when(newState) {
                     BottomSheetBehavior.STATE_EXPANDED ->{
-
+                        viewModelTime.setBottomSheetState(newState)
+                    }
+                    BottomSheetBehavior.STATE_COLLAPSED ->{
+                        viewModelTime.setBottomSheetState(newState)
                     }
                 }
-                if (newState == 0) {
+                if (newState == BottomSheetBehavior.STATE_COLLAPSED) {
                     bgShape.setColor(Color.WHITE)
                 } else {
                     bgShape.setColor(Color.argb((100*2.55).toInt(),239, 242, 248))
