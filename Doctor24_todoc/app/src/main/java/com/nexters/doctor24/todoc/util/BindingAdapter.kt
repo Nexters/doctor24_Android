@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.nexters.doctor24.todoc.data.detailed.response.Day
 import com.nexters.doctor24.todoc.data.marker.response.OperatingDate
 import com.nexters.doctor24.todoc.ui.detailed.adapter.DayAdapter
+import timber.log.Timber
 
 @BindingAdapter("android:visibility")
 fun setVisibility(view: View, isVisible: Boolean) {
@@ -30,8 +31,7 @@ internal fun setOpenDay(view: TextView, today: OperatingDate?) {
         val end = today.endTime.split(":")
 
         result = "${setTime(start[0].toInt(), start[1].toInt())} ~ ${setTime(
-            end[0].toInt(),
-            end[1].toInt()
+            end[0].toInt(), end[1].toInt()
         )}"
     }
     view.text = result
@@ -109,11 +109,14 @@ fun setPickerDefault(view: TimePicker, time: String) {
 
     val ampm = time.split(" ")
     val setTime = ampm[1].split(":")
-    //val hour = setTime[0].toInt
-    //if(ampm[0] == "오후") hour + 12
+    var hour = setTime[0].toInt()
 
+    if (ampm[0] == "오후") {
+        hour += 12
+    }
+
+    view.hour = hour
     view.minute = setTime[1].toInt()
-    //view.hour = hour
 }
 
 fun setAmPm(hour: Int): String {
@@ -127,12 +130,12 @@ fun setHour(hour: Int): String {
     return if (hour >= 12)
         (hour - 12).toString()
     else
-        hour.toString()
+        "$hour"
 }
 
 fun setMinute(min: Int): String {
     return if (min >= 10)
-        min.toString() + ""
+        "$min"
     else
         "0$min"
 }

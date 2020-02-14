@@ -314,11 +314,11 @@
 
                 <TimePicker
                     android:id="@+id/tp_time_picker"
-                    android:layout_width="match_parent"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:timePickerMode="spinner"
                     android:set_picker_default="@{vmTime.isSelected? vmTime.startTime : vmTime.endTime}"
-                    app:onTimeChangedListener="@{(view,hour,min)->vmTime.setChangeTime(hour,min,vmTime.isSelected)}"
+                    app:onTimeChangedListener="@{(view,hour,min)->vmTime.setChangeTime(view, vmTime.isSelected)}"
                     app:layout_constraintBottom_toTopOf="@+id/cl_bottom_view"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"

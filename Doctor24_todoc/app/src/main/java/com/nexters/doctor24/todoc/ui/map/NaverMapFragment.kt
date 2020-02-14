@@ -94,6 +94,11 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
         bottomSheetBehavior.addBottomSheetCallback(object :
             BottomSheetBehavior.BottomSheetCallback() {
             override fun onStateChanged(bottomSheet: View, newState: Int){
+                when(newState) {
+                    BottomSheetBehavior.STATE_EXPANDED ->{
+
+                    }
+                }
                 if (newState == 0) {
                     bgShape.setColor(Color.WHITE)
                 } else {
