@@ -20,6 +20,8 @@ internal class TimeViewModel() : BaseViewModel() {
     val startMin: LiveData<String> get() = _startMin
     private val _startAmPm = MutableLiveData<String>()
     val startAmPm: LiveData<String> get() = _startAmPm
+    private val _isStartSelected = MutableLiveData<Boolean>().apply { postValue(false) }
+    val isStartSelected: LiveData<Boolean> get() = _isStartSelected
 
     private val _endTime = MutableLiveData<String>()
     val endTime: LiveData<String> get() = _endTime
@@ -29,15 +31,34 @@ internal class TimeViewModel() : BaseViewModel() {
     val endMin: LiveData<String> get() = _endMin
     private val _endAmPm = MutableLiveData<String>()
     val endAmPm: LiveData<String> get() = _endAmPm
+    private val _isEndSelected = MutableLiveData<Boolean>().apply { postValue(false) }
+    val isEndSelected: LiveData<Boolean> get() = _isEndSelected
 
+/*    private val _isOpen = MutableLiveData<Boolean>().apply { postValue(true) }
+    val isOpen: LiveData<Boolean> get() = _isOpen*/
+
+    private val _isSelected =
+        MutableLiveData<Boolean>().apply { postValue(true) }     //true - start, false - end
+    val isSelected: LiveData<Boolean> get() = _isSelected
     private val _isPickerSelected = MutableLiveData<Boolean>().apply { postValue(false) }
     val isPickerSelected: LiveData<Boolean> get() = _isPickerSelected
-
     private val _isCompletedTimeSetting = MutableLiveData<Boolean>().apply { postValue(false) }
     val isCompletedTimeSetting: LiveData<Boolean> get() = _isCompletedTimeSetting
 
     init {
         getCurrentTime()
+    }
+
+    fun setChangeTime(hour: Int, minute: Int, isStart: Boolean) {
+        if (isStart) {
+            _startTime.value = setTime(hour, minute)
+        } else
+            _endTime.value = setTime(hour, minute)
+    }
+
+    fun setTimeSelected(boolean: Boolean) {
+        _isSelected.value = boolean
+        _isSelected.postValue(boolean)
     }
 
     fun onClickTimeSetting(boolean: Boolean) {
@@ -52,8 +73,8 @@ internal class TimeViewModel() : BaseViewModel() {
         val timeHour = SimpleDateFormat("hh").format(mDate).toInt()
         val timeMin = SimpleDateFormat("mm").format(mDate).toInt()
 
-        _startTime.value = setTime(timeHour,timeMin)
-        _endTime.value = setTime(timeHour+1,timeMin)
+        _startTime.value = setTime(timeHour, timeMin)
+        _endTime.value = setTime(timeHour + 1, timeMin)
     }
 
     private fun setAmPm(hour: Int): String {

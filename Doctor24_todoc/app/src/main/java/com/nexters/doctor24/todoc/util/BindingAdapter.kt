@@ -1,7 +1,9 @@
 package com.nexters.doctor24.todoc.util
 
+import android.graphics.Color
 import android.view.View
 import android.widget.TextView
+import android.widget.TimePicker
 import androidx.annotation.DrawableRes
 import androidx.databinding.BindingAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -32,7 +34,6 @@ internal fun setOpenDay(view: TextView, today: OperatingDate?) {
             end[1].toInt()
         )}"
     }
-
     view.text = result
 }
 
@@ -95,7 +96,25 @@ fun setBackground(view: View, @DrawableRes resId: Int?) {
     }
 }
 
+@BindingAdapter("android:selected_text")
+fun setSelectedText(view: TextView, isVisible: Boolean) {
+    if (isVisible) {
+        view.setTextColor(Color.BLACK)
+    } else
+        view.setTextColor(Color.LTGRAY)
+}
 
+@BindingAdapter("android:set_picker_default")
+fun setPickerDefault(view: TimePicker, time: String) {
+
+    val ampm = time.split(" ")
+    val setTime = ampm[1].split(":")
+    //val hour = setTime[0].toInt
+    //if(ampm[0] == "오후") hour + 12
+
+    view.minute = setTime[1].toInt()
+    //view.hour = hour
+}
 
 fun setAmPm(hour: Int): String {
     return if (hour >= 12)
