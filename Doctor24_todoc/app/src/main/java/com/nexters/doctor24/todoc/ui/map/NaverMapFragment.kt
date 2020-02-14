@@ -61,7 +61,7 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
     private val bottomSheetCategory: BottomSheetDialog by lazy {
         BottomSheetDialog(context!!, R.style.PreviewBottomSheetDialog)
     }
-
+    private var locationState : LocationTrackingMode = LocationTrackingMode.Follow
     private var isSelected = false
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -159,6 +159,23 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
                     }
                 }
             })
+        }
+        binding.buttonLocation.setOnClickListener {
+            when(locationState) {
+                LocationTrackingMode.Follow -> {
+                    locationState = LocationTrackingMode.None
+                    binding.buttonLocation.setImageResource(R.drawable.ic_location_none)
+                }
+                LocationTrackingMode.NoFollow -> {
+                    locationState = LocationTrackingMode.Follow
+                    binding.buttonLocation.setImageResource(R.drawable.ic_location_follow)
+                }
+                LocationTrackingMode.None -> {
+                    locationState = LocationTrackingMode.NoFollow
+                    binding.buttonLocation.setImageResource(R.drawable.ic_location_local)
+                }
+            }
+            naverMap.locationTrackingMode = locationState
         }
 
         initCategoryView()
@@ -307,24 +324,6 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
             binding.btnRefresh.isVisible = false
             isSelected = true
             markerManager.selectMarker(this)
-            /*when {
-                mapViewModel.currentState == ListState.Default -> mapViewModel.setListState(isMarkerClick = true)
-            }
-
-            geoJson?.run { mapViewModel.requestGeoAndListInfo(this) }
-
-            val currentZoom = gMap?.cameraPosition?.zoom?.toInt() ?: 13
-            val listType = getBottomCheckedType(this, mapListLayout.currentChecked())
-            val searchTitle = complexName?.let { it } ?: name ?: ""
-
-            if (!searchTitle.isNullOrEmpty()) mainSearchViewModel.setFilterSearchDesc(searchTitle)
-
-            mapListLayout.setRdButton(listType)
-            requestListAPI(listType, this, 1, currentZoom)
-
-            if (!UserInfo.getInstance().filterMgr.isAptType) {
-                mapViewModel.saveClusterClickHistory(this, currentZoom)
-            }*/
         }
     }
 
@@ -391,7 +390,7 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
         }
         map.apply {
             locationSource = this@NaverMapFragment.locationSource
-            locationTrackingMode = LocationTrackingMode.Follow
+            locationTrackingMode = locationState
             isNightModeEnabled = true
             setBackgroundResource(NaverMap.DEFAULT_BACKGROUND_DRWABLE_DARK)
             mapType = NaverMap.MapType.Navi
@@ -400,10 +399,6 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
         }
 
         binding.tab.getTabAt(0)?.select()
-        binding.buttonLocation.apply {
-            setBackgroundResource(R.drawable.ic_current_location)
-            this.map = map
-        }
         markerManager =
             MapMarkerManager(context!!, naverMap).apply { listener = this@NaverMapFragment }
 
