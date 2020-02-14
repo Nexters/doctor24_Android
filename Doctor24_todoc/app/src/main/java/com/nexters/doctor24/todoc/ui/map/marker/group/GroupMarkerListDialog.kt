@@ -19,6 +19,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.viewbinding.ViewBinding
 import com.nexters.doctor24.todoc.R
 import com.nexters.doctor24.todoc.base.BaseDialogFragment
+import com.nexters.doctor24.todoc.data.marker.response.OperatingDate
 import com.nexters.doctor24.todoc.data.marker.response.ResMapMarker
 import com.nexters.doctor24.todoc.databinding.GroupMarkerListDialogBinding
 import com.nexters.doctor24.todoc.databinding.ItemListHospitalBinding
@@ -74,7 +75,7 @@ class GroupMarkerListDialog : BaseDialogFragment<GroupMarkerListDialogBinding>()
                 isEmergency = it.emergency,
                 isNight = it.nightTimeServe,
                 placeName = it.placeName,
-                todayHour = "${it.day?.startTime} ~ ${it.day?.endTime}"
+                todayHour = it.day
             )
         }
         binding.recyclerViewMarkerList.apply {
@@ -119,15 +120,16 @@ class GroupMarkerListDialog : BaseDialogFragment<GroupMarkerListDialogBinding>()
 
         internal fun bind(item: GroupListHospitalUiData) {
             binding.item = item
+            binding.executePendingBindings()
         }
     }
 
-    data class GroupListHospitalUiData(
+    internal data class GroupListHospitalUiData(
         val id: String,
         val isEmergency : Boolean = false,
         val isNight : Boolean = false,
         val isNormal : Boolean = !isEmergency && !isNight,
         val placeName : String = "",
-        val todayHour : String = ""
+        val todayHour : OperatingDate?
     )
 }

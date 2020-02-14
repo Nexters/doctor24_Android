@@ -185,12 +185,14 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
         viewModel.hospitalMarkerDatas.observe(viewLifecycleOwner, EventObserver {
             if (it.isEmpty()) {
                 Toast.makeText(context, "현재 운영중인 병원이 없습니다.", Toast.LENGTH_SHORT).show()
+                markerManager.setMarker(arrayListOf())
             } else {
                 markerManager.setMarker(it)
             }
         })
 
         viewModel.tabChangeEvent.observe(viewLifecycleOwner, Observer {
+            if(::markerManager.isInitialized) markerManager.setMarker(arrayListOf())
             viewModel.reqMarker(naverMap.cameraPosition.target, naverMap.cameraPosition.zoom)
         })
 
@@ -327,6 +329,7 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
     }
 
     private fun deSelectMarker() {
+        isSelected = false
         markerManager.deSelectMarker()
         naverMap.setContentPadding(0, 0, 0, 0)
     }
