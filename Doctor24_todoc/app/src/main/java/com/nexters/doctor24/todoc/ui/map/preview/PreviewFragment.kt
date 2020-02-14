@@ -15,6 +15,7 @@ import com.nexters.doctor24.todoc.R
 import com.nexters.doctor24.todoc.data.marker.response.OperatingDate
 import com.nexters.doctor24.todoc.data.marker.response.ResMapMarker
 import com.nexters.doctor24.todoc.databinding.PreviewFragmentBinding
+import com.nexters.doctor24.todoc.ui.detailed.DetailedActivity
 import com.nexters.doctor24.todoc.ui.findload.FindLoadDialog
 import com.nexters.doctor24.todoc.ui.findload.FindLoadViewModel
 import com.nexters.doctor24.todoc.util.toDistance
@@ -98,6 +99,11 @@ internal class PreviewFragment : BottomSheetDialogFragment() {
         super.onViewCreated(view, savedInstanceState)
         binding.item = previewData
         initObserve()
+
+        binding.clDetailedFragHospitalInfo.setOnClickListener {
+            startActivity(Intent(context, DetailedActivity::class.java))
+
+        }
 
         binding.ivDetailedFragGotoMap.setOnClickListener {
             findLoadDialog.show(childFragmentManager, FindLoadDialog.TAG)
