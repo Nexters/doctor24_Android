@@ -31,4 +31,7 @@
     <string name="load_map_dialog_google">구글맵스</string>
     <string name="load_map_dialog_naver">네이버지도</string>
     <string name="load_map_dialog_kakao">카카오맵</string>
+
+    <string name="medical_call">전화하기</string>
+    <string name="medical_call_disable">전화번호 정보가 없습니다.</string>
 </resources>
