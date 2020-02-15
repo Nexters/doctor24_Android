@@ -12,7 +12,9 @@ internal interface  APIMarker {
         @Path("latitude") latitude: String,
         @Path("longitude") longitude: String,
         @Query("radiusLevel") radiusLevel: Int? = 1,
-        @Query("category") category: String?
+        @Query("category") category: String?,
+        @Query("operatingHours.startTime") startTime: String = "09:00:00",
+        @Query("operatingHours.endTime") endTime: String = "10:00:00"
     ): List<ResMapLocation>
 
     @GET("medicals/{type}/xlatitudes/{xlatitude}/xlongitudes/{xlongitude}/zlatitudes/{zlatitude}/zlongitudes/{zlongitude}/facilities")

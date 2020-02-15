@@ -5,8 +5,7 @@
     <data>
         <variable
             name="dayData"
-            type="com.nexters.doctor24.todoc.data.detailed.response.Day" />
-
+            type="com.nexters.doctor24.todoc.ui.detailed.adapter.DayData" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -19,7 +18,7 @@
             style="@style/AndB1LeftBoldRed16"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:dayType="@{dayData.dayType}"
+            app:dayType="@{dayData.weekday}"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -29,7 +28,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
-            app:dayOpen="@{dayData}"
+            app:text="@{dayData.operatingHour}"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tv_rv_item_red_day" />
 
