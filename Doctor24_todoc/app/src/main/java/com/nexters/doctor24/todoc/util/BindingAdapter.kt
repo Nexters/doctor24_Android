@@ -159,7 +159,7 @@ fun String.to24hourString(): String {
         return "0$hour:${setTime[1]}:00"
     }
     else{
-        Timber.e("나에게ㅔㅔ 버거운"+this.toString()+"결고가나보자 : "+"$hour:${setTime[1]}:00")
+        Timber.e("나에게ㅔㅔ 버거운"+this.toString()+"e결고가나보자 : "+"$hour:${setTime[1]}:00")
         return "$hour:${setTime[1]}:00"
     }
 }
