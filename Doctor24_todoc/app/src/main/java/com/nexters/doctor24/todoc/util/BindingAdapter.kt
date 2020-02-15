@@ -3,18 +3,15 @@ package com.nexters.doctor24.todoc.util
 import android.graphics.Color
 import android.util.Log
 import android.view.View
-import android.widget.TextClock
 import android.widget.TextView
 import android.widget.TimePicker
 import androidx.annotation.DrawableRes
 import androidx.databinding.BindingAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.nexters.doctor24.todoc.data.detailed.response.Day
 import com.nexters.doctor24.todoc.data.marker.response.OperatingDate
 import com.nexters.doctor24.todoc.ui.detailed.adapter.DayAdapter
 import com.nexters.doctor24.todoc.ui.detailed.adapter.DayData
-import timber.log.Timber
 
 @BindingAdapter("android:visibility")
 fun setVisibility(view: View, isVisible: Boolean) {
@@ -53,7 +50,7 @@ fun setOpenDay(view: TextView, day: Day?) {
     view.text = result
 }*/
 
-fun Day.toHHmmFormat() : String {
+fun Day.toHHmmFormat(): String {
     val start = this.startTime.split(":")
     val end = this.endTime.split(":")
 
@@ -73,7 +70,7 @@ fun setDayType(view: TextView, day: String) {
     view.text = result
 }
 
-fun String.toWeekDayWord() : String {
+fun String.toWeekDayWord(): String {
     val dayType = hashMapOf<String, String>(
         "MONDAY" to "월",
         "TUESDAY" to "화",
@@ -91,7 +88,7 @@ fun setCategoryText(view: TextView, categories: List<String>?) {
     var result = ""
 
     categories?.let {
-        if(it.count() < 10) {
+        if (it.count() < 10) {
             result = it.joinToString(separator = ", ")
         } else
             result = it.joinToString(separator = ", ", truncated = "등", limit = 10)
@@ -103,7 +100,7 @@ fun setCategoryText(view: TextView, categories: List<String>?) {
 @BindingAdapter("setOpenData")
 fun setOpenData(view: RecyclerView, openDatas: List<DayData>?) {
 
-    Log.e("setOpenData",openDatas.toString())
+    Log.e("setOpenData", openDatas.toString())
 
     (view.adapter as DayAdapter).run {
         addItem(openDatas)
@@ -133,7 +130,9 @@ fun setPickerDefault(view: TimePicker, time: String) {
     var hour = setTime[0].toInt()
 
     if (ampm[0] == "오후") {
-        hour += 12
+        if (hour != 12) {
+            hour += 12
+        }
     }
 
     view.hour = hour
@@ -143,9 +142,9 @@ fun setPickerDefault(view: TimePicker, time: String) {
 
 @BindingAdapter("android:set_default_text_color")
 fun setDefaultTextColor(view: TextView, state: Boolean) {
-    if(state){
+    if (state) {
         view.setTextColor(Color.BLACK)
-    }else{
+    } else {
         view.setTextColor(Color.LTGRAY)
     }
 }
@@ -158,7 +157,7 @@ fun setAmPm(hour: Int): String {
 }
 
 fun setHour(hour: Int): String {
-    return if (hour >= 12)
+    return if (hour > 12)
         (hour - 12).toString()
     else
         "$hour"

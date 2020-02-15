@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import com.naver.maps.geometry.LatLng
 import com.nexters.doctor24.todoc.base.BaseViewModel
 import com.nexters.doctor24.todoc.base.DispatcherProvider
+import com.nexters.doctor24.todoc.base.SingleLiveEvent
 import com.nexters.doctor24.todoc.data.detailed.response.Day
 import com.nexters.doctor24.todoc.data.detailed.response.DetailedInfoData
 import com.nexters.doctor24.todoc.repository.DetailedInfoRepository
@@ -26,6 +27,9 @@ internal class DetailedViewModel(
     private val _openDayData = MutableLiveData<ArrayList<DayData>>()
     val openDayData: LiveData<ArrayList<DayData>> get() = _openDayData
 
+    private val _closeDetailed = SingleLiveEvent<Unit>()
+    val closeDetailed : LiveData<Unit> get() = _closeDetailed
+
     fun reqDetailedInfo(type: String, facilityId: String) {
         uiScope.launch(dispatchers.io()) {
             try {
@@ -46,6 +50,10 @@ internal class DetailedViewModel(
 
             }
         }
+    }
+
+    fun closeDetailed(){
+        _closeDetailed.call()
     }
 
     private fun setWeekendDay(days: List<Day>): ArrayList<DayData> {

@@ -4,7 +4,6 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-
         <variable
             name="vm"
             type="com.nexters.doctor24.todoc.ui.detailed.DetailedViewModel" />
@@ -31,6 +30,7 @@
                 android:layout_marginStart="16dp"
                 android:padding="8dp"
                 android:src="@drawable/rectangle"
+                android:onClick="@{() -> vm.closeDetailed()}"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -177,6 +177,7 @@
                     <androidx.constraintlayout.widget.ConstraintLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:visibility="@{vm.detailedData.categories.size()>0 ? true : false}"
                         android:paddingVertical="12dp">
 
                         <ImageView
@@ -206,6 +207,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
                         android:background="@color/grey_4"
+                        android:visibility="@{vm.detailedData.categories.size()>0 ? true : false}"
                         app:layout_constraintBottom_toTopOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent" />
@@ -253,6 +255,7 @@
                     <androidx.constraintlayout.widget.ConstraintLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:visibility="@{vm.detailedData.phone.length() == 0 ? false : true}"
                         android:paddingVertical="12dp">
 
                         <ImageView
@@ -281,6 +284,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
                         android:background="@color/grey_4"
+                        android:visibility="@{vm.detailedData.phone.length() == 0 ? false : true}"
                         app:layout_constraintBottom_toTopOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent" />

@@ -108,7 +108,7 @@ internal class TimeViewModel() : BaseViewModel() {
     }
 
     private fun setHour(hour: Int): String {
-        return if (hour >= 12)
+        return if (hour > 12)
             (hour - 12).toString()
         else
             "$hour"

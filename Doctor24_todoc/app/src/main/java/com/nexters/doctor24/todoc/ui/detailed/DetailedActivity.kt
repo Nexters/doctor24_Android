@@ -9,6 +9,7 @@ import android.view.View
 import android.widget.TextView
 import androidx.core.net.toUri
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.GridLayoutManager
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.NaverMap
@@ -80,6 +81,10 @@ internal class DetailedActivity : BaseActivity<DetailedFragmentBinding, Detailed
 //        }
 
         setMovieRecyclerView()
+
+        viewModel.closeDetailed.observe(this, Observer {
+            finish()
+        })
     }
 
     override fun onMapReady(map: NaverMap) {
