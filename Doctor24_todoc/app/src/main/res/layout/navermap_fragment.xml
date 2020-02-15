@@ -84,7 +84,7 @@
                 android:drawableStart="@drawable/ic_refresh"
                 android:drawablePadding="8dp"
                 android:gravity="center_vertical"
-                android:onClick="@{()->vm.onClickRefresh()}"
+                android:onClick="@{()->vm.onClickRefresh(vmTime.startTime, vmTime.endTime)}"
                 android:paddingStart="20dp"
                 android:paddingEnd="16dp"
                 android:text="@string/map_refresh"

@@ -12,6 +12,7 @@ import com.nexters.doctor24.todoc.data.detailed.response.Day
 import com.nexters.doctor24.todoc.data.marker.response.OperatingDate
 import com.nexters.doctor24.todoc.ui.detailed.adapter.DayAdapter
 import com.nexters.doctor24.todoc.ui.detailed.adapter.DayData
+import timber.log.Timber
 
 @BindingAdapter("android:visibility")
 fun setVisibility(view: View, isVisible: Boolean) {
@@ -137,6 +138,30 @@ fun setPickerDefault(view: TimePicker, time: String) {
 
     view.hour = hour
     view.minute = setTime[1].toInt()
+}
+
+fun String.to24hourString(): String {
+
+    Timber.e("나에게ㅔㅔ 버거운"+this.toString())
+
+    val ampm = this.split(" ")
+    val setTime = ampm[1].split(":")
+    var hour = setTime[0].toInt()
+
+    if (ampm[0] == "오후") {
+        if (hour != 12) {
+            hour += 12
+        }
+    }
+
+    if(hour < 10){
+        Timber.e("나에게ㅔㅔ 버거운"+this.toString()+"결고가나보자 : "+"0$hour:${setTime[1]}:00")
+        return "0$hour:${setTime[1]}:00"
+    }
+    else{
+        Timber.e("나에게ㅔㅔ 버거운"+this.toString()+"결고가나보자 : "+"$hour:${setTime[1]}:00")
+        return "$hour:${setTime[1]}:00"
+    }
 }
 
 

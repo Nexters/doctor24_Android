@@ -10,13 +10,17 @@ internal class MarkerDataSourceImpl(val retrofit: Retrofit) : MarkerDataSource {
         center: LatLng,
         type: MarkerTypeEnum,
         level: Int?,
-        category: String?
+        category: String?,
+        startTime: String?,
+        endTime: String?
     ): List<ResMapLocation> = retrofit.create(APIMarker::class.java).getMarkers(
         latitude = center.latitude.toString(),
         longitude = center.longitude.toString(),
         type = type.type,
         radiusLevel = level,
-        category = category
+        category = category,
+        startTime = startTime,
+        endTime = endTime
     )
 
     override suspend fun getBounds(

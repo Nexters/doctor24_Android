@@ -55,22 +55,18 @@ internal class TimeViewModel() : BaseViewModel() {
 
     fun isChangedStartTime(isChange: Boolean) {
         _isStartTimeChanged.value = isChange
-        Log.e("지금 start는!!", isChange.toString())
     }
 
     fun isChangedEndTime(isChange: Boolean) {
         _isEndTimeChanged.value = isChange
-        Log.e("지금 end는!!", isChange.toString())
     }
 
     fun isChangedStoredStartTime(isChange: Boolean) {
         _isStartStoredTimeChanged.value = isChange
-        Log.e("지금 start는!!", isChange.toString())
     }
 
     fun isChangedStoredEndTime(isChange: Boolean) {
         _isEndStoredTimeChanged.value = isChange
-        Log.e("지금 end는!!", isChange.toString())
     }
 
     fun storeTempTime() {
@@ -97,6 +93,7 @@ internal class TimeViewModel() : BaseViewModel() {
                 _endTime.value = _endStoredTime.value
             }
 
+            //
         } else {
             _isOpen.value = true
 

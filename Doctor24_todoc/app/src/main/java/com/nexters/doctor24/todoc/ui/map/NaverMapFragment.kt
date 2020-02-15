@@ -40,6 +40,7 @@ import com.nexters.doctor24.todoc.ui.map.marker.MapMarkerManager
 import com.nexters.doctor24.todoc.ui.map.marker.group.GroupMarkerListDialog
 import com.nexters.doctor24.todoc.ui.map.preview.PreviewFragment
 import com.nexters.doctor24.todoc.ui.map.preview.PreviewViewModel
+import com.nexters.doctor24.todoc.util.to24hourString
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import timber.log.Timber
 
@@ -219,8 +220,9 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
         val bottomSheetBehavior = BottomSheetBehavior.from<View>(binding.mapBottom)
 
         viewModelTime.isOpen.observe(viewLifecycleOwner, Observer {
-            if(it == false)
+            if(it == false){
                 bottomSheetBehavior.state = STATE_COLLAPSED
+            }
             else
                 bottomSheetBehavior.state = STATE_EXPANDED
         })
@@ -262,7 +264,7 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
 
         viewModel.tabChangeEvent.observe(viewLifecycleOwner, Observer {
             if(::markerManager.isInitialized) markerManager.setMarker(arrayListOf())
-            viewModel.reqMarker(naverMap.cameraPosition.target, naverMap.cameraPosition.zoom)
+            viewModel.reqMarker(naverMap.cameraPosition.target, naverMap.cameraPosition.zoom, viewModelTime.startTime.value?.to24hourString(), viewModelTime.endTime.value?.to24hourString())
         })
 
         viewModel.currentLocation.observe(viewLifecycleOwner, Observer {
@@ -295,7 +297,7 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
         })
 
         categoryViewModel.currentSelectItem.observe(viewLifecycleOwner, Observer {
-            viewModel.reqMarkerWithCategory(it)
+            viewModel.reqMarkerWithCategory(it, viewModelTime.startTime.value?.to24hourString(), viewModelTime.endTime.value?.to24hourString())
             bottomSheetCategory.dismiss()
         })
 
@@ -467,6 +469,16 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
         map.addOnLocationChangeListener {
             viewModel.onChangedMyLocation(it)
         }
+
+        viewModelTime.startStoredTime.observe(viewLifecycleOwner, Observer {
+            if(::markerManager.isInitialized) markerManager.setMarker(arrayListOf())
+            viewModel.reqMarker(naverMap.cameraPosition.target, naverMap.cameraPosition.zoom, viewModelTime.startTime.value?.to24hourString(), viewModelTime.endTime.value?.to24hourString())
+        })
+
+        viewModelTime.endStoredTime.observe(viewLifecycleOwner, Observer {
+            if(::markerManager.isInitialized) markerManager.setMarker(arrayListOf())
+            viewModel.reqMarker(naverMap.cameraPosition.target, naverMap.cameraPosition.zoom, viewModelTime.startTime.value?.to24hourString(), viewModelTime.endTime.value?.to24hourString())
+        })
     }
 
     private fun handleResponse(result: Result<ResMapAddress>) {
