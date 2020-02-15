@@ -14,6 +14,8 @@ import com.nexters.doctor24.todoc.data.marker.MarkerTypeEnum
 import com.nexters.doctor24.todoc.data.marker.response.ResMapLocation
 import com.nexters.doctor24.todoc.data.marker.response.ResMapMarker
 import com.nexters.doctor24.todoc.repository.MarkerRepository
+import com.nexters.doctor24.todoc.util.isCurrentMapDarkMode
+import com.nexters.doctor24.todoc.util.to24hourString
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
@@ -114,17 +116,7 @@ internal class NaverMapViewModel(private val dispatchers: DispatcherProvider,
     }
 
     fun setMapDarkMode() {
-        _mapDarkMode.value = when (getCurrentTimeHours()) {
-            in 8..17 -> false
-            else -> true
-        }
-    }
-
-    private fun getCurrentTimeHours(): Int {
-        val now = System.currentTimeMillis()
-        val date = Date(now)
-
-        return SimpleDateFormat("HH", Locale.KOREA).format(date).toInt()
+        _mapDarkMode.value = isCurrentMapDarkMode()
     }
 
     // 15 제일 좁은 영역 level 1 (0.5km 반경)
@@ -176,7 +168,7 @@ internal class NaverMapViewModel(private val dispatchers: DispatcherProvider,
         _refreshEvent.call()
         _currentLocation.value?.let { location ->
             _currentZoom.value?.let { zoom ->
-                reqMarker(location, zoom, start, end)
+                reqMarker(location, zoom, start.to24hourString(), end.to24hourString())
             }
         }
     }

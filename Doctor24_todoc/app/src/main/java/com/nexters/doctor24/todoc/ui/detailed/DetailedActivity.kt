@@ -6,10 +6,10 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.TextView
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.GridLayoutManager
 import com.naver.maps.geometry.LatLng
+import com.naver.maps.map.CameraUpdate
 import com.naver.maps.map.NaverMap
 import com.naver.maps.map.OnMapReadyCallback
 import com.naver.maps.map.overlay.Align
@@ -19,11 +19,11 @@ import com.naver.maps.map.overlay.OverlayImage
 import com.nexters.doctor24.todoc.R
 import com.nexters.doctor24.todoc.base.BaseActivity
 import com.nexters.doctor24.todoc.data.detailed.response.DetailedInfoData
-import com.nexters.doctor24.todoc.data.marker.MarkerTypeEnum.Companion.getMarkerType
 import com.nexters.doctor24.todoc.databinding.DetailedFragmentBinding
 import com.nexters.doctor24.todoc.ui.detailed.adapter.DayAdapter
 import com.nexters.doctor24.todoc.ui.findload.FindLoadDialog
 import com.nexters.doctor24.todoc.ui.findload.FindLoadViewModel
+import com.nexters.doctor24.todoc.util.isCurrentMapDarkMode
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 internal class DetailedActivity : BaseActivity<DetailedFragmentBinding, DetailedViewModel>(),
@@ -54,21 +54,26 @@ internal class DetailedActivity : BaseActivity<DetailedFragmentBinding, Detailed
         overridePendingTransition(R.anim.act_slide_up, R.anim.no_animation)
 
         val type = intent.extras?.getString(KEY_MEDICAL_TYPE) ?: "hospital"
-        val id = intent.extras?.getString(KEY_MEDICAL_ID) ?: ""
-        val distance = intent.extras?.getString(KEY_DISTANCE) ?: ""
+        val id = intent.extras?.getString(KEY_MEDICAL_ID)
 
-        viewModel.reqDetailedInfo(type, id)
-
-        binding.apply {
-            vm = viewModel
-        }
+        id?.let { viewModel.reqDetailedInfo(type, id) } ?: finish()
 
         binding.mvDetailedFragMapView.apply {
             onCreate(savedInstanceState)
             getMapAsync(this@DetailedActivity)
         }
 
-        binding.tvDetailedFragAddressDistance.text = distance
+        binding.apply {
+            vm = viewModel
+        }
+
+        initView()
+        initObserve()
+    }
+
+    private fun initView() {
+
+        binding.tvDetailedFragAddressDistance.text = intent.extras?.getString(KEY_DISTANCE) ?: ""
 //        findLoadViewModel.determineLocation =
 //        findLoadViewModel.centerName =
         binding.ivDetailedFragGotoMap.setOnClickListener {
@@ -80,16 +85,37 @@ internal class DetailedActivity : BaseActivity<DetailedFragmentBinding, Detailed
 //        }
 
         setMovieRecyclerView()
+    }
+
+    private fun initObserve() {
+        viewModel.detailedData.observe(this, Observer {
+            if(::naverMap.isInitialized) setSelectedMarker(it)
+        })
 
         viewModel.closeDetailed.observe(this, Observer {
             finish()
         })
+
+        viewModel.naverMap.observe(this, Observer {
+            naverMap = it
+            viewModel.detailedData.value?.let { setSelectedMarker(it) }
+        })
     }
 
     override fun onMapReady(map: NaverMap) {
-        map.isNightModeEnabled = true
-
-        setSelectedMarker(map, viewModel.detailedData)
+        map.uiSettings.apply {
+            isCompassEnabled = false
+            isRotateGesturesEnabled = false
+            isZoomControlEnabled = false
+            isLocationButtonEnabled = false
+            isTiltGesturesEnabled = false
+        }
+        map.apply {
+            map.isNightModeEnabled = isCurrentMapDarkMode()
+            setBackgroundResource(NaverMap.DEFAULT_BACKGROUND_DRWABLE_DARK)
+            mapType = NaverMap.MapType.Navi
+        }
+        viewModel.setNaverMapView(map)
     }
 
     private fun setMovieRecyclerView() {
@@ -102,27 +128,23 @@ internal class DetailedActivity : BaseActivity<DetailedFragmentBinding, Detailed
         }
     }
 
-    fun setSelectedMarker(map: NaverMap, selected: LiveData<DetailedInfoData>) {
-        naverMap = map
+    private fun setSelectedMarker(selected: DetailedInfoData) {
 
-        val marker = Marker()
-        marker.position = LatLng(selected.value!!.latitude, selected.value!!.longitude)
-        marker.map = naverMap
-        marker.icon = drawSelectMarkerIcon(selected.value!!.medicalType)
-
-        var selectedMarker = DetailedViewModel.SelectedMarkerUIData(
-            LatLng(
-                selected.value!!.latitude,
-                selected.value!!.longitude
-            ), selected.value!!.medicalType, selected.value!!.name
-        )
-        getMarkerType(selected.value!!.medicalType)?.let {
-            marker.icon = drawSelectMarkerIcon(selected.value!!.medicalType)
-            InfoWindow().apply {
-                adapter = MarkerTagAdapter(selectedMarker)
-                offsetY = -80
-            }.open(marker, Align.Bottom)
+        val marker = Marker().apply {
+            position = LatLng(selected.latitude, selected.longitude)
+            icon = drawSelectMarkerIcon(selected.medicalType)
+            map = naverMap
         }
+
+        InfoWindow().apply {
+            adapter = MarkerTagAdapter(
+                DetailedViewModel.SelectedMarkerUIData(
+                    LatLng(selected.latitude, selected.longitude), selected.medicalType, selected.name))
+            offsetY = -80
+        }.open(marker, Align.Bottom)
+
+        val cameraUpdate = CameraUpdate.scrollTo(marker.position)
+        naverMap.moveCamera(cameraUpdate)
     }
 
     private fun drawSelectMarkerIcon(type: String): OverlayImage {
