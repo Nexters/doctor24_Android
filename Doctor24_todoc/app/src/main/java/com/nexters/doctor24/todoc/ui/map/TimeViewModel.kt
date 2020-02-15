@@ -79,8 +79,7 @@ internal class TimeViewModel() : BaseViewModel() {
         _startStoredTime.value = _startTime.value
         _endStoredTime.value = _endTime.value
 
-        Timber.e("startStore ${_startStoredTime.value}, startTime ${_startTime.value}")
-        Timber.e("endStore ${_endStoredTime.value}, endTime ${_endTime.value}")
+
 
         _isOpen.value = false
     }
@@ -92,7 +91,10 @@ internal class TimeViewModel() : BaseViewModel() {
             _isStartTimeChanged.value = false
             _isEndTimeChanged.value = false
 
-            if ( (_startStoredTime.value != _startTime.value) && (_endStoredTime.value != _endTime.value) ){
+            Timber.e("startStore ${_startStoredTime.value}, startTime ${_startTime.value}")
+            Timber.e("endStore ${_endStoredTime.value}, endTime ${_endTime.value}")
+
+            if ( (_startStoredTime.value != _startTime.value) || (_endStoredTime.value != _endTime.value) ){
                 _startTime.value = _startStoredTime.value
                 _endTime.value = _endStoredTime.value
             }
