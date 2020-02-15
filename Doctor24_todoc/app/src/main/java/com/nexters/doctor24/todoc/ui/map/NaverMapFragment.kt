@@ -222,6 +222,11 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
 
         val bottomSheetBehavior = BottomSheetBehavior.from<View>(binding.mapBottom)
 
+        viewModelTime.isReset.observe(viewLifecycleOwner, Observer {
+            if(::markerManager.isInitialized) markerManager.setMarker(arrayListOf())
+            viewModel.reqMarker(naverMap.cameraPosition.target, naverMap.cameraPosition.zoom, viewModelTime.startTime.value?.to24hourString(), viewModelTime.endTime.value?.to24hourString())
+        })
+
         viewModelTime.isOpen.observe(viewLifecycleOwner, Observer {
             if(it == false){
                 bottomSheetBehavior.state = STATE_COLLAPSED
