@@ -6,6 +6,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.nexters.doctor24.todoc.base.BaseViewModel
+import com.nexters.doctor24.todoc.base.SingleLiveEvent
 import timber.log.Timber
 import java.text.SimpleDateFormat
 import java.util.*
@@ -42,6 +43,9 @@ internal class TimeViewModel() : BaseViewModel() {
     val isStartStoredTimeChanged: LiveData<Boolean> get() = _isStartStoredTimeChanged
     private val _isEndStoredTimeChanged = MutableLiveData<Boolean>().apply { postValue(false) }
     val isEndStoredTimeChanged: LiveData<Boolean> get() = _isEndStoredTimeChanged
+
+    private val _isReset = SingleLiveEvent<Unit>()
+    val isReset : LiveData<Unit> get() = _isReset
 
     //5) 시간 setting 할 때 나올 수 있는 경우들 예외처리
     //      - 종료시간은 시작시간보다 느리게
@@ -123,6 +127,12 @@ internal class TimeViewModel() : BaseViewModel() {
     fun setInitialTime() {
         getCurrentTime()
         setTimeSelected(true)
+
+        if(_isOpen.value != true){
+            //api
+            _isReset.call()
+        }
+
     }
 
     private fun getCurrentTime() {
