@@ -42,6 +42,7 @@ import com.nexters.doctor24.todoc.ui.map.marker.MapMarkerManager
 import com.nexters.doctor24.todoc.ui.map.marker.group.GroupMarkerListDialog
 import com.nexters.doctor24.todoc.ui.map.preview.PreviewFragment
 import com.nexters.doctor24.todoc.ui.map.preview.PreviewViewModel
+import com.nexters.doctor24.todoc.util.isCurrentMapDarkMode
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import timber.log.Timber
 
@@ -241,10 +242,6 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
             } else {
                 viewModelTime.isChangedEndTime(false)
             }
-        })
-
-        viewModel.mapDarkMode.observe(viewLifecycleOwner, Observer {
-            if(::naverMap.isInitialized) naverMap.isNightModeEnabled = it
         })
 
         viewModel.hospitalMarkerDatas.observe(viewLifecycleOwner, EventObserver {
@@ -451,7 +448,7 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
         map.apply {
             locationSource = this@NaverMapFragment.locationSource
             locationTrackingMode = locationState
-            isNightModeEnabled = true
+            isNightModeEnabled = isCurrentMapDarkMode()
             setBackgroundResource(NaverMap.DEFAULT_BACKGROUND_DRWABLE_DARK)
             mapType = NaverMap.MapType.Navi
             minZoom = 12.0
