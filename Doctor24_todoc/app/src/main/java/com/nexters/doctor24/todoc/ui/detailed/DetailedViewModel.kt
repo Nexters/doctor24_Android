@@ -40,9 +40,16 @@ internal class DetailedViewModel(
 
                 withContext(dispatchers.main()) {
                     _detailedData.value = result
-
-                    var list = setOperatingDay(result.days)
-                    list.addAll(setWeekendDay(result.days))
+                    val weekendList = mutableListOf<Day>()
+                    val weekdayList = mutableListOf<Day>()
+                    result.days.forEach {
+                        when(it.dayType) {
+                            "SATURDAY", "SUNDAY", "HOLIDAY" -> weekendList.add(it)
+                            else -> weekdayList.add(it)
+                        }
+                    }
+                    var list = setOperatingDay(weekdayList)
+                    list.addAll(setWeekendDay(weekendList))
 
                     _openDayData.value = list
                 }
