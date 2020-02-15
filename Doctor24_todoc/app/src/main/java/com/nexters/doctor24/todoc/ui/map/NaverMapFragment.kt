@@ -199,6 +199,10 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
     }
 
     private fun initObserve() {
+        viewModel.mapDarkMode.observe(viewLifecycleOwner, Observer {
+            if(::naverMap.isInitialized) naverMap.isNightModeEnabled = it
+        })
+
         viewModel.hospitalMarkerDatas.observe(viewLifecycleOwner, EventObserver {
             if (it.isEmpty()) {
                 Toast.makeText(context, "현재 운영중인 병원이 없습니다.", Toast.LENGTH_SHORT).show()
@@ -402,6 +406,7 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
             maxZoom = 17.0
         }
 
+        viewModel.setMapDarkMode()
         binding.tab.getTabAt(0)?.select()
         markerManager =
             MapMarkerManager(context!!, naverMap).apply { listener = this@NaverMapFragment }
