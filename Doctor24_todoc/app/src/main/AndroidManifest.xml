@@ -24,6 +24,8 @@
         </activity>
 
         <activity android:name=".ui.detailed.DetailedActivity"/>
+
+        <activity android:name=".ui.map.list.MedicalListActivity" />
     </application>
 
 </manifest>

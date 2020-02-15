@@ -8,6 +8,7 @@ import com.nexters.doctor24.todoc.ui.findload.FindLoadViewModel
 import com.nexters.doctor24.todoc.ui.map.NaverMapViewModel
 import com.nexters.doctor24.todoc.ui.map.TimeViewModel
 import com.nexters.doctor24.todoc.ui.map.category.CategoryViewModel
+import com.nexters.doctor24.todoc.ui.map.list.MedicalListViewModel
 import com.nexters.doctor24.todoc.ui.map.preview.PreviewViewModel
 import org.koin.android.ext.koin.androidContext
 import org.koin.androidx.viewmodel.dsl.viewModel
@@ -23,4 +24,5 @@ val appModule = module {
     viewModel { DetailedViewModel(get(),get()) }
     viewModel { PreviewViewModel() }
     viewModel { FindLoadViewModel() }
+    viewModel { MedicalListViewModel() }
 }

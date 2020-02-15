@@ -56,6 +56,12 @@ internal class NaverMapViewModel(private val dispatchers: DispatcherProvider,
         }
         Event(list)
     }
+    private val _medicalListData = Transformations.map(_markerList) { response ->
+        val list = arrayListOf<ResMapMarker>()
+        response.flatMap { it.facilities }.forEach { list.add(it) }
+        Event(list)
+    }
+    val medicalListData : LiveData<Event<ArrayList<ResMapMarker>>> get() = _medicalListData
     val hospitalMarkerDatas : LiveData<Event<ArrayList<MarkerUIData>>> get() = _hospitalMarkerDatas
 
     val selectedMarkerData = MutableLiveData<ResMapMarker>()

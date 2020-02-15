@@ -37,29 +37,23 @@ class FindLoadViewModel : ViewModel() {
 
 
     fun onCheckedGoogleMap() {
-        currentLocation?.let { my ->
-            determineLocation?.let { medi ->
-                Timber.d("Checked MapApps - google")
-                _checkedMapAppEvent.value = MapApps.GoogleMap(centerName, medi)
-            }
+        determineLocation?.let { medi ->
+            Timber.d("Checked MapApps - google")
+            _checkedMapAppEvent.value = MapApps.GoogleMap(centerName, medi)
         }
     }
 
     fun onCheckedNaverMap() {
-        currentLocation?.let { my ->
-            determineLocation?.let { medi ->
-                Timber.d("Checked MapApps - naver")
-                _checkedMapAppEvent.value = MapApps.NaverMap(centerName, medi)
-            }
+        determineLocation?.let { medi ->
+            Timber.d("Checked MapApps - naver")
+            _checkedMapAppEvent.value = MapApps.NaverMap(centerName, medi)
         }
     }
 
     fun onCheckedKakaoMap() {
-        currentLocation?.let { my ->
-            determineLocation?.let { medi ->
-                Timber.d("Checked MapApps - kakao")
-                _checkedMapAppEvent.value = MapApps.KakaoMap(centerName, medi)
-            }
+        determineLocation?.let { medi ->
+            Timber.d("Checked MapApps - kakao")
+            _checkedMapAppEvent.value = MapApps.KakaoMap(centerName, medi)
         }
     }
 
