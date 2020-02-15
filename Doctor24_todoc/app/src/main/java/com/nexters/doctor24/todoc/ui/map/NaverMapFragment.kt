@@ -4,6 +4,7 @@ import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.Window
@@ -11,6 +12,7 @@ import android.view.animation.AnimationUtils
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.core.view.GravityCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.Observer
@@ -443,6 +445,8 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
             isZoomControlEnabled = false
             isLocationButtonEnabled = false
             isTiltGesturesEnabled = false
+            logoGravity = Gravity.TOP or Gravity.END
+            setLogoMargin(0, 350, 50, 0)
         }
         map.apply {
             locationSource = this@NaverMapFragment.locationSource
