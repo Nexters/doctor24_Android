@@ -4,6 +4,7 @@ import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.Window
@@ -11,6 +12,7 @@ import android.view.animation.AnimationUtils
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.core.view.GravityCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.Observer
@@ -40,6 +42,7 @@ import com.nexters.doctor24.todoc.ui.map.marker.MapMarkerManager
 import com.nexters.doctor24.todoc.ui.map.marker.group.GroupMarkerListDialog
 import com.nexters.doctor24.todoc.ui.map.preview.PreviewFragment
 import com.nexters.doctor24.todoc.ui.map.preview.PreviewViewModel
+import com.nexters.doctor24.todoc.util.isCurrentMapDarkMode
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import timber.log.Timber
 
@@ -241,10 +244,6 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
             }
         })
 
-        viewModel.mapDarkMode.observe(viewLifecycleOwner, Observer {
-            if(::naverMap.isInitialized) naverMap.isNightModeEnabled = it
-        })
-
         viewModel.hospitalMarkerDatas.observe(viewLifecycleOwner, EventObserver {
             if (it.isEmpty()) {
                 Toast.makeText(context, "현재 운영중인 병원이 없습니다.", Toast.LENGTH_SHORT).show()
@@ -443,11 +442,13 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
             isZoomControlEnabled = false
             isLocationButtonEnabled = false
             isTiltGesturesEnabled = false
+            logoGravity = Gravity.TOP or Gravity.END
+            setLogoMargin(0, 350, 50, 0)
         }
         map.apply {
             locationSource = this@NaverMapFragment.locationSource
             locationTrackingMode = locationState
-            isNightModeEnabled = true
+            isNightModeEnabled = isCurrentMapDarkMode()
             setBackgroundResource(NaverMap.DEFAULT_BACKGROUND_DRWABLE_DARK)
             mapType = NaverMap.MapType.Navi
             minZoom = 12.0

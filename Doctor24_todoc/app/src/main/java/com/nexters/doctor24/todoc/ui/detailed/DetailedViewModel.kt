@@ -3,6 +3,7 @@ package com.nexters.doctor24.todoc.ui.detailed
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.naver.maps.geometry.LatLng
+import com.naver.maps.map.NaverMap
 import com.nexters.doctor24.todoc.base.BaseViewModel
 import com.nexters.doctor24.todoc.base.DispatcherProvider
 import com.nexters.doctor24.todoc.base.SingleLiveEvent
@@ -27,6 +28,9 @@ internal class DetailedViewModel(
     private val _openDayData = MutableLiveData<ArrayList<DayData>>()
     val openDayData: LiveData<ArrayList<DayData>> get() = _openDayData
 
+    private val _naverMap = MutableLiveData<NaverMap>()
+    val naverMap : LiveData<NaverMap> get() = _naverMap
+
     private val _closeDetailed = SingleLiveEvent<Unit>()
     val closeDetailed : LiveData<Unit> get() = _closeDetailed
 
@@ -40,9 +44,16 @@ internal class DetailedViewModel(
 
                 withContext(dispatchers.main()) {
                     _detailedData.value = result
-
-                    var list = setOperatingDay(result.days)
-                    list.addAll(setWeekendDay(result.days))
+                    val weekendList = mutableListOf<Day>()
+                    val weekdayList = mutableListOf<Day>()
+                    result.days.forEach {
+                        when(it.dayType) {
+                            "SATURDAY", "SUNDAY", "HOLIDAY" -> weekendList.add(it)
+                            else -> weekdayList.add(it)
+                        }
+                    }
+                    var list = setOperatingDay(weekdayList)
+                    list.addAll(setWeekendDay(weekendList))
 
                     _openDayData.value = list
                 }
@@ -50,6 +61,10 @@ internal class DetailedViewModel(
 
             }
         }
+    }
+
+    fun setNaverMapView(map: NaverMap) {
+        _naverMap.value = map
     }
 
     fun closeDetailed(){
