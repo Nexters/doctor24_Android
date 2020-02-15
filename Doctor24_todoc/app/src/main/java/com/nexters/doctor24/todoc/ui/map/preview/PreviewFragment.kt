@@ -37,6 +37,12 @@ internal class PreviewFragment : BottomSheetDialogFragment() {
     private val findLoadViewModel : FindLoadViewModel by viewModel()
     private val findLoadDialog : FindLoadDialog by lazy { FindLoadDialog(findLoadViewModel) }
 
+    interface PreviewListener {
+        fun onClosedPreview()
+    }
+
+    var listener : PreviewListener? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val data = arguments?.let{
@@ -99,7 +105,6 @@ internal class PreviewFragment : BottomSheetDialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.item = previewData
-        initObserve()
 
         binding.clDetailedFragHospitalInfo.setOnClickListener {
             startActivity(Intent(context, DetailedActivity::class.java).apply {
@@ -120,12 +125,9 @@ internal class PreviewFragment : BottomSheetDialogFragment() {
 
     }
 
-    private fun initObserve() {
-
-    }
-
-    override fun dismiss() {
-        super.dismiss()
+    override fun onDestroy() {
+        super.onDestroy()
+        listener?.onClosedPreview()
     }
 
     data class PreviewUiData(

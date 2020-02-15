@@ -49,7 +49,7 @@ import timber.log.Timber
 
 
 internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMapViewModel>(),
-    OnMapReadyCallback, MapMarkerManager.MarkerClickListener, CategoryAdapter.CategoryListener {
+    OnMapReadyCallback, MapMarkerManager.MarkerClickListener, CategoryAdapter.CategoryListener, PreviewFragment.PreviewListener {
 
     companion object {
         private const val LOCATION_PERMISSION_REQUEST_CODE = 1000
@@ -73,6 +73,7 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
     private val listIntent by lazy { Intent(context, MedicalListActivity::class.java) }
     private var locationState : LocationTrackingMode = LocationTrackingMode.Follow
     private var isSelected = false
+    private lateinit var bottomSheetBehavior : BottomSheetBehavior<View>
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -97,7 +98,7 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
 
     private fun setBottomSheet() {
 
-        val bottomSheetBehavior = BottomSheetBehavior.from<View>(binding.mapBottom)
+        bottomSheetBehavior = BottomSheetBehavior.from<View>(binding.mapBottom)
         var bgShape: GradientDrawable = binding.linearLayout.background as GradientDrawable
 
         bgShape.setColor(Color.WHITE)
@@ -220,8 +221,6 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
 
     private fun initObserve() {
 
-        val bottomSheetBehavior = BottomSheetBehavior.from<View>(binding.mapBottom)
-
         viewModelTime.isReset.observe(viewLifecycleOwner, Observer {
             if(::markerManager.isInitialized) markerManager.setMarker(arrayListOf())
             viewModel.reqMarker(naverMap.cameraPosition.target, naverMap.cameraPosition.zoom, viewModelTime.startTime.value?.to24hourString(), viewModelTime.endTime.value?.to24hourString())
@@ -283,10 +282,6 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
             bottomSheetCategory.show()
         })
 
-        viewModel.previewCloseEvent.observe(viewLifecycleOwner, Observer {
-            deSelectMarker()
-        })
-
         viewModel.refreshEvent.observe(viewLifecycleOwner, Observer {
             binding.btnRefresh.isVisible = false
         })
@@ -328,6 +323,10 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
         categoryViewModel.onSelectCategory(category)
     }
 
+    override fun onClosedPreview() {
+        deSelectMarker()
+    }
+
     override fun markerClick(marker: Marker) {
         deSelectMarker()
         marker.tag?.let{
@@ -342,6 +341,7 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
                 PreviewFragment().apply {
                     setStyle(DialogFragment.STYLE_NORMAL, R.style.PreviewBottomSheetDialog)
                     arguments = medicalData
+                    listener = this@NaverMapFragment
                 }.show(childFragmentManager, PreviewFragment.TAG)
             }
         }
@@ -393,6 +393,7 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
         isSelected = false
         markerManager.deSelectMarker()
         naverMap.setContentPadding(0, 0, 0, 0)
+        bottomSheetBehavior.state = STATE_COLLAPSED
     }
 
     override fun onStart() {
