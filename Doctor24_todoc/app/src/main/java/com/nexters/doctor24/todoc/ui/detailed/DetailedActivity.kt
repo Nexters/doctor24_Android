@@ -1,13 +1,11 @@
 package com.nexters.doctor24.todoc.ui.detailed
 
 import android.annotation.SuppressLint
-import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.TextView
-import androidx.core.net.toUri
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.GridLayoutManager
@@ -34,19 +32,20 @@ internal class DetailedActivity : BaseActivity<DetailedFragmentBinding, Detailed
         @JvmField
         val TAG: String = this::class.java.simpleName
 
-        const val KEY_MEDICAL_TYPE : String = "KEY_MEDICAL_TYPE"
-        const val KEY_MEDICAL_ID : String = "KEY_MEDICAL_ID"
-        const val KEY_DISTANCE : String = "KEY_DISTANCE"
+        const val KEY_MEDICAL_TYPE: String = "KEY_MEDICAL_TYPE"
+        const val KEY_MEDICAL_ID: String = "KEY_MEDICAL_ID"
+        const val KEY_DISTANCE: String = "KEY_DISTANCE"
     }
+
     private lateinit var naverMap: NaverMap
-    lateinit var marker : Marker
+    lateinit var marker: Marker
 
     override val layoutResId: Int
         get() = R.layout.detailed_fragment
     override val viewModel: DetailedViewModel by viewModel()
     private val dayAdapter by lazy { DayAdapter() }
-    private val findLoadViewModel : FindLoadViewModel by viewModel()
-    private val findLoadDialog : FindLoadDialog by lazy { FindLoadDialog(findLoadViewModel) }
+    private val findLoadViewModel: FindLoadViewModel by viewModel()
+    private val findLoadDialog: FindLoadDialog by lazy { FindLoadDialog(findLoadViewModel) }
 
     @SuppressLint("SourceLockedOrientationActivity")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -111,7 +110,12 @@ internal class DetailedActivity : BaseActivity<DetailedFragmentBinding, Detailed
         marker.map = naverMap
         marker.icon = drawSelectMarkerIcon(selected.value!!.medicalType)
 
-        var selectedMarker = DetailedViewModel.SelectedMarkerUIData(LatLng(selected.value!!.latitude,selected.value!!.longitude),selected.value!!.medicalType,selected.value!!.name)
+        var selectedMarker = DetailedViewModel.SelectedMarkerUIData(
+            LatLng(
+                selected.value!!.latitude,
+                selected.value!!.longitude
+            ), selected.value!!.medicalType, selected.value!!.name
+        )
         getMarkerType(selected.value!!.medicalType)?.let {
             marker.icon = drawSelectMarkerIcon(selected.value!!.medicalType)
             InfoWindow().apply {
@@ -133,7 +137,8 @@ internal class DetailedActivity : BaseActivity<DetailedFragmentBinding, Detailed
 
     inner class MarkerTagAdapter(private val selectedMarkerUIData: DetailedViewModel.SelectedMarkerUIData) :
         InfoWindow.ViewAdapter() {
-        private val view = LayoutInflater.from(this@DetailedActivity).inflate(R.layout.item_marker_name, null)
+        private val view =
+            LayoutInflater.from(this@DetailedActivity).inflate(R.layout.item_marker_name, null)
         private val name = view.findViewById<TextView>(R.id.text_name)
 
         override fun getView(window: InfoWindow): View {
