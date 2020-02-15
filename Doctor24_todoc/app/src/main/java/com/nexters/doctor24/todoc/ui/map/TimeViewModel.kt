@@ -92,6 +92,11 @@ internal class TimeViewModel() : BaseViewModel() {
             _isStartTimeChanged.value = false
             _isEndTimeChanged.value = false
 
+            if ( (_startStoredTime.value != _startTime.value) && (_endStoredTime.value != _endTime.value) ){
+                _startTime.value = _startStoredTime.value
+                _endTime.value = _endStoredTime.value
+            }
+
         }
         else {
             _isOpen.value = true
