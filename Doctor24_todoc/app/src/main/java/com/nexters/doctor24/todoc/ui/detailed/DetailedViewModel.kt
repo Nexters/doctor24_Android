@@ -6,8 +6,11 @@ import androidx.lifecycle.MutableLiveData
 import com.naver.maps.geometry.LatLng
 import com.nexters.doctor24.todoc.base.BaseViewModel
 import com.nexters.doctor24.todoc.base.DispatcherProvider
+import com.nexters.doctor24.todoc.data.detailed.response.Day
 import com.nexters.doctor24.todoc.data.detailed.response.DetailedInfoData
 import com.nexters.doctor24.todoc.repository.DetailedInfoRepository
+import com.nexters.doctor24.todoc.util.toHHmmFormat
+import com.nexters.doctor24.todoc.util.toWeekDayWord
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -37,6 +40,30 @@ internal class DetailedViewModel(
         }
     }
 
+    private fun setOperatingDay(days : List<Day>) {
+        val hash = hashMapOf<String, ArrayList<String>>()
+        days.asSequence().forEach {
+            if (hash.containsKey(it.toHHmmFormat())) {
+                hash[it.toHHmmFormat()]?.add(it.dayType.toWeekDayWord())
+            } else {
+                hash[it.toHHmmFormat()] = arrayListOf(it.dayType.toWeekDayWord())
+            }
+        }
+        val result = arrayListOf<DayData>()
+        hash.forEach { (s, arrayList) ->
+            if(arrayList.count() > 1) {
+                val weekday = arrayList.joinToString(separator = ",")
+                result.add(DayData(s, weekday.substring(0, weekday.lastIndex)))
+            } else {
+                result.add(DayData(s, arrayList[0]))
+            }
+        }
+    }
+
+    data class DayData(
+        val operatingHour : String,
+        val weekday : String
+    )
 
     internal data class SelectedMarkerUIData(
         val location: LatLng,

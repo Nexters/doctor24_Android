@@ -45,15 +45,17 @@ fun setOpenDay(view: TextView, day: Day?) {
     var result = ""
 
     day?.let {
-
-        val start = day.startTime.split(":")
-        val end = day.endTime.split(":")
-
-        result =
-            "${start[0].toInt()}:${start[1]} ~ ${end[0].toInt()}:${end[1]}"
+        it.toHHmmFormat()
     }
 
     view.text = result
+}
+
+fun Day.toHHmmFormat() : String {
+    val start = this.startTime.split(":")
+    val end = this.endTime.split(":")
+
+    return "${start[0].toInt()}:${start[1]} ~ ${end[0].toInt()}:${end[1]}"
 }
 
 @BindingAdapter("dayType")
@@ -69,6 +71,17 @@ fun setDayType(view: TextView, day: String) {
         "HOLIDAY" to "공휴일"
     )
     view.text = dayType[day]
+}
+
+fun String.toWeekDayWord() : String {
+    val dayType = hashMapOf<String, String>(
+        "MONDAY" to "월",
+        "TUESDAY" to "화",
+        "WEDNESDAY" to "수",
+        "THURSDAY" to "목",
+        "FRIDAY" to "금"
+    )
+    return dayType[this] ?: ""
 }
 
 
