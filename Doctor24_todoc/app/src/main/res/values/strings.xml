@@ -23,7 +23,7 @@
     <string name="category_item_anesthesia">마취통증과</string>
     <string name="category_item_neurology">신경과</string>
 
-    <string name="map_refresh">재검색</string>
+    <string name="map_refresh">재탐색</string>
     <string name="map_marker_group_list">병원 리스트</string>
     <string name="map_marker_group_list_item_today">오늘</string>
 
@@ -34,4 +34,9 @@
 
     <string name="medical_call">전화하기</string>
     <string name="medical_call_disable">전화번호 정보가 없습니다.</string>
+
+    <string name="medical_list_title">주변 병원 리스트</string>
+    <string name="medical_list_order">거리순</string>
+    <string name="medical_list_total">총 %d개</string>
+    <string name="medical_list_empty">병원을 찾을 수 없습니다.</string>
 </resources>

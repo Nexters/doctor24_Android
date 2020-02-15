@@ -88,7 +88,9 @@ class GroupMarkerListDialog : BaseDialogFragment<GroupMarkerListDialogBinding>()
                 isNight = it.nightTimeServe,
                 placeName = it.placeName,
                 todayHour = it.day,
-                distance = location?.toDistance(LatLng(it.latitude, it.longitude)) ?: ""
+                distance = location?.toDistance(LatLng(it.latitude, it.longitude)) ?: "",
+                determine = location,
+                isShowFindLoad = false
             )
         }
         binding.recyclerViewMarkerList.apply {
@@ -153,6 +155,8 @@ class GroupMarkerListDialog : BaseDialogFragment<GroupMarkerListDialogBinding>()
         val isNormal : Boolean = !isEmergency && !isNight,
         val placeName : String = "",
         val todayHour : OperatingDate?,
-        val distance : String
+        val distance : String,
+        val determine : LatLng?,
+        val isShowFindLoad : Boolean = false
     )
 }

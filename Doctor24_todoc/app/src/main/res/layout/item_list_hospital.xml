@@ -51,12 +51,13 @@
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/text_name"
             style="@style/AndH4LeftBold18"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="43.5dp"
             android:text="@{item.placeName}"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/ivFindLoad"
             tools:text="한방병원" />
 
         <androidx.appcompat.widget.AppCompatTextView
@@ -72,22 +73,48 @@
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/text_today_hour"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
+            android:lines="1"
+            android:ellipsize="end"
             style="@style/AndB1LeftRegular16"
             app:todayOpen="@{item.todayHour}"
             app:layout_constraintTop_toTopOf="@id/text_today"
             app:layout_constraintBottom_toBottomOf="@id/text_today"
             app:layout_constraintStart_toEndOf="@id/text_today"
+            app:layout_constraintEnd_toStartOf="@id/ivFindLoad"
             />
 
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/ivFindLoad"
+            android:layout_width="54dp"
+            android:layout_height="54dp"
+            android:src="@drawable/group_4"
+            android:visibility="@{item.isShowFindLoad}"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tvDistance"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/AndSt1LeftRegular14"
+            android:layout_marginTop="6dp"
+            android:text="@{item.distance}"
+            android:visibility="@{item.isShowFindLoad}"
+            app:layout_constraintTop_toBottomOf="@id/text_today"
+            app:layout_constraintStart_toStartOf="parent"
+            tools:text="321km"
+            />
         <View
             android:layout_width="0dp"
             android:layout_height="1dp"
-            android:layout_marginTop="15.5dp"
+            android:layout_marginTop="16dp"
             android:background="@color/grey_4"
-            app:layout_constraintTop_toBottomOf="@id/text_today"
+            app:layout_constraintTop_toBottomOf="@id/tvDistance"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             />

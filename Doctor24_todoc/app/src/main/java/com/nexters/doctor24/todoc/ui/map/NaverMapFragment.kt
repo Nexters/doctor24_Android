@@ -1,5 +1,6 @@
 package com.nexters.doctor24.todoc.ui.map
 
+import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
@@ -34,6 +35,7 @@ import com.nexters.doctor24.todoc.databinding.NavermapFragmentBinding
 import com.nexters.doctor24.todoc.ui.map.category.CategoryAdapter
 import com.nexters.doctor24.todoc.ui.map.category.CategoryViewModel
 import com.nexters.doctor24.todoc.ui.map.category.categoryItemList
+import com.nexters.doctor24.todoc.ui.map.list.MedicalListActivity
 import com.nexters.doctor24.todoc.ui.map.marker.MapMarkerManager
 import com.nexters.doctor24.todoc.ui.map.marker.group.GroupMarkerListDialog
 import com.nexters.doctor24.todoc.ui.map.preview.PreviewFragment
@@ -64,6 +66,7 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
     private val bottomSheetCategory: BottomSheetDialog by lazy {
         BottomSheetDialog(context!!, R.style.PreviewBottomSheetDialog)
     }
+    private val listIntent by lazy { Intent(context, MedicalListActivity::class.java) }
     private var locationState : LocationTrackingMode = LocationTrackingMode.Follow
     private var isSelected = false
 
@@ -182,6 +185,15 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
             naverMap.locationTrackingMode = locationState
         }
 
+        binding.buttonList.setOnClickListener {
+            viewModel.currentMyLocation?.let { loc->
+                listIntent.apply{
+                    putExtra(MedicalListActivity.KEY_MEDI_MY_LOCATION, doubleArrayOf(loc.latitude, loc.longitude))
+                }
+            }
+            startActivity(listIntent)
+        }
+
         initCategoryView()
     }
 
@@ -221,12 +233,16 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
             }
         })
 
-        viewModelTime.endTime.observe(viewLifecycleOwner, Observer{
-            if(it != viewModelTime.endStoredTime.value){
+        viewModelTime.endTime.observe(viewLifecycleOwner, Observer {
+            if (it != viewModelTime.endStoredTime.value) {
                 viewModelTime.isChangedEndTime(true)
-            }else{
+            } else {
                 viewModelTime.isChangedEndTime(false)
             }
+        })
+
+        viewModel.mapDarkMode.observe(viewLifecycleOwner, Observer {
+            if(::naverMap.isInitialized) naverMap.isNightModeEnabled = it
         })
 
         viewModel.hospitalMarkerDatas.observe(viewLifecycleOwner, EventObserver {
@@ -235,6 +251,12 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
                 markerManager.setMarker(arrayListOf())
             } else {
                 markerManager.setMarker(it)
+            }
+        })
+
+        viewModel.medicalListData.observe(viewLifecycleOwner, EventObserver {
+            listIntent.apply {
+                putExtra(MedicalListActivity.KEY_MEDI_LIST, it)
             }
         })
 
@@ -432,6 +454,7 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
             maxZoom = 17.0
         }
 
+        viewModel.setMapDarkMode()
         binding.tab.getTabAt(0)?.select()
         markerManager =
             MapMarkerManager(context!!, naverMap).apply { listener = this@NaverMapFragment }

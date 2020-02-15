@@ -1,6 +1,5 @@
 package com.nexters.doctor24.todoc.ui.map.category
 
-import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.CheckBox
