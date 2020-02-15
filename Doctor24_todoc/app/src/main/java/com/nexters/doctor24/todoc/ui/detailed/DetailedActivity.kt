@@ -1,11 +1,13 @@
 package com.nexters.doctor24.todoc.ui.detailed
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.TextView
+import androidx.core.net.toUri
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.GridLayoutManager
 import com.naver.maps.geometry.LatLng
@@ -46,6 +48,7 @@ internal class DetailedActivity : BaseActivity<DetailedFragmentBinding, Detailed
     private val dayAdapter by lazy { DayAdapter() }
     private val findLoadViewModel: FindLoadViewModel by viewModel()
     private val findLoadDialog: FindLoadDialog by lazy { FindLoadDialog(findLoadViewModel) }
+    private var detailData : DetailedInfoData? = null
 
     @SuppressLint("SourceLockedOrientationActivity")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -74,15 +77,15 @@ internal class DetailedActivity : BaseActivity<DetailedFragmentBinding, Detailed
     private fun initView() {
 
         binding.tvDetailedFragAddressDistance.text = intent.extras?.getString(KEY_DISTANCE) ?: ""
-//        findLoadViewModel.determineLocation =
-//        findLoadViewModel.centerName =
         binding.ivDetailedFragGotoMap.setOnClickListener {
             findLoadDialog.show(supportFragmentManager, FindLoadDialog.TAG)
         }
 
-//        binding.tvDetailedFragCallBtn.setOnClickListener {
-//            startActivity(Intent(Intent.ACTION_DIAL, ("tel:${previewData?.phoneNumber ?: ""}").toUri()))
-//        }
+        binding.tvDetailedFragCallBtn.setOnClickListener {
+            detailData?.phone.let {
+                startActivity(Intent(Intent.ACTION_DIAL, ("tel:${it ?: ""}").toUri()))
+            }
+        }
 
         setMovieRecyclerView()
     }
@@ -90,6 +93,9 @@ internal class DetailedActivity : BaseActivity<DetailedFragmentBinding, Detailed
     private fun initObserve() {
         viewModel.detailedData.observe(this, Observer {
             if(::naverMap.isInitialized) setSelectedMarker(it)
+            detailData = it
+            findLoadViewModel.determineLocation = LatLng(it.latitude, it.longitude)
+            findLoadViewModel.centerName = it.name
         })
 
         viewModel.closeDetailed.observe(this, Observer {
