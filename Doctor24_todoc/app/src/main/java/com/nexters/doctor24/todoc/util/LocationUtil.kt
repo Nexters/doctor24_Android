@@ -3,5 +3,13 @@ package com.nexters.doctor24.todoc.util
 import com.naver.maps.geometry.LatLng
 
 fun LatLng.toDistance(from : LatLng?) : String {
-    return String.format("%.2f km", from?.let{this.distanceTo(it)/1000} ?: 0.0)
+    var meter = from?.let{this.distanceTo(it)} ?: 0.0
+
+    return when {
+        meter > 1000 -> {
+            meter /= 1000
+            String.format("%.2f km", meter)
+        }
+        else -> String.format("%.2f m", meter)
+    }
 }
