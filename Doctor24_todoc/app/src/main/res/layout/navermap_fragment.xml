@@ -360,27 +360,16 @@
                         android:id="@+id/tv_set_time_btn"
                         android:layout_width="match_parent"
                         android:layout_height="56dp"
-                        android:background="@color/blue"
+                        android:background="@drawable/selector_set_time_btn"
                         android:gravity="center"
                         android:text="확인"
-                        android:textColor="@color/white"
-                        android:visibility="@{vmTime.isCompletedTimeSetting}"
+                        android:enabled="@{vmTime.isStartTimeChanged || vmTime.isEndTimeChanged}"
+                        android:textColor="@color/selector_text_call_time"
+                        android:onClick="@{()->vmTime.storeTempTime()}"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
 
-                    <TextView
-                        android:id="@+id/tv_set_time_btn_non_activate"
-                        android:layout_width="match_parent"
-                        android:layout_height="56dp"
-                        android:background="@color/grey_3"
-                        android:gravity="center"
-                        android:text="확인"
-                        android:textColor="@color/grey_2"
-                        android:visibility="@{!vmTime.isCompletedTimeSetting}"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
             </androidx.constraintlayout.widget.ConstraintLayout>

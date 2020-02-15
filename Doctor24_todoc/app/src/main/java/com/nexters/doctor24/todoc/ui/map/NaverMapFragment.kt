@@ -6,6 +6,7 @@ import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
+import android.view.Window
 import android.view.animation.AnimationUtils
 import android.widget.ImageView
 import android.widget.TextView
@@ -16,6 +17,8 @@ import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_COLLAPSED
+import com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_EXPANDED
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.tabs.TabLayout
 import com.naver.maps.geometry.LatLng
@@ -85,6 +88,7 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
         initView()
         initObserve()
         setBottomSheet()
+
     }
 
     private fun setBottomSheet() {
@@ -98,10 +102,10 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
             BottomSheetBehavior.BottomSheetCallback() {
             override fun onStateChanged(bottomSheet: View, newState: Int){
                 when(newState) {
-                    BottomSheetBehavior.STATE_EXPANDED ->{
+                    STATE_EXPANDED ->{
                         viewModelTime.setBottomSheetState(newState)
                     }
-                    BottomSheetBehavior.STATE_COLLAPSED ->{
+                    STATE_COLLAPSED ->{
                         viewModelTime.setBottomSheetState(newState)
                     }
                 }
@@ -211,6 +215,32 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
     }
 
     private fun initObserve() {
+
+        val bottomSheetBehavior = BottomSheetBehavior.from<View>(binding.mapBottom)
+
+        viewModelTime.isOpen.observe(viewLifecycleOwner, Observer {
+            if(it == false)
+                bottomSheetBehavior.state = STATE_COLLAPSED
+            else
+                bottomSheetBehavior.state = STATE_EXPANDED
+        })
+
+        viewModelTime.startTime.observe(viewLifecycleOwner, Observer{
+            if(it != viewModelTime.startStoredTime.value){
+                viewModelTime.isChangedStartTime(true)
+            }else{
+                viewModelTime.isChangedStartTime(false)
+            }
+        })
+
+        viewModelTime.endTime.observe(viewLifecycleOwner, Observer {
+            if (it != viewModelTime.endStoredTime.value) {
+                viewModelTime.isChangedEndTime(true)
+            } else {
+                viewModelTime.isChangedEndTime(false)
+            }
+        })
+
         viewModel.mapDarkMode.observe(viewLifecycleOwner, Observer {
             if(::naverMap.isInitialized) naverMap.isNightModeEnabled = it
         })

@@ -4,7 +4,6 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.nexters.doctor24.todoc.R
-import com.nexters.doctor24.todoc.data.detailed.response.Day
 import com.nexters.doctor24.todoc.databinding.RvItemOpenTimeBlackBinding
 import com.nexters.doctor24.todoc.databinding.RvItemOpenTimeBlueBinding
 import com.nexters.doctor24.todoc.databinding.RvItemOpenTimeRedBinding
@@ -15,7 +14,7 @@ class DayAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         data.clear()
     }
 
-    fun addItem(DayList: List<Day>?) {
+    fun addItem(DayList: List<DayData>?) {
         if (DayList == null) return
 
         with(data) {
@@ -33,14 +32,14 @@ class DayAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     class RedDayViewHolder(val binding: RvItemOpenTimeRedBinding) :
         RecyclerView.ViewHolder(binding.root)
 
-    var data = arrayListOf<Day>()
+    var data = arrayListOf<DayData>()
 
     override fun getItemViewType(position: Int): Int {
         val detailedInfoData = data[position]
 
-        return if (detailedInfoData.dayType == "SUNDAY" || detailedInfoData.dayType == "HOLIDAY") {
+        return if (detailedInfoData.weekday == "SUNDAY" || detailedInfoData.weekday == "HOLIDAY") {
             2
-        } else if (detailedInfoData.dayType == "SATURDAY") {
+        } else if (detailedInfoData.weekday == "SATURDAY") {
             1
         } else {
             0

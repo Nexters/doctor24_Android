@@ -1,18 +1,17 @@
 package com.nexters.doctor24.todoc.util
 
 import android.graphics.Color
+import android.util.Log
 import android.view.View
-import android.widget.TextClock
 import android.widget.TextView
 import android.widget.TimePicker
 import androidx.annotation.DrawableRes
 import androidx.databinding.BindingAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.nexters.doctor24.todoc.data.detailed.response.Day
 import com.nexters.doctor24.todoc.data.marker.response.OperatingDate
 import com.nexters.doctor24.todoc.ui.detailed.adapter.DayAdapter
-import timber.log.Timber
+import com.nexters.doctor24.todoc.ui.detailed.adapter.DayData
 
 @BindingAdapter("android:visibility")
 fun setVisibility(view: View, isVisible: Boolean) {
@@ -39,19 +38,19 @@ internal fun setOpenDay(view: TextView, today: OperatingDate?) {
     view.text = result
 }
 
-@BindingAdapter("dayOpen")
+/*@BindingAdapter("dayOpen")
 fun setOpenDay(view: TextView, day: Day?) {
 
     var result = ""
 
     day?.let {
-        it.toHHmmFormat()
+        result += it.toHHmmFormat()
     }
 
     view.text = result
-}
+}*/
 
-fun Day.toHHmmFormat() : String {
+fun Day.toHHmmFormat(): String {
     val start = this.startTime.split(":")
     val end = this.endTime.split(":")
 
@@ -60,20 +59,18 @@ fun Day.toHHmmFormat() : String {
 
 @BindingAdapter("dayType")
 fun setDayType(view: TextView, day: String) {
-    val dayType = hashMapOf<String, String>(
-        "MONDAY" to "월요일",
-        "TUESDAY" to "화요일",
-        "WEDNESDAY" to "수요일",
-        "THURSDAY" to "목요일",
-        "FRIDAY" to "금요일",
-        "SATURDAY" to "토요일",
-        "SUNDAY" to "일요일",
-        "HOLIDAY" to "공휴일"
-    )
-    view.text = dayType[day]
+
+    val result = when (day) {
+        "SATURDAY" -> "토요일"
+        "SUNDAY" -> "일요일"
+        "HOLIDAY" -> "공휴일"
+        else -> day
+    }
+
+    view.text = result
 }
 
-fun String.toWeekDayWord() : String {
+fun String.toWeekDayWord(): String {
     val dayType = hashMapOf<String, String>(
         "MONDAY" to "월",
         "TUESDAY" to "화",
@@ -87,17 +84,23 @@ fun String.toWeekDayWord() : String {
 
 @BindingAdapter("categoryText")
 fun setCategoryText(view: TextView, categories: List<String>?) {
-/*
+
+    var result = ""
+
     categories?.let {
-        for (i in categories){
-        //진료과목과 일치하는 것만 출력 하도록 map
-        }
-    }*/
-    view.text = categories?.joinToString(", ")
+        if (it.count() < 10) {
+            result = it.joinToString(separator = ", ")
+        } else
+            result = it.joinToString(separator = ", ", truncated = "등", limit = 10)
+    }
+
+    view.text = result
 }
 
 @BindingAdapter("setOpenData")
-fun setOpenData(view: RecyclerView, openDatas: List<Day>?) {
+fun setOpenData(view: RecyclerView, openDatas: List<DayData>?) {
+
+    Log.e("setOpenData", openDatas.toString())
 
     (view.adapter as DayAdapter).run {
         addItem(openDatas)
@@ -127,7 +130,9 @@ fun setPickerDefault(view: TimePicker, time: String) {
     var hour = setTime[0].toInt()
 
     if (ampm[0] == "오후") {
-        hour += 12
+        if (hour != 12) {
+            hour += 12
+        }
     }
 
     view.hour = hour
@@ -137,9 +142,9 @@ fun setPickerDefault(view: TimePicker, time: String) {
 
 @BindingAdapter("android:set_default_text_color")
 fun setDefaultTextColor(view: TextView, state: Boolean) {
-    if(state){
+    if (state) {
         view.setTextColor(Color.BLACK)
-    }else{
+    } else {
         view.setTextColor(Color.LTGRAY)
     }
 }
@@ -152,7 +157,7 @@ fun setAmPm(hour: Int): String {
 }
 
 fun setHour(hour: Int): String {
-    return if (hour >= 12)
+    return if (hour > 12)
         (hour - 12).toString()
     else
         "$hour"
