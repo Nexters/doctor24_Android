@@ -1,5 +1,6 @@
 package com.nexters.doctor24.todoc.ui.map
 
+import android.util.Log
 import android.widget.TimePicker
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -17,13 +18,13 @@ internal class TimeViewModel() : BaseViewModel() {
 
     private val _startTime = MutableLiveData<String>()
     val startTime: LiveData<String> get() = _startTime
-    private val _startTempTime = MutableLiveData<String>()
-    val startTempTime: LiveData<String> get() = _startTempTime
+    private val _startStoredTime = MutableLiveData<String>("")
+    val startStoredTime: LiveData<String> get() = _startStoredTime
 
     private val _endTime = MutableLiveData<String>()
     val endTime: LiveData<String> get() = _endTime
-    private val _endTempTime = MutableLiveData<String>()
-    val endTempTime: LiveData<String> get() = _endTempTime
+    private val _endStoredTime = MutableLiveData<String>("")
+    val endStoredTime: LiveData<String> get() = _endStoredTime
 
     private val _isOpen = MutableLiveData<Boolean>()
     val isOpen: LiveData<Boolean> get() = _isOpen
@@ -33,10 +34,16 @@ internal class TimeViewModel() : BaseViewModel() {
     val isSelected: LiveData<Boolean> get() = _isSelected
     private val _isPickerSelected = MutableLiveData<Boolean>().apply { postValue(false) }
     val isPickerSelected: LiveData<Boolean> get() = _isPickerSelected
-    private val _isCompletedTimeSetting = MutableLiveData<Boolean>().apply { postValue(false) }
-    val isCompletedTimeSetting: LiveData<Boolean> get() = _isCompletedTimeSetting
 
-    //2) 확인 눌렀을때, bottomSheet 닫히면서 시간 데이터 셋팅
+    private val _isStartTimeChanged = MutableLiveData<Boolean>().apply { postValue(false) }
+    val isStartTimeChanged: LiveData<Boolean> get() = _isStartTimeChanged
+    private val _isEndTimeChanged = MutableLiveData<Boolean>().apply { postValue(false) }
+    val isEndTimeChanged: LiveData<Boolean> get() = _isEndTimeChanged
+    private val _isStartStoredTimeChanged = MutableLiveData<Boolean>().apply { postValue(false) }
+    val isStartStoredTimeChanged: LiveData<Boolean> get() = _isStartStoredTimeChanged
+    private val _isEndStoredTimeChanged = MutableLiveData<Boolean>().apply { postValue(false) }
+    val isEndStoredTimeChanged: LiveData<Boolean> get() = _isEndStoredTimeChanged
+
     //3) 그냥 내릴 경우, 변경 전 시간으로 데이터 셋팅
     //4) 숫자 변동사항 있을경우, 확인버튼 활성화
     //5) 시간 setting 할 때 나올 수 있는 경우들 예외처리
@@ -45,22 +52,50 @@ internal class TimeViewModel() : BaseViewModel() {
 
     init {
         getCurrentTime()
+        storeTempTime()
+    }
+
+    fun isChangedStartTime(isChange : Boolean){
+        _isStartTimeChanged.value = isChange
+        Log.e("지금 start는!!", isChange.toString())
+    }
+
+    fun isChangedEndTime(isChange : Boolean){
+        _isEndTimeChanged.value = isChange
+        Log.e("지금 end는!!", isChange.toString())
+    }
+
+    fun isChangedStoredStartTime(isChange : Boolean){
+        _isStartStoredTimeChanged.value = isChange
+        Log.e("지금 start는!!", isChange.toString())
+    }
+
+    fun isChangedStoredEndTime(isChange : Boolean){
+        _isEndStoredTimeChanged.value = isChange
+        Log.e("지금 end는!!", isChange.toString())
     }
 
     fun storeTempTime() {
-        _startTempTime.value = _startTime.value
-        _endTempTime.value = _endTime.value
-    }
+        _startStoredTime.value = _startTime.value
+        _endStoredTime.value = _endTime.value
 
-    fun isChanged(): Boolean{
-        return !((_startTempTime.value == _startTime.value) && (_endTempTime.value == _endTime.value))
+        Timber.e("startStore ${_startStoredTime.value}, startTime ${_startTime.value}")
+        Timber.e("endStore ${_endStoredTime.value}, endTime ${_endTime.value}")
+
+        _isOpen.value = false
     }
 
     fun setBottomSheetState(state: Int) {
-        if (state == BottomSheetBehavior.STATE_COLLAPSED)
+        if (state == BottomSheetBehavior.STATE_COLLAPSED){
             _isOpen.value = false
+
+            _isStartTimeChanged.value = false
+            _isEndTimeChanged.value = false
+
+        }
         else {
             _isOpen.value = true
+
             setTimeSelected(true)
         }
     }
@@ -84,7 +119,12 @@ internal class TimeViewModel() : BaseViewModel() {
         _isPickerSelected.postValue(boolean)
     }
 
-    fun getCurrentTime() {
+    fun setInitialTime() {
+        getCurrentTime()
+        setTimeSelected(true)
+    }
+
+    private fun getCurrentTime() {
         val now = System.currentTimeMillis()
         val mDate = Date(now)
 
@@ -93,11 +133,6 @@ internal class TimeViewModel() : BaseViewModel() {
 
         _startTime.value = setTime(timeHour, timeMin)
         _endTime.value = setTime(timeHour + 1, timeMin)
-    }
-
-    fun setInitialTime() {
-        getCurrentTime()
-        setTimeSelected(true)
     }
 
     private fun setAmPm(hour: Int): String {
