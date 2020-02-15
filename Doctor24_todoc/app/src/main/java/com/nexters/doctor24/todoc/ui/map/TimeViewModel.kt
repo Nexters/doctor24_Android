@@ -10,7 +10,6 @@ import timber.log.Timber
 import java.text.SimpleDateFormat
 import java.util.*
 
-
 internal class TimeViewModel() : BaseViewModel() {
 
     private val _nowTime = MutableLiveData<String>()
@@ -44,61 +43,58 @@ internal class TimeViewModel() : BaseViewModel() {
     private val _isEndStoredTimeChanged = MutableLiveData<Boolean>().apply { postValue(false) }
     val isEndStoredTimeChanged: LiveData<Boolean> get() = _isEndStoredTimeChanged
 
-    //3) 그냥 내릴 경우, 변경 전 시간으로 데이터 셋팅
-    //4) 숫자 변동사항 있을경우, 확인버튼 활성화
     //5) 시간 setting 할 때 나올 수 있는 경우들 예외처리
     //      - 종료시간은 시작시간보다 느리게
     //      - 시작시간은 종료시간보다 빠르게
+    //      - 종료시간과 시작시간의 day차이 없도록(시작시간이 종료시간이 밤12시를 넘지 않도록)
 
     init {
         getCurrentTime()
         storeTempTime()
     }
 
-    fun isChangedStartTime(isChange : Boolean){
+    fun isChangedStartTime(isChange: Boolean) {
         _isStartTimeChanged.value = isChange
-        Log.e("지금 start는!!", isChange.toString())
     }
 
-    fun isChangedEndTime(isChange : Boolean){
+    fun isChangedEndTime(isChange: Boolean) {
         _isEndTimeChanged.value = isChange
-        Log.e("지금 end는!!", isChange.toString())
     }
 
-    fun isChangedStoredStartTime(isChange : Boolean){
+    fun isChangedStoredStartTime(isChange: Boolean) {
         _isStartStoredTimeChanged.value = isChange
-        Log.e("지금 start는!!", isChange.toString())
     }
 
-    fun isChangedStoredEndTime(isChange : Boolean){
+    fun isChangedStoredEndTime(isChange: Boolean) {
         _isEndStoredTimeChanged.value = isChange
-        Log.e("지금 end는!!", isChange.toString())
     }
 
     fun storeTempTime() {
         _startStoredTime.value = _startTime.value
         _endStoredTime.value = _endTime.value
 
-        Timber.e("startStore ${_startStoredTime.value}, startTime ${_startTime.value}")
-        Timber.e("endStore ${_endStoredTime.value}, endTime ${_endTime.value}")
+
 
         _isOpen.value = false
     }
 
     fun setBottomSheetState(state: Int) {
-        if (state == BottomSheetBehavior.STATE_COLLAPSED){
+        if (state == BottomSheetBehavior.STATE_COLLAPSED) {
             _isOpen.value = false
 
             _isStartTimeChanged.value = false
             _isEndTimeChanged.value = false
 
-            if ( (_startStoredTime.value != _startTime.value) && (_endStoredTime.value != _endTime.value) ){
+            Timber.e("startStore ${_startStoredTime.value}, startTime ${_startTime.value}")
+            Timber.e("endStore ${_endStoredTime.value}, endTime ${_endTime.value}")
+
+            if ((_startStoredTime.value != _startTime.value) || (_endStoredTime.value != _endTime.value)) {
                 _startTime.value = _startStoredTime.value
                 _endTime.value = _endStoredTime.value
             }
 
-        }
-        else {
+            //
+        } else {
             _isOpen.value = true
 
             setTimeSelected(true)
@@ -176,6 +172,4 @@ internal class TimeViewModel() : BaseViewModel() {
         include_layout_set_time.visibility = View.VISIBLE
         include_layout_set_time_picker.visibility = View.GONE*/
     }
-
-
 }

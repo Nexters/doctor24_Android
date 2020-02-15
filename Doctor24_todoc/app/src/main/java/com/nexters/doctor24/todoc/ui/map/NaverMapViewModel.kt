@@ -15,6 +15,7 @@ import com.nexters.doctor24.todoc.data.marker.response.ResMapLocation
 import com.nexters.doctor24.todoc.data.marker.response.ResMapMarker
 import com.nexters.doctor24.todoc.repository.MarkerRepository
 import com.nexters.doctor24.todoc.util.isCurrentMapDarkMode
+import com.nexters.doctor24.todoc.util.to24hourString
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
@@ -85,14 +86,16 @@ internal class NaverMapViewModel(private val dispatchers: DispatcherProvider,
     private val _dialogCloseEvent = SingleLiveEvent<Unit>()
     val dialogCloseEvent : LiveData<Unit> get() = _dialogCloseEvent
 
-    fun reqMarker(center: LatLng, zoomLevel: Double) {
+    fun reqMarker(center: LatLng, zoomLevel: Double, startTime : String?, endTime: String?) {
         uiScope.launch(dispatchers.io()) {
             try {
                 val result = repo.getMarkers(
                     center = center,
                     type = tabChangeEvent.value ?: MarkerTypeEnum.HOSPITAL,
                     level = getRadiusLevel(zoomLevel),
-                    category = if(tabChangeEvent.value == MarkerTypeEnum.PHARMACY) null else _currentCategory.value
+                    category = if(tabChangeEvent.value == MarkerTypeEnum.PHARMACY) null else _currentCategory.value,
+                    startTime = startTime,
+                    endTime = endTime
                 )
                 withContext(dispatchers.main()) {
                     _markerList.value = result
@@ -103,11 +106,11 @@ internal class NaverMapViewModel(private val dispatchers: DispatcherProvider,
         }
     }
 
-    fun reqMarkerWithCategory(category: String) {
+    fun reqMarkerWithCategory(category: String, start: String?, end:String?) {
         _currentCategory.value = category
         _currentLocation.value?.let { location ->
             _currentZoom.value?.let { zoom ->
-                reqMarker(location, zoom)
+                reqMarker(location, zoom, start, end)
             }
         }
     }
@@ -161,11 +164,11 @@ internal class NaverMapViewModel(private val dispatchers: DispatcherProvider,
         _previewCloseEvent.call()
     }
 
-    fun onClickRefresh() {
+    fun onClickRefresh(start:String, end:String) {
         _refreshEvent.call()
         _currentLocation.value?.let { location ->
             _currentZoom.value?.let { zoom ->
-                reqMarker(location, zoom)
+                reqMarker(location, zoom, start.to24hourString(), end.to24hourString())
             }
         }
     }
