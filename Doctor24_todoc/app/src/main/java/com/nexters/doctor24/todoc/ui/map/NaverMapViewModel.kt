@@ -2,7 +2,6 @@ package com.nexters.doctor24.todoc.ui.map
 
 import android.content.SharedPreferences
 import android.location.Location
-import android.os.Parcelable
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
@@ -17,7 +16,9 @@ import com.nexters.doctor24.todoc.data.marker.response.ResMapMarker
 import com.nexters.doctor24.todoc.repository.MarkerRepository
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import okhttp3.internal.toImmutableList
+import java.text.SimpleDateFormat
+import java.util.*
+
 
 internal class NaverMapViewModel(private val dispatchers: DispatcherProvider,
                                  private val sharedPreferences: SharedPreferences,
@@ -25,7 +26,9 @@ internal class NaverMapViewModel(private val dispatchers: DispatcherProvider,
 
     companion object {
         const val KEY_PREF_FILTER_CATEGORY = "KEY_PREF_FILTER_CATEGORY"
+        val dateFormat = SimpleDateFormat("HH:mm:ss", Locale.KOREA)
     }
+
 
     var currentMyLocation : LatLng? = null // 현재 사용자의 위치
     private val _currentLocation = MutableLiveData<LatLng>() // 현재 보고있는 지도의 center 좌표
@@ -34,6 +37,8 @@ internal class NaverMapViewModel(private val dispatchers: DispatcherProvider,
     val currentZoom : LiveData<Double> get() = _currentZoom
     private val _currentCategory = MutableLiveData<String?>().apply { postValue(null) }
     val currentCategory : LiveData<String?> get() = _currentCategory
+    private val _mapDarkMode = MutableLiveData<Boolean>() // 지도 모드
+    val mapDarkMode : LiveData<Boolean> get() = _mapDarkMode
 
     private val _markerList = MutableLiveData<List<ResMapLocation>>()
     private val _hospitalMarkerDatas = Transformations.map(_markerList) {
@@ -98,6 +103,20 @@ internal class NaverMapViewModel(private val dispatchers: DispatcherProvider,
                 reqMarker(location, zoom)
             }
         }
+    }
+
+    fun setMapDarkMode() {
+        _mapDarkMode.value = when (getCurrentTimeHours()) {
+            in 8..17 -> false
+            else -> true
+        }
+    }
+
+    private fun getCurrentTimeHours(): Int {
+        val now = System.currentTimeMillis()
+        val date = Date(now)
+
+        return SimpleDateFormat("HH", Locale.KOREA).format(date).toInt()
     }
 
     // 15 제일 좁은 영역 level 1 (0.5km 반경)

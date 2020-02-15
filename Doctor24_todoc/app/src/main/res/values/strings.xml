@@ -23,7 +23,7 @@
     <string name="category_item_anesthesia">마취통증과</string>
     <string name="category_item_neurology">신경과</string>
 
-    <string name="map_refresh">재검색</string>
+    <string name="map_refresh">재탐색</string>
     <string name="map_marker_group_list">병원 리스트</string>
     <string name="map_marker_group_list_item_today">오늘</string>
 
