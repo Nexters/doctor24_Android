@@ -276,8 +276,8 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
                 markerManager.setMarker(arrayListOf())
             } else {
                 markerManager.setMarker(it)
-                if(firstInit) firstInit = false
             }
+            if(firstInit) firstInit = false
         })
 
         viewModel.medicalListData.observe(viewLifecycleOwner, EventObserver {
