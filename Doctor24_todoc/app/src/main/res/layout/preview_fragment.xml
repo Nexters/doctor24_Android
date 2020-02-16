@@ -14,6 +14,9 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@drawable/background_bottom_round"
+        android:elevation="10dp"
+        android:outlineAmbientShadowColor="#4a4a4a"
+        android:outlineSpotShadowColor="#4a4a4a"
         app:behavior_hideable="false"
         app:behavior_peekHeight="1000dp"
         app:layout_behavior="android.support.design.widget.BottomSheetBehavior">
