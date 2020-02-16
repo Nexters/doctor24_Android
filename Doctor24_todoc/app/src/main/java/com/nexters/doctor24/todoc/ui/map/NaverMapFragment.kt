@@ -276,8 +276,8 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
                 markerManager.setMarker(arrayListOf())
             } else {
                 markerManager.setMarker(it)
-                if(firstInit) firstInit = false
             }
+            if(firstInit) firstInit = false
         })
 
         viewModel.medicalListData.observe(viewLifecycleOwner, EventObserver {
@@ -350,6 +350,11 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
 
     override fun markerClick(marker: Marker) {
         deSelectMarker()
+        marker.apply {
+            isHideCollidedMarkers = true
+            isHideCollidedSymbols = true
+            isHideCollidedCaptions = true
+        }
         marker.tag?.let{
             if((it as ArrayList<ResMapMarker>).isNotEmpty()) {
                 val medicalData = Bundle().apply {

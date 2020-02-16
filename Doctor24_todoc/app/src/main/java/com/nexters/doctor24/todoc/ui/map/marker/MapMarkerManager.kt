@@ -187,6 +187,12 @@ internal class MapMarkerManager(val context: Context, private val naverMap: Nave
         selectMarkerItem?.run {
             val marker = mapMarkers[this]
             marker?.let {
+                it.apply {
+                    isHideCollidedMarkers = false
+                    isHideCollidedSymbols = false
+                    isHideCollidedCaptions = false
+                    zIndex = ZINDEX_NORAML
+                }
                 getMarkerType(medicalType)?.let { type ->
                     it.icon = drawMarkerIcon(type, isEmergency, isNight)
                     it.infoWindow?.close()
