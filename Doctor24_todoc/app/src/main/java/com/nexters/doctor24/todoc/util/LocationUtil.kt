@@ -15,15 +15,3 @@ fun LatLng.toDistance(from : LatLng?) : String {
         else -> String.format("%.2f m", meter)
     }
 }
-
-fun isCurrentMapDarkMode() = when (getCurrentTimeHours()) {
-    in 8..17 -> false
-    else -> true
-}
-
-private fun getCurrentTimeHours(): Int {
-    val now = System.currentTimeMillis()
-    val date = Date(now)
-
-    return SimpleDateFormat("HH", Locale.KOREA).format(date).toInt()
-}

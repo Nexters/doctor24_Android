@@ -42,6 +42,7 @@ import com.nexters.doctor24.todoc.ui.map.preview.PreviewViewModel
 import com.nexters.doctor24.todoc.util.isCurrentMapDarkMode
 import com.nexters.doctor24.todoc.util.to24hourString
 import com.nexters.doctor24.todoc.util.toDp
+import com.nexters.doctor24.todoc.util.toHour
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import timber.log.Timber
 
@@ -219,6 +220,25 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
     }
 
     private fun initObserve() {
+
+        viewModelTime.checkTimeLimit.observe(viewLifecycleOwner, Observer {
+            if(it.isNotEmpty()) {
+                Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+                viewModelTime.isSelected.value?.let { selectStart ->
+                    if(selectStart) {
+                        viewModelTime.endTime.value?.to24hourString()?.toHour()?.let { end->
+                            binding.tpTimePicker.hour = end - 1
+                            viewModelTime.setChangeTime(binding.tpTimePicker, selectStart)
+                        }
+                    } else {
+                        viewModelTime.startTime.value?.to24hourString()?.toHour()?.let { start->
+                            binding.tpTimePicker.hour = start + 1
+                            viewModelTime.setChangeTime(binding.tpTimePicker, selectStart)
+                        }
+                    }
+                }
+            }
+        })
 
         viewModelTime.isReset.observe(viewLifecycleOwner, Observer {
             if(::markerManager.isInitialized) markerManager.setMarker(arrayListOf())
