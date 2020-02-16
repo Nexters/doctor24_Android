@@ -39,6 +39,9 @@
     <string name="medical_list_order">거리순</string>
     <string name="medical_list_total">총 %d개</string>
     <string name="medical_list_empty">병원을 찾을 수 없습니다.</string>
+    <string name="medical_list_last">더 이상 %s이 없습니다.</string>
 
     <string name="medical_empty">현재 운영중인 %s이 없습니다.</string>
+    <string name="start_time_error_message">시작시간은 종료시간보다 빨라야 합니다.</string>
+    <string name="end_time_error_message">종료시간은 시작시간보다 늦어야 합니다.</string>
 </resources>

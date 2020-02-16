@@ -19,7 +19,7 @@ val appModule = module {
     single { androidContext().resources as Resources }
     factory { DefaultDispatcherProvider() as DispatcherProvider }
     viewModel { NaverMapViewModel(get(), get(named("filterPrefs")), get()) }
-    viewModel { TimeViewModel() }
+    viewModel { TimeViewModel(get()) }
     viewModel { CategoryViewModel() }
     viewModel { DetailedViewModel(get(),get()) }
     viewModel { PreviewViewModel() }
