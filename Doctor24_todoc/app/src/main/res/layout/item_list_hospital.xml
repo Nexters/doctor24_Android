@@ -14,49 +14,57 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <androidx.appcompat.widget.AppCompatImageView
-            android:id="@+id/image_badge_emergency"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/layout_badge"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="15.5dp"
-            android:src="@drawable/ic_badge_emergency"
-            android:visibility="@{item.isEmergency}"
+            android:visibility="@{!item.isPharmacy}"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            >
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/image_badge_emergency"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_badge_emergency"
+                android:visibility="@{item.isEmergency}"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
-        <androidx.appcompat.widget.AppCompatImageView
-            android:id="@+id/image_badge_night"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="15.5dp"
-            android:layout_marginStart="6dp"
-            app:layout_goneMarginStart="0dp"
-            android:src="@drawable/ic_badge_night"
-            android:visibility="@{item.isNight}"
-            app:layout_constraintStart_toEndOf="@id/image_badge_emergency"
-            app:layout_constraintTop_toTopOf="parent" />
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/image_badge_night"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="6dp"
+                app:layout_goneMarginStart="0dp"
+                android:src="@drawable/ic_badge_night"
+                android:visibility="@{item.isNight}"
+                app:layout_constraintStart_toEndOf="@id/image_badge_emergency"
+                app:layout_constraintTop_toTopOf="parent" />
 
-        <androidx.appcompat.widget.AppCompatImageView
-            android:id="@+id/image_badge_normal"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="15.5dp"
-            android:layout_marginStart="6dp"
-            app:layout_goneMarginStart="0dp"
-            android:src="@drawable/ic_badge_normal"
-            android:visibility="@{item.isNormal}"
-            app:layout_constraintStart_toEndOf="@id/image_badge_night"
-            app:layout_constraintTop_toTopOf="parent" />
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/image_badge_normal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="6dp"
+                app:layout_goneMarginStart="0dp"
+                android:src="@drawable/ic_badge_normal"
+                android:visibility="@{item.isNormal}"
+                app:layout_constraintStart_toEndOf="@id/image_badge_night"
+                app:layout_constraintTop_toTopOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/text_name"
             style="@style/AndH4LeftBold18"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="43.5dp"
+            android:layout_marginTop="8dp"
+            app:layout_goneMarginTop="16dp"
             android:text="@{item.placeName}"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/layout_badge"
             app:layout_constraintEnd_toStartOf="@id/ivFindLoad"
             tools:text="한방병원" />
 

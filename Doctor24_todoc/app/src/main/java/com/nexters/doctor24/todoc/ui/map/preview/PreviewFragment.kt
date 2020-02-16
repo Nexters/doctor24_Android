@@ -12,6 +12,7 @@ import androidx.databinding.DataBindingUtil
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.naver.maps.geometry.LatLng
 import com.nexters.doctor24.todoc.R
+import com.nexters.doctor24.todoc.data.marker.MarkerTypeEnum
 import com.nexters.doctor24.todoc.data.marker.response.OperatingDate
 import com.nexters.doctor24.todoc.data.marker.response.ResMapMarker
 import com.nexters.doctor24.todoc.databinding.PreviewFragmentBinding
@@ -58,6 +59,7 @@ internal class PreviewFragment : BottomSheetDialogFragment() {
             previewData = PreviewUiData(
                 id = it.id,
                 type = it.medicalType,
+                isPharmacy = it.medicalType == MarkerTypeEnum.PHARMACY.type,
                 isEmergency = it.emergency,
                 isNight = it.nightTimeServe,
                 placeName = it.placeName,
@@ -133,6 +135,7 @@ internal class PreviewFragment : BottomSheetDialogFragment() {
     data class PreviewUiData(
         val id: String,
         val type: String,
+        val isPharmacy: Boolean = false,
         val isEmergency : Boolean = false,
         val isNight : Boolean = false,
         val isNormal : Boolean = !isEmergency && !isNight,

@@ -73,6 +73,7 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
     private val listIntent by lazy { Intent(context, MedicalListActivity::class.java) }
     private var locationState : LocationTrackingMode = LocationTrackingMode.Follow
     private var isSelected = false
+    private var firstInit = true
     private lateinit var bottomSheetBehavior : BottomSheetBehavior<View>
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -252,10 +253,12 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
 
         viewModel.hospitalMarkerDatas.observe(viewLifecycleOwner, EventObserver {
             if (it.isEmpty()) {
-                Toast.makeText(context, "현재 운영중인 병원이 없습니다.", Toast.LENGTH_SHORT).show()
+                val message = String.format(getString(R.string.medical_empty, viewModel.tabChangeEvent.value?.title ?: MarkerTypeEnum.HOSPITAL.title))
+                Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
                 markerManager.setMarker(arrayListOf())
             } else {
                 markerManager.setMarker(it)
+                if(firstInit) firstInit = false
             }
         })
 
@@ -271,11 +274,11 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
         })
 
         viewModel.currentLocation.observe(viewLifecycleOwner, Observer {
-            showRefresh()
+            if(firstInit) binding.tab.getTabAt(0)?.select() else showRefresh()
         })
 
         viewModel.currentZoom.observe(viewLifecycleOwner, Observer {
-            showRefresh()
+            if(firstInit) binding.tab.getTabAt(0)?.select() else showRefresh()
         })
 
         viewModel.categoryEvent.observe(viewLifecycleOwner, Observer {
@@ -310,7 +313,7 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
     }
 
     private fun showRefresh() {
-        if(!binding.btnRefresh.isVisible && !isSelected) {
+        if(!binding.btnRefresh.isVisible && !isSelected && !firstInit) {
             deSelectMarker()
             binding.btnRefresh.apply {
                 isVisible = true
@@ -463,8 +466,6 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
             maxZoom = 17.0
         }
 
-        viewModel.setMapDarkMode()
-        binding.tab.getTabAt(0)?.select()
         markerManager =
             MapMarkerManager(context!!, naverMap).apply { listener = this@NaverMapFragment }
 
@@ -479,12 +480,12 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
 
         viewModelTime.startStoredTime.observe(viewLifecycleOwner, Observer {
             if(::markerManager.isInitialized) markerManager.setMarker(arrayListOf())
-            viewModel.reqMarker(naverMap.cameraPosition.target, naverMap.cameraPosition.zoom, viewModelTime.startTime.value?.to24hourString(), viewModelTime.endTime.value?.to24hourString())
+            if(!firstInit) viewModel.reqMarker(naverMap.cameraPosition.target, naverMap.cameraPosition.zoom, viewModelTime.startTime.value?.to24hourString(), viewModelTime.endTime.value?.to24hourString())
         })
 
         viewModelTime.endStoredTime.observe(viewLifecycleOwner, Observer {
             if(::markerManager.isInitialized) markerManager.setMarker(arrayListOf())
-            viewModel.reqMarker(naverMap.cameraPosition.target, naverMap.cameraPosition.zoom, viewModelTime.startTime.value?.to24hourString(), viewModelTime.endTime.value?.to24hourString())
+            if(!firstInit) viewModel.reqMarker(naverMap.cameraPosition.target, naverMap.cameraPosition.zoom, viewModelTime.startTime.value?.to24hourString(), viewModelTime.endTime.value?.to24hourString())
         })
     }
 

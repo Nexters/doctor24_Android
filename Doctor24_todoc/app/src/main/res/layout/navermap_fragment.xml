@@ -154,6 +154,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@drawable/background_bottom_round"
+            android:elevation="10dp"
+            android:outlineAmbientShadowColor="#4a4a4a"
+            android:outlineSpotShadowColor="#4a4a4a"
             app:behavior_hideable="false"
             app:behavior_peekHeight="132dp"
             app:layout_behavior="@string/bottom_sheet_behavior">
