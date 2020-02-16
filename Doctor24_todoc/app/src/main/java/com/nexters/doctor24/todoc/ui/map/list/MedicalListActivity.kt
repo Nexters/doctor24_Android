@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.naver.maps.geometry.LatLng
 import com.nexters.doctor24.todoc.R
 import com.nexters.doctor24.todoc.base.BaseActivity
+import com.nexters.doctor24.todoc.data.marker.MarkerTypeEnum
 import com.nexters.doctor24.todoc.data.marker.response.ResMapMarker
 import com.nexters.doctor24.todoc.databinding.ActivityMedicalListBinding
 import com.nexters.doctor24.todoc.ui.detailed.DetailedActivity
@@ -62,6 +63,7 @@ internal class MedicalListActivity : BaseActivity<ActivityMedicalListBinding, Me
             GroupMarkerListDialog.GroupListHospitalUiData(
                 id = it.id,
                 type = it.medicalType,
+                isPharmacy = it.medicalType == MarkerTypeEnum.PHARMACY.type,
                 isEmergency = it.emergency,
                 isNight = it.nightTimeServe,
                 placeName = it.placeName,

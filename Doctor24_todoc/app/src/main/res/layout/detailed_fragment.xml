@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+        <import type="com.nexters.doctor24.todoc.data.marker.MarkerTypeEnum"/>
         <variable
             name="vm"
             type="com.nexters.doctor24.todoc.ui.detailed.DetailedViewModel" />
@@ -97,6 +98,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:orientation="horizontal"
+                            android:visibility="@{vm.detailedData.medicalType == MarkerTypeEnum.HOSPITAL.type}"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toTopOf="parent">
 

@@ -39,8 +39,6 @@ internal class NaverMapViewModel(private val dispatchers: DispatcherProvider,
     val currentZoom : LiveData<Double> get() = _currentZoom
     private val _currentCategory = MutableLiveData<String?>().apply { postValue(null) }
     val currentCategory : LiveData<String?> get() = _currentCategory
-    private val _mapDarkMode = MutableLiveData<Boolean>() // 지도 모드
-    val mapDarkMode : LiveData<Boolean> get() = _mapDarkMode
 
     private val _markerList = MutableLiveData<List<ResMapLocation>>()
     private val _hospitalMarkerDatas = Transformations.map(_markerList) {
@@ -113,10 +111,6 @@ internal class NaverMapViewModel(private val dispatchers: DispatcherProvider,
                 reqMarker(location, zoom, start, end)
             }
         }
-    }
-
-    fun setMapDarkMode() {
-        _mapDarkMode.value = isCurrentMapDarkMode()
     }
 
     // 15 제일 좁은 영역 level 1 (0.5km 반경)
