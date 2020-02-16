@@ -109,9 +109,9 @@
                 android:layout_width="70dp"
                 android:layout_height="70dp"
                 android:layout_marginEnd="24dp"
+                android:layout_marginBottom="156dp"
                 android:src="@drawable/ic_location_follow"
-                app:layout_constraintTop_toTopOf="@id/image_button_category"
-                app:layout_constraintBottom_toBottomOf="@id/image_button_category"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent" />
 
             <androidx.appcompat.widget.AppCompatImageView
@@ -119,11 +119,11 @@
                 android:layout_width="70dp"
                 android:layout_height="70dp"
                 android:layout_marginStart="24dp"
-                android:layout_marginBottom="156dp"
                 android:src="@drawable/ic_filter"
                 android:onClick="@{()-> vm.onClickFilter()}"
                 android:visibility="@{vm.categoryShow}"
-                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintTop_toTopOf="@id/button_location"
+                app:layout_constraintBottom_toBottomOf="@id/button_location"
                 app:layout_constraintStart_toStartOf="parent" />
 
             <androidx.appcompat.widget.AppCompatTextView
