@@ -5,9 +5,9 @@ import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.view.Gravity
-import android.view.LayoutInflater
 import android.view.View
 import android.view.animation.AnimationUtils
+import android.view.animation.BounceInterpolator
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
@@ -20,7 +20,6 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_COLLAPSED
 import com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_EXPANDED
 import com.google.android.material.bottomsheet.BottomSheetDialog
-import com.google.android.material.tabs.TabLayout
 import com.naver.maps.map.*
 import com.naver.maps.map.overlay.Marker
 import com.naver.maps.map.util.FusedLocationSource
@@ -72,7 +71,6 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
     private val listIntent by lazy { Intent(context, MedicalListActivity::class.java) }
     private var locationState : LocationTrackingMode = LocationTrackingMode.Follow
     private var isSelected = false
-    private var firstInit = true
     private lateinit var bottomSheetBehavior : BottomSheetBehavior<View>
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -138,40 +136,10 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
     }
 
     private fun initView() {
-        val markerTypes = MarkerTypeEnum.values()
-        binding.tab.apply {
-            markerTypes.forEach {
-                val tabView =
-                    LayoutInflater.from(context).inflate(R.layout.item_tab, null) as TextView
-                tabView.text = it.title
-                tabView.setCompoundDrawablesRelativeWithIntrinsicBounds(it.icon, 0, 0, 0)
-                addTab(newTab().setCustomView(tabView))
-            }
-            addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
-                override fun onTabReselected(tab: TabLayout.Tab?) {
-                    tab?.let {
-                        val view = it.customView as TextView
-                        view.setTextColor(resources.getColor(R.color.white))
-                        viewModel.onChangeTab(markerTypes[it.position])
-                    }
-                }
 
-                override fun onTabUnselected(tab: TabLayout.Tab?) {
-                    tab?.let {
-                        val view = it.customView as TextView
-                        view.setTextColor(resources.getColor(R.color.grey_2))
-                    }
-                }
+        binding.textTabHospital?.setOnClickListener { viewModel.onChangeTab(MarkerTypeEnum.HOSPITAL) }
+        binding.textTabPharmacy?.setOnClickListener { viewModel.onChangeTab(MarkerTypeEnum.PHARMACY) }
 
-                override fun onTabSelected(tab: TabLayout.Tab?) {
-                    tab?.let {
-                        val view = it.customView as TextView
-                        view.setTextColor(resources.getColor(R.color.white))
-                        viewModel.onChangeTab(markerTypes[it.position])
-                    }
-                }
-            })
-        }
         binding.buttonLocation.setOnClickListener {
             when(locationState) {
                 LocationTrackingMode.Follow -> {
@@ -274,10 +242,11 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
                 val message = String.format(getString(R.string.medical_empty, viewModel.tabChangeEvent.value?.title ?: MarkerTypeEnum.HOSPITAL.title))
                 Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
                 markerManager.setMarker(arrayListOf())
+                showRefresh()
             } else {
                 markerManager.setMarker(it)
+                hideRefresh()
             }
-            if(firstInit) firstInit = false
         })
 
         viewModel.medicalListData.observe(viewLifecycleOwner, EventObserver {
@@ -287,16 +256,28 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
         })
 
         viewModel.tabChangeEvent.observe(viewLifecycleOwner, Observer {
+            if (it == MarkerTypeEnum.PHARMACY) {
+                binding.itemTab?.animate()
+                    ?.translationX(binding.itemTab?.width?.minus(12.toDp)?.toFloat() ?: 0f)
+                    ?.setInterpolator(BounceInterpolator()
+                    )?.setDuration(300)?.start()
+            } else {
+                binding.itemTab?.animate()?.translationX(0f)
+                    ?.setInterpolator(BounceInterpolator())?.setDuration(300)?.start()
+            }
+            binding.textTabHospital?.isSelected = it == MarkerTypeEnum.HOSPITAL
+            binding.textTabPharmacy?.isSelected = it == MarkerTypeEnum.PHARMACY
+
             if(::markerManager.isInitialized) markerManager.setMarker(arrayListOf())
             viewModel.reqMarker(naverMap.cameraPosition.target, naverMap.cameraPosition.zoom, viewModelTime.startTime.value?.to24hourString(), viewModelTime.endTime.value?.to24hourString())
         })
 
         viewModel.currentLocation.observe(viewLifecycleOwner, Observer {
-            if(firstInit) binding.tab.getTabAt(0)?.select() else showRefresh()
+            showRefresh()
         })
 
         viewModel.currentZoom.observe(viewLifecycleOwner, Observer {
-            if(firstInit) binding.tab.getTabAt(0)?.select() else showRefresh()
+            showRefresh()
         })
 
         viewModel.categoryEvent.observe(viewLifecycleOwner, Observer {
@@ -331,13 +312,17 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
     }
 
     private fun showRefresh() {
-        if(!binding.btnRefresh.isVisible && !isSelected && !firstInit) {
+        if(!binding.btnRefresh.isVisible && !isSelected) {
             deSelectMarker()
             binding.btnRefresh.apply {
                 isVisible = true
                 startAnimation((AnimationUtils.loadAnimation(context, R.anim.anim_slide_in_down)))
             }
         }
+    }
+
+    private fun hideRefresh() {
+        if(!markerManager.isMarkerEmpty()) binding.btnRefresh.isVisible = false
     }
 
     override fun onClickCategory(category: String) {
@@ -484,6 +469,8 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
             maxZoom = 17.0
         }
 
+        viewModel.onChangeTab(MarkerTypeEnum.HOSPITAL)
+
         markerManager =
             MapMarkerManager(context!!, naverMap).apply { listener = this@NaverMapFragment }
 
@@ -498,12 +485,12 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
 
         viewModelTime.startStoredTime.observe(viewLifecycleOwner, Observer {
             if(::markerManager.isInitialized) markerManager.setMarker(arrayListOf())
-            if(!firstInit) viewModel.reqMarker(naverMap.cameraPosition.target, naverMap.cameraPosition.zoom, viewModelTime.startTime.value?.to24hourString(), viewModelTime.endTime.value?.to24hourString())
+            viewModel.reqMarker(naverMap.cameraPosition.target, naverMap.cameraPosition.zoom, viewModelTime.startTime.value?.to24hourString(), viewModelTime.endTime.value?.to24hourString())
         })
 
         viewModelTime.endStoredTime.observe(viewLifecycleOwner, Observer {
             if(::markerManager.isInitialized) markerManager.setMarker(arrayListOf())
-            if(!firstInit) viewModel.reqMarker(naverMap.cameraPosition.target, naverMap.cameraPosition.zoom, viewModelTime.startTime.value?.to24hourString(), viewModelTime.endTime.value?.to24hourString())
+            viewModel.reqMarker(naverMap.cameraPosition.target, naverMap.cameraPosition.zoom, viewModelTime.startTime.value?.to24hourString(), viewModelTime.endTime.value?.to24hourString())
         })
     }
 
