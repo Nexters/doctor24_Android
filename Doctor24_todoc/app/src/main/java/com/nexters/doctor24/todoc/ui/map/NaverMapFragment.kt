@@ -7,12 +7,10 @@ import android.os.Bundle
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
-import android.view.Window
 import android.view.animation.AnimationUtils
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
-import androidx.core.view.GravityCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.Observer
@@ -23,7 +21,6 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_COLLAPS
 import com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_EXPANDED
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.tabs.TabLayout
-import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.*
 import com.naver.maps.map.overlay.Marker
 import com.naver.maps.map.util.FusedLocationSource
@@ -42,8 +39,9 @@ import com.nexters.doctor24.todoc.ui.map.marker.MapMarkerManager
 import com.nexters.doctor24.todoc.ui.map.marker.group.GroupMarkerListDialog
 import com.nexters.doctor24.todoc.ui.map.preview.PreviewFragment
 import com.nexters.doctor24.todoc.ui.map.preview.PreviewViewModel
-import com.nexters.doctor24.todoc.util.to24hourString
 import com.nexters.doctor24.todoc.util.isCurrentMapDarkMode
+import com.nexters.doctor24.todoc.util.to24hourString
+import com.nexters.doctor24.todoc.util.toDp
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import timber.log.Timber
 
@@ -380,7 +378,7 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
 
     private fun moveMarkerBoundary(marker: Marker) {
         val cameraUpdate = CameraUpdate.scrollTo(marker.position).animate(CameraAnimation.Easing)
-        naverMap.setContentPadding(0, 0, 0, 550)
+        naverMap.setContentPadding(0, 0, 0, 270.toDp)
         naverMap.moveCamera(cameraUpdate)
     }
 
@@ -454,7 +452,7 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
             isLocationButtonEnabled = false
             isTiltGesturesEnabled = false
             logoGravity = Gravity.TOP or Gravity.END
-            setLogoMargin(0, 350, 50, 0)
+            setLogoMargin(0, 138.toDp, 24.toDp, 0)
         }
         map.apply {
             locationSource = this@NaverMapFragment.locationSource
@@ -488,6 +486,8 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
             if(!firstInit) viewModel.reqMarker(naverMap.cameraPosition.target, naverMap.cameraPosition.zoom, viewModelTime.startTime.value?.to24hourString(), viewModelTime.endTime.value?.to24hourString())
         })
     }
+
+
 
     private fun handleResponse(result: Result<ResMapAddress>) {
         when (result) {
