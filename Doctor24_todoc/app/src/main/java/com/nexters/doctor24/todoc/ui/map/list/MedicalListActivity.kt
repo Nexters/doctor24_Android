@@ -34,7 +34,7 @@ internal class MedicalListActivity : BaseActivity<ActivityMedicalListBinding, Me
         get() = R.layout.activity_medical_list
     override val viewModel: MedicalListViewModel by viewModel()
     private var groupData: ArrayList<ResMapMarker>? = arrayListOf()
-    private var uiData: List<GroupMarkerListDialog.GroupListHospitalUiData>? = null
+    private var uiData = arrayListOf<GroupMarkerListDialog.GroupListHospitalUiData>()
     private var location : LatLng? = null
     private val listAdapter by lazy { MedicalListAdapter().apply { listener = this@MedicalListActivity } }
     private val findLoadViewModel : FindLoadViewModel by viewModel()
@@ -59,29 +59,34 @@ internal class MedicalListActivity : BaseActivity<ActivityMedicalListBinding, Me
     }
 
     private fun initView() {
-        uiData = groupData?.map {
-            GroupMarkerListDialog.GroupListHospitalUiData(
-                id = it.id,
-                type = it.medicalType,
-                isPharmacy = it.medicalType == MarkerTypeEnum.PHARMACY.type,
-                isEmergency = it.emergency,
-                isNight = it.nightTimeServe,
-                placeName = it.placeName,
-                todayHour = it.day,
-                distance = location?.toDistance(LatLng(it.latitude, it.longitude)) ?: "",
-                determine = location,
-                isShowFindLoad = true
+        groupData?.forEach {
+            uiData.add(
+                GroupMarkerListDialog.GroupListHospitalUiData(
+                    id = it.id,
+                    type = it.medicalType,
+                    isPharmacy = it.medicalType == MarkerTypeEnum.PHARMACY.type,
+                    isEmergency = it.emergency,
+                    isNight = it.nightTimeServe,
+                    placeName = it.placeName,
+                    todayHour = it.day,
+                    distance = location?.toDistance(LatLng(it.latitude, it.longitude)) ?: "",
+                    determine = location,
+                    isShowFindLoad = true
+                )
             )
         }
 
-        binding.tvTotal.text = String.format(getString(R.string.medical_list_total), uiData?.count() ?: 0)
+        binding.tvTotal.text = String.format(getString(R.string.medical_list_total), uiData.count())
 
-        binding.tvEmpty.isVisible = uiData?.isEmpty() ?: true
-        binding.rvList.apply{
-            adapter = listAdapter.apply {
-                submitList(uiData)
+        binding.tvEmpty.isVisible = uiData.isEmpty()
+        binding.rvList.isVisible = uiData.isNotEmpty()
+        if(uiData.isNotEmpty()) {
+            binding.rvList.apply{
+                adapter = listAdapter.apply {
+                    submitList(uiData.apply { add(GroupMarkerListDialog.GroupListHospitalUiData(isPharmacy = uiData[0].isPharmacy)) })
+                }
+                layoutManager = LinearLayoutManager(context, RecyclerView.VERTICAL, false)
             }
-            layoutManager = LinearLayoutManager(context, RecyclerView.VERTICAL, false)
         }
     }
 

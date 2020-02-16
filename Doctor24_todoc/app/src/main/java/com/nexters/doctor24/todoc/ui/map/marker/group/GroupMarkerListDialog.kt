@@ -150,16 +150,16 @@ class GroupMarkerListDialog : BaseDialogFragment<GroupMarkerListDialogBinding>()
     }
 
     internal data class GroupListHospitalUiData(
-        val id: String,
-        val type: String,
+        val id: String = "",
+        val type: String = "",
         val isPharmacy : Boolean = true,
         val isEmergency : Boolean = false,
         val isNight : Boolean = false,
         val isNormal : Boolean = !isEmergency && !isNight,
         val placeName : String = "",
-        val todayHour : OperatingDate?,
-        val distance : String,
-        val determine : LatLng?,
+        val todayHour : OperatingDate? = null,
+        val distance : String = "",
+        val determine : LatLng? = null,
         val isShowFindLoad : Boolean = false
     )
 }
