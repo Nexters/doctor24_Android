@@ -257,16 +257,16 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
 
         viewModel.tabChangeEvent.observe(viewLifecycleOwner, Observer {
             if (it == MarkerTypeEnum.PHARMACY) {
-                binding.itemTab?.animate()
-                    ?.translationX(binding.itemTab?.width?.minus(12.toDp)?.toFloat() ?: 0f)
+                binding.itemTab.animate()
+                    ?.translationX(binding.itemTab.width.minus(12.toDp).toFloat())
                     ?.setInterpolator(BounceInterpolator()
                     )?.setDuration(300)?.start()
             } else {
-                binding.itemTab?.animate()?.translationX(0f)
+                binding.itemTab.animate()?.translationX(0f)
                     ?.setInterpolator(BounceInterpolator())?.setDuration(300)?.start()
             }
-            binding.textTabHospital?.isSelected = it == MarkerTypeEnum.HOSPITAL
-            binding.textTabPharmacy?.isSelected = it == MarkerTypeEnum.PHARMACY
+            binding.textTabHospital.isSelected = it == MarkerTypeEnum.HOSPITAL
+            binding.textTabPharmacy.isSelected = it == MarkerTypeEnum.PHARMACY
 
             if(::markerManager.isInitialized) markerManager.setMarker(arrayListOf())
             viewModel.reqMarker(naverMap.cameraPosition.target, naverMap.cameraPosition.zoom, viewModelTime.startTime.value?.to24hourString(), viewModelTime.endTime.value?.to24hourString())
