@@ -171,6 +171,10 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
             bottomSheetBehavior.state = STATE_EXPANDED
         }
 
+        binding.tvSetTime.setOnClickListener {
+            bottomSheetBehavior.state = STATE_EXPANDED
+        }
+
         binding.ivMapFragCloseBtn?.setOnClickListener {
             bottomSheetBehavior.state = STATE_COLLAPSED
         }
