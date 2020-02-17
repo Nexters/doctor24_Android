@@ -86,8 +86,6 @@ internal class DetailedActivity : BaseActivity<DetailedFragmentBinding, Detailed
                 startActivity(Intent(Intent.ACTION_DIAL, ("tel:${it ?: ""}").toUri()))
             }
         }
-
-        setMovieRecyclerView()
     }
 
     private fun initObserve() {
@@ -107,6 +105,15 @@ internal class DetailedActivity : BaseActivity<DetailedFragmentBinding, Detailed
             naverMap = it
             viewModel.detailedData.value?.let { setSelectedMarker(it) }
         })
+
+        viewModel.openDayData.observe(this, Observer {
+            with(binding) {
+                rvDetailedFragTime.apply {
+                    layoutManager = GridLayoutManager(context, 2)
+                    adapter = dayAdapter.apply { addItem(it) }
+                }
+            }
+        })
     }
 
     override fun onMapReady(map: NaverMap) {
@@ -123,16 +130,6 @@ internal class DetailedActivity : BaseActivity<DetailedFragmentBinding, Detailed
             mapType = NaverMap.MapType.Navi
         }
         viewModel.setNaverMapView(map)
-    }
-
-    private fun setMovieRecyclerView() {
-
-        with(binding) {
-            rvDetailedFragTime.apply {
-                layoutManager = GridLayoutManager(context, 2)
-                adapter = dayAdapter
-            }
-        }
     }
 
     private fun setSelectedMarker(selected: DetailedInfoData) {
