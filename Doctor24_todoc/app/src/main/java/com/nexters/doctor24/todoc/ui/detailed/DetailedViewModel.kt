@@ -105,7 +105,7 @@ internal class DetailedViewModel(
                 val weekday = arrayList.joinToString(separator = ",")
                 result.add(DayData(s, weekday))
             } else {
-                result.add(DayData(s, arrayList[0]))
+                result.add(DayData(s, "${arrayList[0]}요일"))
             }
         }
         return result
