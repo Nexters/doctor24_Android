@@ -11,9 +11,9 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="344dp"
         android:background="@drawable/background_marker_list_dialog"
-        android:minHeight="398dp"
+        android:layout_marginBottom="24dp"
         android:paddingStart="16dp"
         android:paddingEnd="16dp">
 
@@ -50,12 +50,12 @@
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recycler_view_marker_list"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_width="match_parent"
+            android:overScrollMode="never"
+            android:layout_height="250dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/border" />
+            app:layout_constraintTop_toBottomOf="@+id/border"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

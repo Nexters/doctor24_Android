@@ -69,7 +69,8 @@ class GroupMarkerListDialog : BaseDialogFragment<GroupMarkerListDialogBinding>()
         val wm = context?.getSystemService(Context.WINDOW_SERVICE) as WindowManager
         wm.defaultDisplay.getMetrics(metrics)
         val dialogWidth = (metrics.widthPixels - 16f.dpToPixel() * 2).toInt()
-        dialog?.window?.setLayout(dialogWidth, ViewGroup.LayoutParams.WRAP_CONTENT)
+        val dialogHeight = (320f.dpToPixel()).toInt()
+        dialog?.window?.setLayout(dialogWidth, dialogHeight)
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -138,6 +139,12 @@ class GroupMarkerListDialog : BaseDialogFragment<GroupMarkerListDialogBinding>()
         internal fun bind(item: GroupListHospitalUiData) {
             binding.item = item
             binding.executePendingBindings()
+
+            if (position == (groupData?.size)?.minus(1)) {
+                binding.itemBottomLine.visibility = View.GONE
+            }else{
+                Timber.e("position $position ${groupData?.size}")
+            }
 
             binding.root.setOnClickListener {
                 startActivity(Intent(context, DetailedActivity::class.java).apply {
