@@ -142,8 +142,6 @@ fun setPickerDefault(view: TimePicker, time: String) {
 
 fun String.to24hourString(): String {
 
-    Timber.e("나에게ㅔㅔ 버거운"+this.toString())
-
     val ampm = this.split(" ")
     val setTime = ampm[1].split(":")
     var hour = setTime[0].toInt()

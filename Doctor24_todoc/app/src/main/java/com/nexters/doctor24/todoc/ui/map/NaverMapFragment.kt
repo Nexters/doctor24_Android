@@ -224,19 +224,6 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
         viewModelTime.checkTimeLimit.observe(viewLifecycleOwner, Observer {
             if(it.isNotEmpty()) {
                 Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
-                viewModelTime.isSelected.value?.let { selectStart ->
-                    if(selectStart) {
-                        viewModelTime.endTime.value?.to24hourString()?.toHour()?.let { end->
-                            binding.tpTimePicker.hour = end - 1
-                            viewModelTime.setChangeTime(binding.tpTimePicker, selectStart)
-                        }
-                    } else {
-                        viewModelTime.startTime.value?.to24hourString()?.toHour()?.let { start->
-                            binding.tpTimePicker.hour = start + 1
-                            viewModelTime.setChangeTime(binding.tpTimePicker, selectStart)
-                        }
-                    }
-                }
             }
         })
 

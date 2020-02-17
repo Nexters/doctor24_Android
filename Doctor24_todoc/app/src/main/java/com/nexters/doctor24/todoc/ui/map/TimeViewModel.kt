@@ -4,13 +4,11 @@ import android.content.res.Resources
 import android.widget.TimePicker
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Transformations
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.nexters.doctor24.todoc.R
 import com.nexters.doctor24.todoc.base.BaseViewModel
 import com.nexters.doctor24.todoc.base.SingleLiveEvent
 import com.nexters.doctor24.todoc.util.isFasterThan
-import com.nexters.doctor24.todoc.util.isLaterThan
 import com.nexters.doctor24.todoc.util.to24hourString
 import timber.log.Timber
 import java.text.SimpleDateFormat
@@ -38,7 +36,7 @@ internal class TimeViewModel(val resource: Resources) : BaseViewModel() {
         MutableLiveData<Boolean>().apply { value = true }     //true - start, false - end
     val isSelected: LiveData<Boolean> get() = _isSelected
     private val _checkTimeLimit = MutableLiveData<String>()
-    val checkTimeLimit : LiveData<String> get() = _checkTimeLimit
+    val checkTimeLimit: LiveData<String> get() = _checkTimeLimit
 
     private val _isPickerSelected = MutableLiveData<Boolean>().apply { postValue(false) }
     val isPickerSelected: LiveData<Boolean> get() = _isPickerSelected
@@ -53,7 +51,7 @@ internal class TimeViewModel(val resource: Resources) : BaseViewModel() {
     val isEndStoredTimeChanged: LiveData<Boolean> get() = _isEndStoredTimeChanged
 
     private val _isReset = SingleLiveEvent<Unit>()
-    val isReset : LiveData<Unit> get() = _isReset
+    val isReset: LiveData<Unit> get() = _isReset
 
     //5) 시간 setting 할 때 나올 수 있는 경우들 예외처리
     //      - 종료시간은 시작시간보다 느리게
@@ -62,7 +60,11 @@ internal class TimeViewModel(val resource: Resources) : BaseViewModel() {
 
     init {
         getCurrentTime()
-        storeTempTime()
+
+        _startStoredTime.value = _startTime.value
+        _endStoredTime.value = _endTime.value
+
+        _isOpen.value = false
     }
 
     fun isChangedStartTime(isChange: Boolean) {
@@ -82,12 +84,12 @@ internal class TimeViewModel(val resource: Resources) : BaseViewModel() {
     }
 
     fun storeTempTime() {
-        _startStoredTime.value = _startTime.value
-        _endStoredTime.value = _endTime.value
+        if(checkTimeLimit() ==""){
+            _startStoredTime.value = _startTime.value
+            _endStoredTime.value = _endTime.value
 
-
-
-        _isOpen.value = false
+            _isOpen.value = false
+        }
     }
 
     fun setBottomSheetState(state: Int) {
@@ -105,7 +107,6 @@ internal class TimeViewModel(val resource: Resources) : BaseViewModel() {
                 _endTime.value = _endStoredTime.value
             }
 
-            //
         } else {
             _isOpen.value = true
 
@@ -121,20 +122,17 @@ internal class TimeViewModel(val resource: Resources) : BaseViewModel() {
         } else {
             _endTime.value = setTime(view.hour, view.minute)
         }
-        checkTimeLimit(isStart)
     }
 
-    private fun checkTimeLimit(isStart : Boolean){
-        val message = if(isStart) {
-            _endTime.value?.to24hourString()?.let { end ->
-                if(_startTime.value?.to24hourString()?.isFasterThan(end) == false) resource.getString(R.string.start_time_error_message) else ""
-            }
-        } else {
-            _startTime.value?.to24hourString()?.let { start ->
-                if(_endTime.value?.to24hourString()?.isLaterThan(start) == false) resource.getString(R.string.end_time_error_message) else ""
-            }
+    private fun checkTimeLimit() : String {
+        var message = ""
+
+        _endTime.value?.to24hourString()?.let { end ->
+            message = if (_startTime.value?.to24hourString()?.isFasterThan(end) == false) resource.getString(R.string.set_time_error_message) else ""
         }
-        _checkTimeLimit.value = message ?: ""
+
+        _checkTimeLimit.value = message
+        return message
     }
 
     fun setTimeSelected(boolean: Boolean) {
@@ -149,7 +147,7 @@ internal class TimeViewModel(val resource: Resources) : BaseViewModel() {
         getCurrentTime()
         setTimeSelected(true)
 
-        if(_isOpen.value != true){
+        if (_isOpen.value != true) {
             //api
             _isReset.call()
         }
