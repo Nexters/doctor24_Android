@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "694743478779",
+    "firebase_url": "https://todoc-todoc.firebaseio.com",
+    "project_id": "todoc-todoc",
+    "storage_bucket": "todoc-todoc.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:694743478779:android:f658111769f61c97475b5e",
+        "android_client_info": {
+          "package_name": "com.nexters.doctor24.todoc"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "694743478779-5us3vjtammeqg7o24f7rhb4q7b9moaua.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBKrepvCi3l_7osZ4MoWygjGNU1aTRFcH4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "694743478779-5us3vjtammeqg7o24f7rhb4q7b9moaua.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
