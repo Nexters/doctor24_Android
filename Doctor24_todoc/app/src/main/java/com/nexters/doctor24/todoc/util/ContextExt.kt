@@ -20,3 +20,9 @@ val Int.toPx: Int
 
 val Int.toDp: Int
     get() = (this * Resources.getSystem().displayMetrics.density).toInt()
+
+val Int.toPxFloat: Float
+    get() = (this / Resources.getSystem().displayMetrics.density)
+
+val Int.toDpFloat: Float
+    get() = (this * Resources.getSystem().displayMetrics.density)

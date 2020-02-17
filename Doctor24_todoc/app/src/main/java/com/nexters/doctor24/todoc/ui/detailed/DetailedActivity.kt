@@ -93,6 +93,7 @@ internal class DetailedActivity : BaseActivity<DetailedFragmentBinding, Detailed
     private fun initObserve() {
         viewModel.detailedData.observe(this, Observer {
             if(::naverMap.isInitialized) setSelectedMarker(it)
+            binding.data = it
             detailData = it
             findLoadViewModel.determineLocation = LatLng(it.latitude, it.longitude)
             findLoadViewModel.centerName = it.name

@@ -31,6 +31,7 @@ import com.nexters.doctor24.todoc.ui.detailed.DetailedActivity
 import com.nexters.doctor24.todoc.ui.map.NaverMapViewModel
 import com.nexters.doctor24.todoc.ui.map.preview.PreviewFragment
 import com.nexters.doctor24.todoc.util.toDistance
+import com.nexters.doctor24.todoc.util.toDistanceDouble
 import kotlinx.android.extensions.LayoutContainer
 import kotlinx.android.synthetic.main.item_list_hospital.*
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
@@ -166,6 +167,7 @@ class GroupMarkerListDialog : BaseDialogFragment<GroupMarkerListDialogBinding>()
         val placeName : String = "",
         val todayHour : OperatingDate? = null,
         val distance : String = "",
+        val distanceOrder : Double = 0.0,
         val determine : LatLng? = null,
         val isShowFindLoad : Boolean = false
     )

@@ -4,6 +4,8 @@ import com.naver.maps.geometry.LatLng
 import java.text.SimpleDateFormat
 import java.util.*
 
+fun LatLng?.toDistanceDouble(from : LatLng?) : Double = from?.let{this?.distanceTo(it)} ?: 0.0
+
 fun LatLng.toDistance(from : LatLng?) : String {
     var meter = from?.let{this.distanceTo(it)} ?: 0.0
 

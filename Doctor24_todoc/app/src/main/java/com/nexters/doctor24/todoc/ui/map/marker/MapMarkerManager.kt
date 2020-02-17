@@ -208,6 +208,8 @@ internal class MapMarkerManager(val context: Context, private val naverMap: Nave
 
     fun getSelectMarkerItem(): MarkerUIData? = selectMarkerItem
 
+    fun isMarkerEmpty() = mapMarkerItems.isEmpty()
+
     inner class MarkerTagAdapter(private val markerItem: MarkerUIData) : InfoWindow.ViewAdapter() {
         private val view = LayoutInflater.from(context).inflate(R.layout.item_marker_name, null)
         private val name = view.findViewById<TextView>(R.id.text_name)
