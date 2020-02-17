@@ -31,7 +31,7 @@ internal class TimeViewModel(val resource: Resources) : BaseViewModel() {
     private val _endStoredTime = MutableLiveData<String>("")
     val endStoredTime: LiveData<String> get() = _endStoredTime
 
-    private val _isOpen = MutableLiveData<Boolean>()
+    private val _isOpen = MutableLiveData<Boolean>().apply{ postValue(false)}
     val isOpen: LiveData<Boolean> get() = _isOpen
 
     private val _isSelected =
@@ -63,8 +63,6 @@ internal class TimeViewModel(val resource: Resources) : BaseViewModel() {
 
         _startStoredTime.value = _startTime.value
         _endStoredTime.value = _endTime.value
-
-        _isOpen.value = false
     }
 
     fun isChangedStartTime(isChange: Boolean) {
@@ -103,9 +101,6 @@ internal class TimeViewModel(val resource: Resources) : BaseViewModel() {
             _isStartTimeChanged.value = false
             _isEndTimeChanged.value = false
 
-            Timber.e("startStore ${_startStoredTime.value}, startTime ${_startTime.value}")
-            Timber.e("endStore ${_endStoredTime.value}, endTime ${_endTime.value}")
-
             if ((_startStoredTime.value != _startTime.value) || (_endStoredTime.value != _endTime.value)) {
                 _startTime.value = _startStoredTime.value
                 _endTime.value = _endStoredTime.value
@@ -113,9 +108,9 @@ internal class TimeViewModel(val resource: Resources) : BaseViewModel() {
 
         } else {
             _isOpen.value = true
-
             setTimeSelected(true)
         }
+        Timber.e("oepn${_isOpen.value}")
     }
 
     fun setChangeTime(view: TimePicker, isStart: Boolean) {
@@ -171,6 +166,11 @@ internal class TimeViewModel(val resource: Resources) : BaseViewModel() {
 
         _startTime.value = setTime(timeHour, timeMin)
         _endTime.value = setTime(timeHour + 1, timeMin)
+
+        if(timeHour == 23){
+            _nowEndTime.value = setTime(23, 59)
+            _endTime.value = setTime(23, 59)
+        }
     }
 
     private fun setAmPm(hour: Int): String {
@@ -200,18 +200,5 @@ internal class TimeViewModel(val resource: Resources) : BaseViewModel() {
 
     fun setEndTimeLimit(){
         _endTime.value = "오후 11:59"
-    }
-
-    private fun validateEndTime() {
-        _startTime.value?.to24hourString()?.let { start ->
-            _endTime.value?.to24hourString()?.let { end ->
-                val startTime = start.split(":")
-                val endTime = end.split(":")
-
-                if((startTime[1].toInt() >= 12) && (endTime[1].toInt() < 12)){
-                    _endTime.value = "오후 11:59"
-                }
-            }
-        }
     }
 }

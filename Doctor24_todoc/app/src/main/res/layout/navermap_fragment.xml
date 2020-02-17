@@ -270,6 +270,18 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
+                <ImageView
+                    android:id="@+id/iv_map_frag_close_btn"
+                    android:layout_width="34dp"
+                    android:layout_height="34dp"
+                    android:src="@drawable/rectangle"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="10dp"
+                    android:padding="8dp"
+                    android:visibility="@{vmTime.isOpen}"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
                 <TextView
                     android:id="@+id/tv_set_time"
                     style="@style/AndSt1CenterBold14"
