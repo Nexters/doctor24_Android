@@ -152,13 +152,11 @@ fun String.to24hourString(): String {
         }
     }
 
-    if(hour < 10){
-        Timber.e("나에게ㅔㅔ 버거운"+this.toString()+"결고가나보자 : "+"0$hour:${setTime[1]}:00")
-        return "0$hour:${setTime[1]}:00"
+    return if(hour < 10){
+        "0$hour:${setTime[1]}:00"
     }
     else{
-        Timber.e("나에게ㅔㅔ 버거운"+this.toString()+"e결고가나보자 : "+"$hour:${setTime[1]}:00")
-        return "$hour:${setTime[1]}:00"
+        "$hour:${setTime[1]}:00"
     }
 }
 

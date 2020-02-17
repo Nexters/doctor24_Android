@@ -18,6 +18,8 @@ internal class TimeViewModel(val resource: Resources) : BaseViewModel() {
 
     private val _nowTime = MutableLiveData<String>()
     val nowTime: LiveData<String> get() = _nowTime
+    private val _nowEndTime = MutableLiveData<String>()
+    val nowEndTime: LiveData<String> get() = _nowEndTime
 
     private val _startTime = MutableLiveData<String>()
     val startTime: LiveData<String> get() = _startTime
@@ -53,10 +55,8 @@ internal class TimeViewModel(val resource: Resources) : BaseViewModel() {
     private val _isReset = SingleLiveEvent<Unit>()
     val isReset: LiveData<Unit> get() = _isReset
 
-    //5) 시간 setting 할 때 나올 수 있는 경우들 예외처리
-    //      - 종료시간은 시작시간보다 느리게
-    //      - 시작시간은 종료시간보다 빠르게
-    //      - 종료시간과 시작시간의 day차이 없도록(시작시간이 종료시간이 밤12시를 넘지 않도록)
+    private val _clickReset = MutableLiveData<Boolean>().apply { postValue(false) }
+    val clickReset: LiveData<Boolean> get() = _clickReset
 
     init {
         getCurrentTime()
@@ -81,6 +81,10 @@ internal class TimeViewModel(val resource: Resources) : BaseViewModel() {
 
     fun isChangedStoredEndTime(isChange: Boolean) {
         _isEndStoredTimeChanged.value = isChange
+    }
+
+    fun isChangeclickReset(isChange: Boolean) {
+        _clickReset.value = isChange
     }
 
     fun storeTempTime() {
@@ -152,6 +156,7 @@ internal class TimeViewModel(val resource: Resources) : BaseViewModel() {
             _isReset.call()
         }
 
+        _clickReset.value = false
     }
 
     private fun getCurrentTime() {
@@ -160,6 +165,9 @@ internal class TimeViewModel(val resource: Resources) : BaseViewModel() {
 
         val timeHour = SimpleDateFormat("HH").format(mDate).toInt()
         val timeMin = SimpleDateFormat("mm").format(mDate).toInt()
+
+        _nowTime.value = setTime(timeHour, timeMin)
+        _nowEndTime.value = setTime(timeHour + 1, timeMin)
 
         _startTime.value = setTime(timeHour, timeMin)
         _endTime.value = setTime(timeHour + 1, timeMin)
@@ -190,15 +198,20 @@ internal class TimeViewModel(val resource: Resources) : BaseViewModel() {
         return """${setAmPm(hour)} ${setHour(hour)}:${setMinute(minute)}"""
     }
 
-    private fun validateEndTime(hour: Int, minute: Int) {
-/*        if (hour > tp_time_picker.hour) {
-            Toast.makeText(context, "시간 설정을 다시 해 주세요1", Toast.LENGTH_SHORT).show()
-            return
-        } else if ((hour == tp_time_picker.hour) && (minute > tp_time_picker.minute)) {
-            Toast.makeText(context, "시간 설정을 다시 해 주세요2", Toast.LENGTH_SHORT).show()
-            return
+    fun setEndTimeLimit(){
+        _endTime.value = "오후 11:59"
+    }
+
+    private fun validateEndTime() {
+        _startTime.value?.to24hourString()?.let { start ->
+            _endTime.value?.to24hourString()?.let { end ->
+                val startTime = start.split(":")
+                val endTime = end.split(":")
+
+                if((startTime[1].toInt() >= 12) && (endTime[1].toInt() < 12)){
+                    _endTime.value = "오후 11:59"
+                }
+            }
         }
-        include_layout_set_time.visibility = View.VISIBLE
-        include_layout_set_time_picker.visibility = View.GONE*/
     }
 }

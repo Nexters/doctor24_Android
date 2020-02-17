@@ -278,6 +278,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="20dp"
                     android:layout_marginRight="24dp"
+                    android:visibility="@{vmTime.clickReset}"
                     android:onClick="@{()->vmTime.setInitialTime()}"
                     android:padding="8dp"
                     android:text="초기화"

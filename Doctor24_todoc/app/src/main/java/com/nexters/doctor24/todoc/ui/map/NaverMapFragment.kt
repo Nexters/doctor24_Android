@@ -221,6 +221,14 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
 
     private fun initObserve() {
 
+        viewModelTime.startStoredTime.observe(viewLifecycleOwner, Observer {
+            setResetVisivility()
+        })
+
+        viewModelTime.endStoredTime.observe(viewLifecycleOwner, Observer {
+            setResetVisivility()
+        })
+
         viewModelTime.checkTimeLimit.observe(viewLifecycleOwner, Observer {
             if(it.isNotEmpty()) {
                 Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
@@ -241,6 +249,8 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
         })
 
         viewModelTime.startTime.observe(viewLifecycleOwner, Observer{
+            validateEndTime()
+
             if(it != viewModelTime.startStoredTime.value){
                 viewModelTime.isChangedStartTime(true)
             }else{
@@ -249,6 +259,8 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
         })
 
         viewModelTime.endTime.observe(viewLifecycleOwner, Observer {
+            validateEndTime()
+
             if (it != viewModelTime.endStoredTime.value) {
                 viewModelTime.isChangedEndTime(true)
             } else {
@@ -315,6 +327,31 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
         categoryViewModel.categoryCloseEvent.observe(viewLifecycleOwner, Observer {
             bottomSheetCategory.dismiss()
         })
+    }
+
+    private fun setResetVisivility(){
+        if((viewModelTime.startStoredTime.value == viewModelTime.nowTime.value) && (viewModelTime.endStoredTime.value == viewModelTime.nowEndTime.value)){
+            viewModelTime.isChangeclickReset(false)
+        }else
+            viewModelTime.isChangeclickReset(true)
+    }
+
+    private fun validateEndTime() {
+        viewModelTime.isSelected.value?.let { selectStart ->
+            if(selectStart) {
+            } else {
+                val startTime = viewModelTime.startTime.value?.to24hourString()?.split(":")
+                val endTime = viewModelTime.endTime.value?.to24hourString()?.split(":")
+
+                startTime?.let { start ->
+                    endTime?.let { end ->
+
+                        if((start[0].toInt()>=12) && (end[0].toInt()<12))
+                            viewModelTime.setEndTimeLimit()
+                    }
+                }
+            }
+        }
     }
 
     private fun showRefresh() {

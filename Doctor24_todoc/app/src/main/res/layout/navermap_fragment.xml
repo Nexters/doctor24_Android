@@ -277,9 +277,10 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="20dp"
                     android:layout_marginRight="24dp"
-                    android:onClick="@{()->vmTime.setInitialTime()}"
+                    android:visibility="@{vmTime.clickReset}"
                     android:padding="8dp"
                     android:text="초기화"
+                    android:onClick="@{()->vmTime.setInitialTime()}"
                     android:textColor="@color/blue"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
