@@ -2,6 +2,9 @@
     <string name="app_name">토닥토닥</string>
     <string name="time_set">%2$s %2$s:%2$s</string>
 
+    <string name="map_tab_hospital">병원</string>
+    <string name="map_tab_pharmacy">약국</string>
+
     <string name="category_dialog_title">진료 과목</string>
     <string name="category_dialog_reset">초기화</string>
     <string name="category_item_all">""</string>
