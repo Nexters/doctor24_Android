@@ -199,6 +199,10 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
             startActivity(listIntent)
         }
 
+        binding.linearLayout.setOnClickListener {
+            bottomSheetBehavior.state = STATE_EXPANDED
+        }
+
         initCategoryView()
     }
 
