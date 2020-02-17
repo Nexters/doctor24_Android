@@ -17,6 +17,7 @@ import com.nexters.doctor24.todoc.ui.findload.FindLoadDialog
 import com.nexters.doctor24.todoc.ui.findload.FindLoadViewModel
 import com.nexters.doctor24.todoc.ui.map.marker.group.GroupMarkerListDialog
 import com.nexters.doctor24.todoc.util.toDistance
+import com.nexters.doctor24.todoc.util.toDistanceDouble
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import timber.log.Timber
 
@@ -70,11 +71,13 @@ internal class MedicalListActivity : BaseActivity<ActivityMedicalListBinding, Me
                     placeName = it.placeName,
                     todayHour = it.day,
                     distance = location?.toDistance(LatLng(it.latitude, it.longitude)) ?: "",
+                    distanceOrder = location.toDistanceDouble(LatLng(it.latitude, it.longitude)),
                     determine = location,
                     isShowFindLoad = true
                 )
             )
         }
+        uiData.sortBy { it.distanceOrder }
 
         binding.tvTotal.text = String.format(getString(R.string.medical_list_total), uiData.count())
 
@@ -97,7 +100,7 @@ internal class MedicalListActivity : BaseActivity<ActivityMedicalListBinding, Me
     }
 
     override fun onClickListItem(index: Int) {
-        uiData?.let {
+        uiData.let {
             startActivity(Intent(this, DetailedActivity::class.java).apply {
                 putExtra(DetailedActivity.KEY_MEDICAL_TYPE, it[index].type)
                 putExtra(DetailedActivity.KEY_MEDICAL_ID, it[index].id)
@@ -107,7 +110,7 @@ internal class MedicalListActivity : BaseActivity<ActivityMedicalListBinding, Me
     }
 
     override fun onClickFindLoad(index: Int) {
-        uiData?.let{
+        uiData.let{
             findLoadViewModel.centerName = it[index].placeName
             findLoadViewModel.determineLocation = it[index].determine
             findLoadDialog.show(supportFragmentManager, FindLoadDialog.TAG)
