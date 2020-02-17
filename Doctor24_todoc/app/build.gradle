@@ -4,6 +4,7 @@ apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
 apply plugin: 'com.android.application'
 apply plugin: 'com.google.gms.google-services'
+apply plugin: 'com.google.firebase.crashlytics'
 android {
     compileSdkVersion 29
     buildToolsVersion "29.0.2"
@@ -95,7 +96,11 @@ dependencies {
 
     // debug
     implementation "com.jakewharton.timber:timber:$rootProject.timber_version"
+
+    // firebase
     implementation 'com.google.firebase:firebase-analytics:17.2.2'
+    implementation 'com.google.firebase:firebase-crashlytics:17.0.0-beta01'
+    implementation 'com.google.firebase:firebase-core:17.2.2'
 
     // test
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
