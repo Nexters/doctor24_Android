@@ -2,7 +2,9 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
-
+apply plugin: 'com.android.application'
+apply plugin: 'com.google.gms.google-services'
+apply plugin: 'com.google.firebase.crashlytics'
 android {
     compileSdkVersion 29
     buildToolsVersion "29.0.2"
@@ -13,7 +15,7 @@ android {
         targetSdkVersion 29
         versionCode 1
         versionName "1.0"
-
+        vectorDrawables.useSupportLibrary = true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -29,12 +31,20 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
 
+    kotlinOptions {
+        jvmTarget = JavaVersion.VERSION_1_8.toString()
+    }
+
     dataBinding {
         enabled = true
     }
 
     androidExtensions {
         experimental = true
+    }
+
+    testOptions {
+        unitTests.returnDefaultValues = true
     }
 }
 
@@ -50,7 +60,9 @@ dependencies {
     implementation "androidx.navigation:navigation-fragment-ktx:$rootProject.navigation_version"
     implementation "androidx.navigation:navigation-ui-ktx:$rootProject.navigation_version"
     implementation "androidx.lifecycle:lifecycle-extensions:$rootProject.lifecycle_version"
-    implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
+
+    // motionLayout
+    implementation 'androidx.constraintlayout:constraintlayout:2.0.0-beta4'
 
     // google
     implementation "com.google.android.material:material:$rootProject.material_version"
@@ -60,6 +72,7 @@ dependencies {
     implementation "com.naver.maps:map-sdk:$rootProject.map_version"
 
     // Coroutine
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$rootProject.coroutine_version"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$rootProject.coroutine_version"
 
     // Network
@@ -76,13 +89,38 @@ dependencies {
 
     // koin
     implementation "org.koin:koin-core:$rootProject.koin_version"
-    implementation "org.koin:koin-androidx-scope:$rootProject.koin_version" // Koin for Lifecycle scoping
-    implementation "org.koin:koin-androidx-viewmodel:$rootProject.koin_version" // Koin for Android Architecture ViewModel
+    implementation "org.koin:koin-androidx-scope:$rootProject.koin_version"
+    // Koin for Lifecycle scoping
+    implementation "org.koin:koin-androidx-viewmodel:$rootProject.koin_version"
+    // Koin for Android Architecture ViewModel
+
+    // debug
+    implementation "com.jakewharton.timber:timber:$rootProject.timber_version"
+
+    // firebase
+    implementation 'com.google.firebase:firebase-analytics:17.2.2'
+    implementation 'com.google.firebase:firebase-crashlytics:17.0.0-beta01'
+    implementation 'com.google.firebase:firebase-core:17.2.2'
 
     // test
+    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
+    implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.2.0'
+    implementation 'androidx.appcompat:appcompat:1.1.0'
     testImplementation 'junit:junit:4.13'
     testImplementation "org.mockito:mockito-core:$rootProject.mockito_version"
+    testImplementation "androidx.arch.core:core-testing:2.1.0"
+    androidTestImplementation 'androidx.test:runner:1.2.0'
+    androidTestImplementation 'androidx.test:rules:1.2.0'
+    androidTestImplementation 'androidx.test:core:1.2.0'
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
     testImplementation "org.koin:koin-test:$rootProject.koin_version"
+    testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$rootProject.coroutine_version"
+    androidTestImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$rootProject.coroutine_version"
+
+/*    //bottom sheet
+    classpath 'androidx.support.design.widget.AppBarLayout$ScrollingViewBehavior'
+    classpath 'androidx.support.design.widget.BottomSheetBehavior'*/
+
 }

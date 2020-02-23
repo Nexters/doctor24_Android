@@ -1,12 +1,22 @@
 package com.nexters.doctor24.todoc.repository
 
-import androidx.lifecycle.LiveData
-import com.nexters.doctor24.todoc.data.MarkerDataSource
-import com.nexters.doctor24.todoc.data.response.ResMapMarker
-import retrofit2.Retrofit
+import com.naver.maps.geometry.LatLng
+import com.nexters.doctor24.todoc.data.marker.MarkerDataSource
+import com.nexters.doctor24.todoc.data.marker.MarkerTypeEnum
+import com.nexters.doctor24.todoc.data.marker.response.ResMapLocation
 
 internal class MarkerRepositoryImpl(private val dataSource: MarkerDataSource): MarkerRepository {
-    override fun getMarkers(lat:String, long:String, radius: String): LiveData<List<ResMapMarker>> {
-        return dataSource.getMarkers(lat, long, radius)
+
+    override suspend fun getMarkers(center : LatLng, type: MarkerTypeEnum, level: Int?, category: String?, startTime: String?, endTime: String?): List<ResMapLocation> {
+        return dataSource.getMarkers(center, type, level, category, startTime, endTime)
+    }
+
+    override suspend fun getBounds(
+        zLocation: LatLng,
+        xLocation: LatLng,
+        type: MarkerTypeEnum
+    ): List<ResMapLocation> {
+        return dataSource.getBounds(xlat = xLocation.latitude.toString(), xlong = xLocation.longitude.toString(),
+            zlat = zLocation.latitude.toString(), zlong = zLocation.longitude.toString(), type = type)
     }
 }
