@@ -25,4 +25,11 @@
     <style name="AppModalStyle" parent="Widget.Design.BottomSheet.Modal">
         <item name="android:background">@android:color/transparent</item>
     </style>
+
+    <style name="AppTheme.Picker" parent="Theme.AppCompat.Light.NoActionBar" >
+        <item name="android:textColorPrimary">@color/grey_1</item>
+        <item name="colorControlNormal">@color/black</item>
+        <item name="android:textColorHighlight">@color/colorPrimary</item>
+    </style>
+
 </resources>
