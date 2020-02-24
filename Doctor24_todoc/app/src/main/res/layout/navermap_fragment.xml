@@ -394,6 +394,7 @@
                     android:id="@+id/tp_time_picker"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:descendantFocusability="blocksDescendants"
                     android:set_picker_default="@{vmTime.isSelected? vmTime.startTime : vmTime.endTime}"
                     android:timePickerMode="spinner"
                     app:layout_constraintBottom_toTopOf="@+id/cl_bottom_view"
