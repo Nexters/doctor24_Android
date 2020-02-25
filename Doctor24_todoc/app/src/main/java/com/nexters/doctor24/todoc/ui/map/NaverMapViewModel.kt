@@ -18,6 +18,7 @@ import com.nexters.doctor24.todoc.util.isCurrentMapDarkMode
 import com.nexters.doctor24.todoc.util.to24hourString
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import timber.log.Timber
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -84,6 +85,9 @@ internal class NaverMapViewModel(private val dispatchers: DispatcherProvider,
     private val _dialogCloseEvent = SingleLiveEvent<Unit>()
     val dialogCloseEvent : LiveData<Unit> get() = _dialogCloseEvent
 
+    private val _coronaSelected = MutableLiveData<Boolean>().apply { postValue(false) }
+    val coronaSelected : LiveData<Boolean> get() = _coronaSelected
+
     fun reqMarker(center: LatLng, zoomLevel: Double, startTime : String?, endTime: String?) {
         uiScope.launch(dispatchers.io()) {
             try {
@@ -98,6 +102,28 @@ internal class NaverMapViewModel(private val dispatchers: DispatcherProvider,
                 withContext(dispatchers.main()) {
                     _markerList.value = result
                 }
+            } catch (e:Exception) {
+
+            }
+        }
+    }
+
+    fun reqCoronaMarker(center: LatLng, zoomLevel: Double, startTime : String?, endTime: String?) {
+        uiScope.launch(dispatchers.io()) {
+            try {
+                val result = repo.getMarkers(
+                    center = center,
+                    type = MarkerTypeEnum.CORONA,
+                    level = getRadiusLevel(zoomLevel),
+                    category = null,
+                    startTime = startTime,
+                    endTime = endTime
+                )
+                withContext(dispatchers.main()) {
+                    _markerList.value = result
+                }
+
+                Timber.e(result.toString())
             } catch (e:Exception) {
 
             }
@@ -150,6 +176,10 @@ internal class NaverMapViewModel(private val dispatchers: DispatcherProvider,
         }
     }
 
+    fun onClickCoronaBtn(){
+        _coronaSelected.value = coronaSelected.value != true
+    }
+
     fun onClickFilter() {
         _categoryEvent.value = sharedPreferences.getInt(KEY_PREF_FILTER_CATEGORY, 0)
     }
@@ -162,7 +192,11 @@ internal class NaverMapViewModel(private val dispatchers: DispatcherProvider,
         _refreshEvent.call()
         _currentLocation.value?.let { location ->
             _currentZoom.value?.let { zoom ->
-                reqMarker(location, zoom, start.to24hourString(), end.to24hourString())
+                if(coronaSelected.value == true){
+                    reqCoronaMarker(location,zoom, start.to24hourString(), end.to24hourString())
+                }else{
+                    reqMarker(location, zoom, start.to24hourString(), end.to24hourString())
+                }
             }
         }
     }
