@@ -100,6 +100,17 @@
                     />
             </androidx.constraintlayout.widget.ConstraintLayout>
 
+            <TextView
+                android:id="@+id/text_btn_corona"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:onClick="@{()->vm.onClickCoronaBtn()}"
+                android:text="corona"
+                android:textSize="30dp"
+                android:layout_marginStart="24dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/layout_tab" />
+
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/btn_refresh"
                 android:layout_width="124dp"

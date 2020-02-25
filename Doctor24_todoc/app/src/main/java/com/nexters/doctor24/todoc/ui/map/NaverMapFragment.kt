@@ -41,7 +41,6 @@ import com.nexters.doctor24.todoc.ui.map.preview.PreviewViewModel
 import com.nexters.doctor24.todoc.util.isCurrentMapDarkMode
 import com.nexters.doctor24.todoc.util.to24hourString
 import com.nexters.doctor24.todoc.util.toDp
-import com.nexters.doctor24.todoc.util.toHour
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import timber.log.Timber
 
@@ -305,6 +304,13 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
                 if(categoryAdapter.childViewList.isNotEmpty()){
                     categoryAdapter.childViewList[0].isChecked = true
                 }
+            }
+        })
+
+        viewModel.coronaSelected.observe(viewLifecycleOwner, Observer {
+            if (it) {
+                if(::markerManager.isInitialized) markerManager.setMarker(arrayListOf())
+                viewModel.reqCoronaMarker(naverMap.cameraPosition.target, naverMap.cameraPosition.zoom, viewModelTime.startTime.value?.to24hourString(), viewModelTime.endTime.value?.to24hourString())
             }
         })
 

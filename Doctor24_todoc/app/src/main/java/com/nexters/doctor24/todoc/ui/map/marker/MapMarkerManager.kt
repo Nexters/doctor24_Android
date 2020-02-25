@@ -145,6 +145,8 @@ internal class MapMarkerManager(val context: Context, private val naverMap: Nave
                     else -> R.drawable.ic_marker_hospital_normal
                 }
                 MarkerTypeEnum.PHARMACY -> R.drawable.ic_marker_pharmacy
+                MarkerTypeEnum.CORONA -> R.drawable.ic_marker_corona
+
             }
         )
     }
@@ -153,6 +155,7 @@ internal class MapMarkerManager(val context: Context, private val naverMap: Nave
         markerView.setImageResource(when(type) {
             MarkerTypeEnum.HOSPITAL -> R.drawable.ic_marker_hospital_normal
             MarkerTypeEnum.PHARMACY -> R.drawable.ic_marker_pharmacy
+            MarkerTypeEnum.CORONA -> R.drawable.ic_marker_corona
         })
         countView.text = total.toString()
         return OverlayImage.fromView(view)
@@ -163,6 +166,7 @@ internal class MapMarkerManager(val context: Context, private val naverMap: Nave
             when(type) {
                 MarkerTypeEnum.HOSPITAL -> R.drawable.ic_marker_hospital_select
                 MarkerTypeEnum.PHARMACY -> R.drawable.ic_marker_pharmacy_select
+                MarkerTypeEnum.CORONA -> R.drawable.ic_marker_corona_select
             }
         )
     }
