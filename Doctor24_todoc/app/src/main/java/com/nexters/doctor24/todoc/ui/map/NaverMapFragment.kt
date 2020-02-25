@@ -512,7 +512,7 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
             isNightModeEnabled = isCurrentMapDarkMode()
             setBackgroundResource(NaverMap.DEFAULT_BACKGROUND_DRWABLE_DARK)
             mapType = NaverMap.MapType.Navi
-            minZoom = 12.0
+            minZoom = 5.0
             maxZoom = 17.0
         }
 
