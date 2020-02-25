@@ -192,7 +192,11 @@ internal class NaverMapViewModel(private val dispatchers: DispatcherProvider,
         _refreshEvent.call()
         _currentLocation.value?.let { location ->
             _currentZoom.value?.let { zoom ->
-                reqMarker(location, zoom, start.to24hourString(), end.to24hourString())
+                if(coronaSelected.value == true){
+                    reqMarker(location, zoom, start.to24hourString(), end.to24hourString())
+                }else{
+                    reqCoronaMarker(location,zoom, start.to24hourString(), end.to24hourString())
+                }
             }
         }
     }
