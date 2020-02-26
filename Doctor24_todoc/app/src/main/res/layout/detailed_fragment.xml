@@ -4,7 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-        <import type="com.nexters.doctor24.todoc.data.marker.MarkerTypeEnum"/>
+        <variable
+            name="marker"
+            type="com.nexters.doctor24.todoc.data.marker.MarkerTypeEnum" />
         <variable
             name="vm"
             type="com.nexters.doctor24.todoc.ui.detailed.DetailedViewModel" />
@@ -103,8 +105,8 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:orientation="horizontal"
-                            android:visibility="@{data.medicalType == MarkerTypeEnum.HOSPITAL.type}"
                             app:layout_constraintStart_toStartOf="parent"
+                            android:visibility="@{!marker.PHARMACY.type.equals(data.medicalType)}"
                             app:layout_constraintTop_toTopOf="parent">
 
                             <ImageView
@@ -112,16 +114,15 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginEnd="6dp"
-                                android:src="@drawable/corona"
-                                android:visibility="gone" />
-
+                                android:visibility="@{marker.CORONA.type.equals(data.medicalType)}"
+                                android:src="@drawable/corona"/>
                             <ImageView
                                 android:id="@+id/iv_detailed_frag_normal"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginEnd="6dp"
                                 android:src="@drawable/nomal"
-                                android:visibility="gone" />
+                                android:visibility="@{!data.emergency &amp;&amp; !data.nightTimeServe}" />
 
                             <ImageView
                                 android:id="@+id/iv_detailed_frag_emergency"

@@ -34,6 +34,8 @@ internal class DetailedViewModel(
     private val _closeDetailed = SingleLiveEvent<Unit>()
     val closeDetailed : LiveData<Unit> get() = _closeDetailed
 
+    val corona = "corona"
+
     fun reqDetailedInfo(type: String, facilityId: String) {
         uiScope.launch(dispatchers.io()) {
             try {
@@ -44,6 +46,7 @@ internal class DetailedViewModel(
 
                 withContext(dispatchers.main()) {
                     _detailedData.value = result
+                    Timber.e(result.toString())
                     val weekendList = mutableListOf<Day>()
                     val weekdayList = mutableListOf<Day>()
                     result.days.forEach {
