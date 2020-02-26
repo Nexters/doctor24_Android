@@ -116,7 +116,7 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
                         viewModelTime.setBottomSheetState(newState)
                     }
                 }
-                if (newState == BottomSheetBehavior.STATE_COLLAPSED) {
+                if (newState == STATE_COLLAPSED) {
                     bgShape.setColor(Color.WHITE)
                 } else {
                     bgShape.setColor(Color.argb((100*2.55).toInt(),239, 242, 248))
@@ -124,6 +124,7 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
             }
 
             override fun onSlide(bottomSheet: View, slideOffset: Float) {
+
                 if (slideOffset > 0 && slideOffset < 1) {
                     bgShape.setColor(Color.argb((100*2.55).toInt(),239, 242, 248))
                     bgShape.alpha = floatToAlpha(slideOffset)
@@ -325,9 +326,13 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
                 setTypeface(null, if(it) Typeface.BOLD else Typeface.NORMAL)
             }
             if (it) {
+                bottomSheetBehavior.peekHeight = 160
                 if (::markerManager.isInitialized) markerManager.setMarker(arrayListOf())
                 viewModel.reqCoronaMarker(naverMap.cameraPosition.target)
             } else {
+                bottomSheetBehavior.peekHeight = 380
+                bottomSheetBehavior.state = STATE_COLLAPSED
+
                 if (::markerManager.isInitialized) markerManager.setMarker(arrayListOf())
                 if (::naverMap.isInitialized) {
                     naverMap.apply {

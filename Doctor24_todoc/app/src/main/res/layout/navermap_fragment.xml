@@ -307,10 +307,12 @@
                     android:layout_width="28dp"
                     android:layout_height="4dp"
                     android:layout_marginVertical="12dp"
+                    android:inVisibility="@{!vm.coronaSelected}"
                     android:background="@drawable/background_bottom_sheet_holder"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
+
 
                 <ImageView
                     android:id="@+id/iv_map_frag_close_btn"
@@ -325,13 +327,26 @@
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <TextView
+                    android:id="@+id/tv_set_time_closed"
+                    style="@style/AndSt1CenterBoldDisable14"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="6dp"
+                    android:inVisibility="@{vm.coronaSelected}"
+                    android:text="@string/set_time"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/bottom_sheet_btn" />
+
+                <TextView
                     android:id="@+id/tv_set_time"
                     style="@style/AndSt1CenterBold14"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:padding="6dp"
+                    android:inVisibility="@{!vm.coronaSelected}"
                     android:layout_marginTop="6dp"
-                    android:text="진료 시간"
+                    android:text="@string/set_time"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/bottom_sheet_btn" />
@@ -342,6 +357,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="20dp"
                     android:layout_marginRight="24dp"
+                    android:inVisibility="@{!vm.coronaSelected}"
                     android:visibility="@{vmTime.clickReset}"
                     android:padding="8dp"
                     android:text="초기화"

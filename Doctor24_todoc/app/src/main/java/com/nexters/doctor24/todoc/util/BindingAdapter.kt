@@ -6,6 +6,7 @@ import android.view.View
 import android.widget.TextView
 import android.widget.TimePicker
 import androidx.annotation.DrawableRes
+import androidx.core.view.marginTop
 import androidx.databinding.BindingAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.nexters.doctor24.todoc.data.detailed.response.Day
@@ -20,6 +21,14 @@ fun setVisibility(view: View, isVisible: Boolean) {
         view.visibility = View.VISIBLE
     } else
         view.visibility = View.GONE
+}
+
+@BindingAdapter("android:inVisibility")
+fun setInVisibility(view: View, isVisible: Boolean) {
+    if (isVisible) {
+        view.visibility = View.VISIBLE
+    } else
+        view.visibility = View.INVISIBLE
 }
 
 @BindingAdapter("todayOpen")
