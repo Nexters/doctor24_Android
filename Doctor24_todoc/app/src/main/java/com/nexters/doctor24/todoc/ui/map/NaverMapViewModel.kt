@@ -166,6 +166,7 @@ internal class NaverMapViewModel(private val dispatchers: DispatcherProvider,
         _tabChangeEvent.value = type
         if(type == MarkerTypeEnum.PHARMACY) {
             _currentCategory.value = null
+            _coronaSelected.value = false
             _categoryShow.value = false
         } else {
             _categoryShow.value = true
