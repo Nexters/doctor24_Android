@@ -156,6 +156,8 @@ internal class DetailedActivity : BaseActivity<DetailedFragmentBinding, Detailed
             when (type) {
                 "hospital" -> R.drawable.ic_marker_hospital_select
                 "pharmacy" -> R.drawable.ic_marker_pharmacy_select
+                "corona" -> R.drawable.ic_marker_corona_select
+
                 else -> R.drawable.ic_marker_hospital_select
             }
         )

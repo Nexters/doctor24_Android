@@ -108,12 +108,20 @@
                             app:layout_constraintTop_toTopOf="parent">
 
                             <ImageView
+                                android:id="@+id/iv_detailed_frag_corona"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginEnd="6dp"
+                                android:src="@drawable/corona"
+                                android:visibility="gone" />
+
+                            <ImageView
                                 android:id="@+id/iv_detailed_frag_normal"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginEnd="6dp"
                                 android:src="@drawable/nomal"
-                                android:visibility="@{!data.emergency &amp;&amp; !data.nightTimeServe}" />
+                                android:visibility="gone" />
 
                             <ImageView
                                 android:id="@+id/iv_detailed_frag_emergency"
