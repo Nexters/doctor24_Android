@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
+import com.naver.maps.geometry.LatLngBounds
 import com.naver.maps.map.NaverMap
 import com.naver.maps.map.overlay.Align
 import com.naver.maps.map.overlay.InfoWindow
@@ -169,6 +170,12 @@ internal class MapMarkerManager(val context: Context, private val naverMap: Nave
                 MarkerTypeEnum.CORONA -> R.drawable.ic_marker_corona_select
             }
         )
+    }
+
+    fun makeBounds() : LatLngBounds {
+        val bounds = LatLngBounds.Builder()
+        mapMarkers.map{ it.key.location }.forEach { bounds.include(it) }
+        return bounds.build()
     }
 
     fun selectMarker(markerItem: MarkerUIData) {

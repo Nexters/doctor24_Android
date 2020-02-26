@@ -108,16 +108,12 @@ internal class NaverMapViewModel(private val dispatchers: DispatcherProvider,
         }
     }
 
-    fun reqCoronaMarker(center: LatLng, zoomLevel: Double, startTime : String?, endTime: String?) {
+    fun reqCoronaMarker(center: LatLng) {
         uiScope.launch(dispatchers.io()) {
             try {
                 val result = repo.getMarkers(
                     center = center,
-                    type = MarkerTypeEnum.CORONA,
-                    level = getRadiusLevel(zoomLevel),
-                    category = null,
-                    startTime = startTime,
-                    endTime = endTime
+                    type = MarkerTypeEnum.CORONA
                 )
                 withContext(dispatchers.main()) {
                     _markerList.value = result
@@ -193,7 +189,7 @@ internal class NaverMapViewModel(private val dispatchers: DispatcherProvider,
         _currentLocation.value?.let { location ->
             _currentZoom.value?.let { zoom ->
                 if(coronaSelected.value == true){
-                    reqCoronaMarker(location,zoom, start.to24hourString(), end.to24hourString())
+                    reqCoronaMarker(location)
                 }else{
                     reqMarker(location, zoom, start.to24hourString(), end.to24hourString())
                 }

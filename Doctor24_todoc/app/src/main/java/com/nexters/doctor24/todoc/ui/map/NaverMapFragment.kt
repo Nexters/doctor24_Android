@@ -136,8 +136,8 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
 
     private fun initView() {
 
-        binding.textTabHospital?.setOnClickListener { viewModel.onChangeTab(MarkerTypeEnum.HOSPITAL) }
-        binding.textTabPharmacy?.setOnClickListener { viewModel.onChangeTab(MarkerTypeEnum.PHARMACY) }
+        binding.textTabHospital.setOnClickListener { viewModel.onChangeTab(MarkerTypeEnum.HOSPITAL) }
+        binding.textTabPharmacy.setOnClickListener { viewModel.onChangeTab(MarkerTypeEnum.PHARMACY) }
 
         binding.buttonLocation.setOnClickListener {
             when(locationState) {
@@ -201,11 +201,11 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
     private fun initObserve() {
 
         viewModelTime.startStoredTime.observe(viewLifecycleOwner, Observer {
-            setResetVisivility()
+            setResetVisibility()
         })
 
         viewModelTime.endStoredTime.observe(viewLifecycleOwner, Observer {
-            setResetVisivility()
+            setResetVisibility()
         })
 
         viewModelTime.checkTimeLimit.observe(viewLifecycleOwner, Observer {
@@ -256,6 +256,18 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
             } else {
                 markerManager.setMarker(it)
                 hideRefresh()
+                if(viewModel.coronaSelected.value == true) {
+                    val cameraUpdate = CameraUpdate.fitBounds(markerManager.makeBounds()).animate(CameraAnimation.Fly)
+                    naverMap.apply{
+                        minZoom = 5.0
+                        moveCamera(cameraUpdate)
+                    }
+                } else {
+                    naverMap.apply {
+                        minZoom = 12.0
+                        moveCamera(CameraUpdate.zoomTo(12.0).animate(CameraAnimation.Fly))
+                    }
+                }
             }
         })
 
@@ -310,7 +322,7 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
         viewModel.coronaSelected.observe(viewLifecycleOwner, Observer {
             if (it) {
                 if(::markerManager.isInitialized) markerManager.setMarker(arrayListOf())
-                viewModel.reqCoronaMarker(naverMap.cameraPosition.target, naverMap.cameraPosition.zoom, viewModelTime.startTime.value?.to24hourString(), viewModelTime.endTime.value?.to24hourString())
+                viewModel.reqCoronaMarker(naverMap.cameraPosition.target)
             }
         })
 
@@ -328,7 +340,7 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
         })
     }
 
-    private fun setResetVisivility(){
+    private fun setResetVisibility(){
         if((viewModelTime.startStoredTime.value == viewModelTime.nowTime.value) && (viewModelTime.endStoredTime.value == viewModelTime.nowEndTime.value)){
             viewModelTime.isChangeclickReset(false)
         }else
@@ -512,7 +524,7 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
             isNightModeEnabled = isCurrentMapDarkMode()
             setBackgroundResource(NaverMap.DEFAULT_BACKGROUND_DRWABLE_DARK)
             mapType = NaverMap.MapType.Navi
-            minZoom = 5.0
+            minZoom = 12.0
             maxZoom = 17.0
         }
 
