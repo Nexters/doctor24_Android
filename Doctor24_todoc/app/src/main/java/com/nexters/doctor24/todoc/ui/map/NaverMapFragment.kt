@@ -257,9 +257,9 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
                 markerManager.setMarker(it)
                 hideRefresh()
                 if(viewModel.coronaSelected.value == true) {
-                    val cameraUpdate = CameraUpdate.fitBounds(markerManager.makeBounds()).animate(CameraAnimation.Fly)
+                    val cameraUpdate = CameraUpdate.fitBounds(markerManager.makeBounds(), 60).animate(CameraAnimation.Fly)
                     naverMap.apply{
-                        minZoom = 5.0
+                        minZoom = 8.0
                         moveCamera(cameraUpdate)
                     }
                 } else {
