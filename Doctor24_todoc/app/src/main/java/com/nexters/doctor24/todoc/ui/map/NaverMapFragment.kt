@@ -2,6 +2,7 @@ package com.nexters.doctor24.todoc.ui.map
 
 import android.content.Intent
 import android.graphics.Color
+import android.graphics.Typeface
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.view.Gravity
@@ -51,6 +52,10 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
     companion object {
         private const val LOCATION_PERMISSION_REQUEST_CODE = 1000
         private const val LAYOUT_SPAN_COUNT = 5
+
+        private const val MAP_ZOOM_LEVEL_MIN = 12.0
+        private const val MAP_ZOOM_LEVEL_MAX = 17.0
+        private const val MAP_ZOOM_LEVEL_CORONA = 8.0
     }
 
     private lateinit var locationSource: FusedLocationSource
@@ -136,8 +141,8 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
 
     private fun initView() {
 
-        binding.textTabHospital?.setOnClickListener { viewModel.onChangeTab(MarkerTypeEnum.HOSPITAL) }
-        binding.textTabPharmacy?.setOnClickListener { viewModel.onChangeTab(MarkerTypeEnum.PHARMACY) }
+        binding.textTabHospital.setOnClickListener { viewModel.onChangeTab(MarkerTypeEnum.HOSPITAL) }
+        binding.textTabPharmacy.setOnClickListener { viewModel.onChangeTab(MarkerTypeEnum.PHARMACY) }
 
         binding.buttonLocation.setOnClickListener {
             when(locationState) {
@@ -174,7 +179,7 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
             bottomSheetBehavior.state = STATE_EXPANDED
         }
 
-        binding.ivMapFragCloseBtn?.setOnClickListener {
+        binding.ivMapFragCloseBtn.setOnClickListener {
             bottomSheetBehavior.state = STATE_COLLAPSED
         }
 
@@ -201,11 +206,11 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
     private fun initObserve() {
 
         viewModelTime.startStoredTime.observe(viewLifecycleOwner, Observer {
-            setResetVisivility()
+            setResetVisibility()
         })
 
         viewModelTime.endStoredTime.observe(viewLifecycleOwner, Observer {
-            setResetVisivility()
+            setResetVisibility()
         })
 
         viewModelTime.checkTimeLimit.observe(viewLifecycleOwner, Observer {
@@ -256,6 +261,13 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
             } else {
                 markerManager.setMarker(it)
                 hideRefresh()
+                if(viewModel.coronaSelected.value == true) {
+                    val cameraUpdate = CameraUpdate.fitBounds(markerManager.makeBounds(), 100).animate(CameraAnimation.Easing)
+                    naverMap.apply{
+                        minZoom = MAP_ZOOM_LEVEL_CORONA
+                        moveCamera(cameraUpdate)
+                    }
+                }
             }
         })
 
@@ -308,9 +320,27 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
         })
 
         viewModel.coronaSelected.observe(viewLifecycleOwner, Observer {
+            binding.textBtnCorona.apply{
+                isSelected = it
+                setTypeface(null, if(it) Typeface.BOLD else Typeface.NORMAL)
+            }
             if (it) {
-                if(::markerManager.isInitialized) markerManager.setMarker(arrayListOf())
-                viewModel.reqCoronaMarker(naverMap.cameraPosition.target, naverMap.cameraPosition.zoom, viewModelTime.startTime.value?.to24hourString(), viewModelTime.endTime.value?.to24hourString())
+                if (::markerManager.isInitialized) markerManager.setMarker(arrayListOf())
+                viewModel.reqCoronaMarker(naverMap.cameraPosition.target)
+            } else {
+                if (::markerManager.isInitialized) markerManager.setMarker(arrayListOf())
+                if (::naverMap.isInitialized) {
+                    naverMap.apply {
+                        minZoom = MAP_ZOOM_LEVEL_MIN
+                        moveCamera(CameraUpdate.zoomTo(MAP_ZOOM_LEVEL_MIN).animate(CameraAnimation.Easing))
+                    }
+                    viewModel.reqMarker(
+                        naverMap.cameraPosition.target,
+                        naverMap.cameraPosition.zoom,
+                        viewModelTime.startTime.value?.to24hourString(),
+                        viewModelTime.endTime.value?.to24hourString()
+                    )
+                }
             }
         })
 
@@ -328,7 +358,7 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
         })
     }
 
-    private fun setResetVisivility(){
+    private fun setResetVisibility(){
         if((viewModelTime.startStoredTime.value == viewModelTime.nowTime.value) && (viewModelTime.endStoredTime.value == viewModelTime.nowEndTime.value)){
             viewModelTime.isChangeclickReset(false)
         }else
@@ -512,8 +542,8 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
             isNightModeEnabled = isCurrentMapDarkMode()
             setBackgroundResource(NaverMap.DEFAULT_BACKGROUND_DRWABLE_DARK)
             mapType = NaverMap.MapType.Navi
-            minZoom = 5.0
-            maxZoom = 17.0
+            minZoom = MAP_ZOOM_LEVEL_MIN
+            maxZoom = MAP_ZOOM_LEVEL_MAX
         }
 
         viewModel.onChangeTab(MarkerTypeEnum.HOSPITAL)

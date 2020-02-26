@@ -49,4 +49,5 @@
     <string name="end_time_error_message">종료시간은 시작시간보다 늦어야 합니다.</string>
     <string name="set_time_error_message">종료시간은 시작시간보다 이후로 설정해주세요.</string>
 
+    <string name="map_corona_button">코로나 진료소</string>
 </resources>
