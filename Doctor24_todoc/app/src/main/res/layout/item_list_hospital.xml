@@ -4,7 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-
+        <variable
+            name="marker"
+            type="com.nexters.doctor24.todoc.data.marker.MarkerTypeEnum" />
         <variable
             name="item"
             type="com.nexters.doctor24.todoc.ui.map.marker.group.GroupMarkerListDialog.GroupListHospitalUiData" />
@@ -14,30 +16,37 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <LinearLayout
             android:id="@+id/layout_badge"
+            android:orientation="horizontal"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="15.5dp"
-            android:visibility="@{!item.isPharmacy}"
+            android:visibility="@{!marker.PHARMACY.type.equals(item.type)}"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             >
             <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/iv_badge_corona"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="6dp"
+                android:visibility="@{marker.CORONA.type.equals(item.type)}"
+                android:src="@drawable/corona" />
+
+            <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/image_badge_emergency"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginEnd="6dp"
                 android:src="@drawable/ic_badge_emergency"
-                android:visibility="@{item.isEmergency}"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                android:visibility="@{item.isEmergency}" />
 
             <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/image_badge_night"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="6dp"
-                app:layout_goneMarginStart="0dp"
+                android:layout_marginEnd="6dp"
                 android:src="@drawable/ic_badge_night"
                 android:visibility="@{item.isNight}"
                 app:layout_constraintStart_toEndOf="@id/image_badge_emergency"
@@ -47,13 +56,12 @@
                 android:id="@+id/image_badge_normal"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="6dp"
-                app:layout_goneMarginStart="0dp"
+                android:layout_marginEnd="6dp"
                 android:src="@drawable/ic_badge_normal"
-                android:visibility="@{item.isNormal}"
+                android:visibility="@{item.normal &amp;&amp; !marker.CORONA.type.equals(item.type)}"
                 app:layout_constraintStart_toEndOf="@id/image_badge_night"
                 app:layout_constraintTop_toTopOf="parent" />
-        </androidx.constraintlayout.widget.ConstraintLayout>
+        </LinearLayout>
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/text_name"

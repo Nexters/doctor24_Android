@@ -122,7 +122,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_marginEnd="6dp"
                                 android:src="@drawable/nomal"
-                                android:visibility="@{!data.emergency &amp;&amp; !data.nightTimeServe}" />
+                                android:visibility="@{!data.emergency &amp;&amp; !data.nightTimeServe  &amp;&amp; !marker.CORONA.type.equals(data.medicalType)}" />
 
                             <ImageView
                                 android:id="@+id/iv_detailed_frag_emergency"

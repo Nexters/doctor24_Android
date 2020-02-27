@@ -68,6 +68,14 @@
                         android:src="@drawable/corona" />
 
                     <ImageView
+                        android:id="@+id/iv_detailed_frag_normal"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="6dp"
+                        android:src="@drawable/nomal"
+                        android:visibility="@{item.normal &amp;&amp; !marker.CORONA.type.equals(item.type)}" />
+
+                    <ImageView
                         android:id="@+id/iv_detailed_frag_emergency"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
