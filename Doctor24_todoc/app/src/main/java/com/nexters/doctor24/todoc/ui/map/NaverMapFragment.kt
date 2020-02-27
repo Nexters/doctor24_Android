@@ -42,6 +42,7 @@ import com.nexters.doctor24.todoc.ui.map.preview.PreviewViewModel
 import com.nexters.doctor24.todoc.util.isCurrentMapDarkMode
 import com.nexters.doctor24.todoc.util.to24hourString
 import com.nexters.doctor24.todoc.util.toDp
+import com.nexters.doctor24.todoc.util.toPx
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import timber.log.Timber
 
@@ -114,6 +115,7 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
                     }
                     STATE_COLLAPSED ->{
                         viewModelTime.setBottomSheetState(newState)
+                        if(viewModel.coronaSelected.value == true) Toast.makeText(context, getString(R.string.map_corona_disable_message), Toast.LENGTH_SHORT).show()
                     }
                 }
                 if (newState == STATE_COLLAPSED) {
@@ -124,14 +126,17 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
             }
 
             override fun onSlide(bottomSheet: View, slideOffset: Float) {
+                if(viewModel.coronaSelected.value == true) {
+                    bottomSheetBehavior.state = STATE_COLLAPSED
+                } else {
+                    if (slideOffset > 0 && slideOffset < 1) {
+                        bgShape.setColor(Color.argb((100*2.55).toInt(),239, 242, 248))
+                        bgShape.alpha = floatToAlpha(slideOffset)
+                    }
 
-                if (slideOffset > 0 && slideOffset < 1) {
-                    bgShape.setColor(Color.argb((100*2.55).toInt(),239, 242, 248))
-                    bgShape.alpha = floatToAlpha(slideOffset)
+                    if(slideOffset == 0.toFloat())
+                        bgShape.setColor(Color.WHITE)
                 }
-
-                if(slideOffset == 0.toFloat())
-                    bgShape.setColor(Color.WHITE)
             }
         })
     }
@@ -142,8 +147,20 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
 
     private fun initView() {
 
-        binding.textTabHospital.setOnClickListener { viewModel.onChangeTab(MarkerTypeEnum.HOSPITAL) }
-        binding.textTabPharmacy.setOnClickListener { viewModel.onChangeTab(MarkerTypeEnum.PHARMACY) }
+        binding.textTabHospital.setOnClickListener {
+            if(viewModel.coronaSelected.value == false) {
+                viewModel.onChangeTab(MarkerTypeEnum.HOSPITAL)
+            } else {
+                Toast.makeText(context, getString(R.string.map_corona_disable_message), Toast.LENGTH_SHORT).show()
+            }
+        }
+        binding.textTabPharmacy.setOnClickListener {
+            if(viewModel.coronaSelected.value == false) {
+                viewModel.onChangeTab(MarkerTypeEnum.PHARMACY)
+            } else {
+                Toast.makeText(context, getString(R.string.map_corona_disable_message), Toast.LENGTH_SHORT).show()
+            }
+        }
 
         binding.buttonLocation.setOnClickListener {
             when(locationState) {
@@ -326,18 +343,18 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
                 setTypeface(null, if(it) Typeface.BOLD else Typeface.NORMAL)
             }
             if (it) {
-                bottomSheetBehavior.peekHeight = 160
+                bottomSheetBehavior.peekHeight = 60.toDp
                 if (::markerManager.isInitialized) markerManager.setMarker(arrayListOf())
                 viewModel.reqCoronaMarker(naverMap.cameraPosition.target)
             } else {
-                bottomSheetBehavior.peekHeight = 380
+                bottomSheetBehavior.peekHeight = 132.toDp
                 bottomSheetBehavior.state = STATE_COLLAPSED
 
                 if (::markerManager.isInitialized) markerManager.setMarker(arrayListOf())
                 if (::naverMap.isInitialized) {
                     naverMap.apply {
                         minZoom = MAP_ZOOM_LEVEL_MIN
-                        moveCamera(CameraUpdate.zoomTo(MAP_ZOOM_LEVEL_MIN).animate(CameraAnimation.Easing))
+                        moveCamera(CameraUpdate.zoomTo(15.0).animate(CameraAnimation.Easing))
                     }
                     viewModel.reqMarker(
                         naverMap.cameraPosition.target,

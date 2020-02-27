@@ -163,18 +163,21 @@ internal class NaverMapViewModel(private val dispatchers: DispatcherProvider,
     }
 
     fun onChangeTab(type: MarkerTypeEnum) {
-        _tabChangeEvent.value = type
-        if(type == MarkerTypeEnum.PHARMACY) {
-            _currentCategory.value = null
-            _coronaSelected.value = false
-            _categoryShow.value = false
-        } else {
-            _categoryShow.value = true
+        if(_coronaSelected.value == false) {
+            _tabChangeEvent.value = type
+            if(type == MarkerTypeEnum.PHARMACY) {
+                _currentCategory.value = null
+                _coronaSelected.value = false
+                _categoryShow.value = false
+            } else {
+                _categoryShow.value = true
+            }
         }
     }
 
     fun onClickCoronaBtn(){
         _coronaSelected.value = coronaSelected.value != true
+        _categoryShow.value = false
     }
 
     fun onClickFilter() {
