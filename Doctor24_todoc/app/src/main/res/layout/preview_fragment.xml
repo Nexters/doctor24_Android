@@ -60,6 +60,14 @@
                     app:layout_constraintTop_toTopOf="parent">
 
                     <ImageView
+                        android:id="@+id/iv_detailed_frag_secure"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="6dp"
+                        android:visibility="@{marker.SECURE.type.equals(item.type)}"
+                        android:src="@drawable/secure" />
+
+                    <ImageView
                         android:id="@+id/iv_detailed_frag_corona"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -73,7 +81,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="6dp"
                         android:src="@drawable/nomal"
-                        android:visibility="@{item.normal &amp;&amp; !marker.CORONA.type.equals(item.type)}" />
+                        android:visibility="@{item.normal &amp;&amp; !marker.CORONA.type.equals(item.type) &amp;&amp; !marker.SECURE.type.equals(item.type)}" />
 
                     <ImageView
                         android:id="@+id/iv_detailed_frag_emergency"
