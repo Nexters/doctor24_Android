@@ -115,7 +115,7 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
                     }
                     STATE_COLLAPSED ->{
                         viewModelTime.setBottomSheetState(newState)
-                        if(viewModel.coronaTagSelected.value == true) Toast.makeText(context, getString(R.string.map_corona_disable_message), Toast.LENGTH_SHORT).show()
+                        if(viewModel.coronaTagSelected.value == true) showCoronaToast()
                     }
                 }
                 if (newState == STATE_COLLAPSED) {
@@ -151,14 +151,14 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
             if(viewModel.coronaTagSelected.value == false) {
                 viewModel.onChangeTab(MarkerTypeEnum.HOSPITAL)
             } else {
-                Toast.makeText(context, getString(R.string.map_corona_disable_message), Toast.LENGTH_SHORT).show()
+                showCoronaToast()
             }
         }
         binding.textTabPharmacy.setOnClickListener {
             if(viewModel.coronaTagSelected.value == false) {
                 viewModel.onChangeTab(MarkerTypeEnum.PHARMACY)
             } else {
-                Toast.makeText(context, getString(R.string.map_corona_disable_message), Toast.LENGTH_SHORT).show()
+                showCoronaToast()
             }
         }
 
@@ -202,6 +202,22 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
         }
 
         initCategoryView()
+    }
+
+    private fun showCoronaToast() {
+        val title = when {
+            viewModel.coronaSelected.value == true -> {
+                getString(R.string.map_corona_button)
+            }
+            viewModel.coronaSecureSelected.value == true -> {
+                getString(R.string.map_secure_button)
+            }
+            else -> {
+                getString(R.string.map_corona_button)
+            }
+        }
+        val message = String.format(getString(R.string.map_corona_disable_message), title, title)
+        Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
     }
 
     private fun initCategoryView() {
