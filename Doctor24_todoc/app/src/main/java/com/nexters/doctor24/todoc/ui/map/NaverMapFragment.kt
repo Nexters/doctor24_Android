@@ -343,13 +343,9 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
                 setTypeface(null, if(it) Typeface.BOLD else Typeface.NORMAL)
             }
             if (it) {
-                bottomSheetBehavior.peekHeight = 60.toDp
                 if (::markerManager.isInitialized) markerManager.setMarker(arrayListOf())
                 viewModel.reqCoronaMarker(naverMap.cameraPosition.target)
             } else {
-                bottomSheetBehavior.peekHeight = 132.toDp
-                bottomSheetBehavior.state = STATE_COLLAPSED
-
                 if (::markerManager.isInitialized) markerManager.setMarker(arrayListOf())
                 if (::naverMap.isInitialized) {
                     naverMap.apply {
@@ -363,6 +359,40 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
                         viewModelTime.endTime.value?.to24hourString()
                     )
                 }
+            }
+        })
+
+        viewModel.coronaSecureSelected.observe(viewLifecycleOwner, Observer {
+            binding.textBtnSecure.apply{
+                isSelected = it
+                setTypeface(null, if(it) Typeface.BOLD else Typeface.NORMAL)
+            }
+            if (it) {
+                if (::markerManager.isInitialized) markerManager.setMarker(arrayListOf())
+                viewModel.reqCoronaMarker(naverMap.cameraPosition.target)
+            } else {
+                if (::markerManager.isInitialized) markerManager.setMarker(arrayListOf())
+                if (::naverMap.isInitialized) {
+                    naverMap.apply {
+                        minZoom = MAP_ZOOM_LEVEL_MIN
+                        moveCamera(CameraUpdate.zoomTo(15.0).animate(CameraAnimation.Easing))
+                    }
+                    viewModel.reqMarker(
+                        naverMap.cameraPosition.target,
+                        naverMap.cameraPosition.zoom,
+                        viewModelTime.startTime.value?.to24hourString(),
+                        viewModelTime.endTime.value?.to24hourString()
+                    )
+                }
+            }
+        })
+
+        viewModel.coronaTagSelected.observe(viewLifecycleOwner, Observer {
+            if (it) {
+                bottomSheetBehavior.peekHeight = 60.toDp
+            } else {
+                bottomSheetBehavior.peekHeight = 132.toDp
+                bottomSheetBehavior.state = STATE_COLLAPSED
             }
         })
 

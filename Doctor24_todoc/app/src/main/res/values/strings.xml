@@ -50,6 +50,7 @@
     <string name="set_time_error_message">종료시간은 시작시간보다 이후로 설정해주세요.</string>
 
     <string name="map_corona_button">코로나 진료소</string>
+    <string name="map_secure_button">안심병원</string>
     <string name="set_time">진료 시간</string>
     <string name="map_corona_disable_message">코로나 진료소 보기 중에는 사용할 수 없습니다.\n코로나 진료소 태그를 해제 해주세요.</string>
 </resources>
