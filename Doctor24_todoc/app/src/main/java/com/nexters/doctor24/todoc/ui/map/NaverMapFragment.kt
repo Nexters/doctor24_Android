@@ -115,7 +115,7 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
                     }
                     STATE_COLLAPSED ->{
                         viewModelTime.setBottomSheetState(newState)
-                        if(viewModel.coronaSelected.value == true) Toast.makeText(context, getString(R.string.map_corona_disable_message), Toast.LENGTH_SHORT).show()
+                        if(viewModel.coronaTagSelected.value == true) Toast.makeText(context, getString(R.string.map_corona_disable_message), Toast.LENGTH_SHORT).show()
                     }
                 }
                 if (newState == STATE_COLLAPSED) {
@@ -126,7 +126,7 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
             }
 
             override fun onSlide(bottomSheet: View, slideOffset: Float) {
-                if(viewModel.coronaSelected.value == true) {
+                if(viewModel.coronaTagSelected.value == true) {
                     bottomSheetBehavior.state = STATE_COLLAPSED
                 } else {
                     if (slideOffset > 0 && slideOffset < 1) {
@@ -148,14 +148,14 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
     private fun initView() {
 
         binding.textTabHospital.setOnClickListener {
-            if(viewModel.coronaSelected.value == false) {
+            if(viewModel.coronaTagSelected.value == false) {
                 viewModel.onChangeTab(MarkerTypeEnum.HOSPITAL)
             } else {
                 Toast.makeText(context, getString(R.string.map_corona_disable_message), Toast.LENGTH_SHORT).show()
             }
         }
         binding.textTabPharmacy.setOnClickListener {
-            if(viewModel.coronaSelected.value == false) {
+            if(viewModel.coronaTagSelected.value == false) {
                 viewModel.onChangeTab(MarkerTypeEnum.PHARMACY)
             } else {
                 Toast.makeText(context, getString(R.string.map_corona_disable_message), Toast.LENGTH_SHORT).show()
@@ -279,7 +279,7 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
             } else {
                 markerManager.setMarker(it)
                 hideRefresh()
-                if(viewModel.coronaSelected.value == true) {
+                if(viewModel.coronaTagSelected.value == true) {
                     val cameraUpdate = CameraUpdate.fitBounds(markerManager.makeBounds(), 100).animate(CameraAnimation.Easing)
                     naverMap.apply{
                         minZoom = MAP_ZOOM_LEVEL_CORONA
