@@ -343,9 +343,25 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
                 setTypeface(null, if(it) Typeface.BOLD else Typeface.NORMAL)
             }
             if (it) {
-                bottomSheetBehavior.peekHeight = 60.toDp
                 if (::markerManager.isInitialized) markerManager.setMarker(arrayListOf())
                 viewModel.reqCoronaMarker(naverMap.cameraPosition.target)
+            }
+        })
+
+        viewModel.coronaSecureSelected.observe(viewLifecycleOwner, Observer {
+            binding.textBtnSecure.apply{
+                isSelected = it
+                setTypeface(null, if(it) Typeface.BOLD else Typeface.NORMAL)
+            }
+            if (it) {
+                if (::markerManager.isInitialized) markerManager.setMarker(arrayListOf())
+                viewModel.reqCoronaMarker(naverMap.cameraPosition.target)
+            }
+        })
+
+        viewModel.coronaTagSelected.observe(viewLifecycleOwner, Observer {
+            if (it) {
+                bottomSheetBehavior.peekHeight = 60.toDp
             } else {
                 bottomSheetBehavior.peekHeight = 132.toDp
                 bottomSheetBehavior.state = STATE_COLLAPSED

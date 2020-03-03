@@ -88,6 +88,12 @@ internal class NaverMapViewModel(private val dispatchers: DispatcherProvider,
     private val _coronaSelected = MutableLiveData<Boolean>().apply { postValue(false) }
     val coronaSelected : LiveData<Boolean> get() = _coronaSelected
 
+    private val _coronaSecureSelected = MutableLiveData<Boolean>().apply { postValue(false) }
+    val coronaSecureSelected : LiveData<Boolean> get() = _coronaSecureSelected
+
+    private val _coronaTagSelected = MutableLiveData<Boolean>().apply { postValue(false) }
+    val coronaTagSelected : LiveData<Boolean> get() = _coronaTagSelected
+
     fun reqMarker(center: LatLng, zoomLevel: Double, startTime : String?, endTime: String?) {
         uiScope.launch(dispatchers.io()) {
             try {
@@ -109,11 +115,17 @@ internal class NaverMapViewModel(private val dispatchers: DispatcherProvider,
     }
 
     fun reqCoronaMarker(center: LatLng) {
+
+        val type : MarkerTypeEnum = if(coronaSelected.value == true){
+            MarkerTypeEnum.CORONA
+        }else
+            MarkerTypeEnum.SECURE
+
         uiScope.launch(dispatchers.io()) {
             try {
                 val result = repo.getMarkers(
                     center = center,
-                    type = MarkerTypeEnum.CORONA
+                    type = type
                 )
                 withContext(dispatchers.main()) {
                     _markerList.value = result
@@ -175,9 +187,20 @@ internal class NaverMapViewModel(private val dispatchers: DispatcherProvider,
         }
     }
 
+    fun checkClickCoronaTag(){
+        _coronaTagSelected.value = _coronaSelected.value == true || _coronaSecureSelected.value == true
+    }
+
     fun onClickCoronaBtn(){
-        _coronaSelected.value = coronaSelected.value != true
+        _coronaSelected.value = _coronaSelected.value != true
         _categoryShow.value = false
+        checkClickCoronaTag()
+    }
+
+    fun onClickCoronaSecureBtn(){
+        _coronaSecureSelected.value = _coronaSecureSelected.value != true
+        _categoryShow.value = false
+        checkClickCoronaTag()
     }
 
     fun onClickFilter() {
@@ -192,7 +215,7 @@ internal class NaverMapViewModel(private val dispatchers: DispatcherProvider,
         _refreshEvent.call()
         _currentLocation.value?.let { location ->
             _currentZoom.value?.let { zoom ->
-                if(coronaSelected.value == true){
+                if(_coronaTagSelected.value == true){
                     reqCoronaMarker(location)
                 }else{
                     reqMarker(location, zoom, start.to24hourString(), end.to24hourString())
