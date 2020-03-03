@@ -31,7 +31,7 @@ fun String.toHour() : Int {
 }
 
 fun isCurrentMapDarkMode() = when (getCurrentTimeHours()) {
-    in 8..17 -> false
+    in 8..18 -> false
     else -> true
 }
 
