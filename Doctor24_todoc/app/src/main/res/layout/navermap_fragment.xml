@@ -118,7 +118,7 @@
 
             <TextView
                 android:id="@+id/text_btn_secure"
-                android:layout_width="94dp"
+                android:layout_width="118dp"
                 android:layout_height="44dp"
                 android:text="@string/map_secure_button"
                 android:gravity="center"
