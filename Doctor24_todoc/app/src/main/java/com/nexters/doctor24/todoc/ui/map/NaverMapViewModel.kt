@@ -6,6 +6,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import com.naver.maps.geometry.LatLng
+import com.nexters.doctor24.todoc.api.error.ErrorResponse
+import com.nexters.doctor24.todoc.api.error.handleError
 import com.nexters.doctor24.todoc.base.BaseViewModel
 import com.nexters.doctor24.todoc.base.DispatcherProvider
 import com.nexters.doctor24.todoc.base.Event
@@ -18,6 +20,7 @@ import com.nexters.doctor24.todoc.util.isCurrentMapDarkMode
 import com.nexters.doctor24.todoc.util.to24hourString
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import retrofit2.HttpException
 import timber.log.Timber
 import java.text.SimpleDateFormat
 import java.util.*
@@ -94,6 +97,9 @@ internal class NaverMapViewModel(private val dispatchers: DispatcherProvider,
     private val _coronaTagSelected = MutableLiveData<Boolean>().apply { postValue(false) }
     val coronaTagSelected : LiveData<Boolean> get() = _coronaTagSelected
 
+    private val _errorData = MutableLiveData<ErrorResponse>()
+    val errorData: LiveData<ErrorResponse> get() = _errorData
+
     fun reqMarker(center: LatLng, zoomLevel: Double, startTime : String?, endTime: String?) {
         uiScope.launch(dispatchers.io()) {
             try {
@@ -109,7 +115,11 @@ internal class NaverMapViewModel(private val dispatchers: DispatcherProvider,
                     _markerList.value = result
                 }
             } catch (e:Exception) {
-
+                when (e) {
+                    is HttpException -> {
+                        _errorData.postValue(handleError(e.code(), e.message()))
+                    }
+                }
             }
         }
     }
@@ -134,7 +144,11 @@ internal class NaverMapViewModel(private val dispatchers: DispatcherProvider,
 
                 Timber.e(result.toString())
             } catch (e:Exception) {
-
+                when (e) {
+                    is HttpException -> {
+                        _errorData.postValue(handleError(e.code(), e.message()))
+                    }
+                }
             }
         }
     }

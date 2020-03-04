@@ -25,9 +25,8 @@ import com.naver.maps.map.*
 import com.naver.maps.map.overlay.Marker
 import com.naver.maps.map.util.FusedLocationSource
 import com.nexters.doctor24.todoc.R
-import com.nexters.doctor24.todoc.api.error.ErrorHandler
-import com.nexters.doctor24.todoc.base.*
-import com.nexters.doctor24.todoc.data.map.response.ResMapAddress
+import com.nexters.doctor24.todoc.base.BaseFragment
+import com.nexters.doctor24.todoc.base.EventObserver
 import com.nexters.doctor24.todoc.data.marker.MarkerTypeEnum
 import com.nexters.doctor24.todoc.data.marker.response.ResMapMarker
 import com.nexters.doctor24.todoc.databinding.NavermapFragmentBinding
@@ -42,7 +41,6 @@ import com.nexters.doctor24.todoc.ui.map.preview.PreviewViewModel
 import com.nexters.doctor24.todoc.util.isCurrentMapDarkMode
 import com.nexters.doctor24.todoc.util.to24hourString
 import com.nexters.doctor24.todoc.util.toDp
-import com.nexters.doctor24.todoc.util.toPx
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import timber.log.Timber
 
@@ -307,7 +305,7 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
 
         viewModel.medicalListData.observe(viewLifecycleOwner, EventObserver {
             listIntent.apply {
-                putExtra(MedicalListActivity.KEY_MEDI_LIST, it)
+                if(!it.isNullOrEmpty()) putExtra(MedicalListActivity.KEY_MEDI_LIST, it)
             }
         })
 
@@ -396,6 +394,11 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
                     )
                 }
             }
+        })
+
+        viewModel.errorData.observe(viewLifecycleOwner, Observer {
+            Timber.e("HTTP Exception: ${it.code}")
+            Toast.makeText(context, "${it.message}", Toast.LENGTH_SHORT).show()
         })
 
         categoryViewModel.currentSelectItem.observe(viewLifecycleOwner, Observer {
@@ -627,7 +630,7 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
 
 
 
-    private fun handleResponse(result: Result<ResMapAddress>) {
+    /*private fun handleResponse(result: Result<ResMapAddress>) {
         when (result) {
             //comment this Success check if you are observing data from DB
             is Success<ResMapAddress> -> {
@@ -647,6 +650,6 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
                 binding.progressBar.isVisible = result.isLoading
             }
         }
-    }
+    }*/
 
 }
