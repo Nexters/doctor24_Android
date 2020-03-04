@@ -116,10 +116,11 @@ internal class NaverMapViewModel(private val dispatchers: DispatcherProvider,
 
     fun reqCoronaMarker(center: LatLng) {
 
-        val type : MarkerTypeEnum = if(coronaSelected.value == true){
+        val type : MarkerTypeEnum = if(_coronaSelected.value == true) {
             MarkerTypeEnum.CORONA
-        }else
+        } else if(_coronaSecureSelected.value == true) {
             MarkerTypeEnum.SECURE
+        } else MarkerTypeEnum.CORONA
 
         uiScope.launch(dispatchers.io()) {
             try {
@@ -180,6 +181,7 @@ internal class NaverMapViewModel(private val dispatchers: DispatcherProvider,
             if(type == MarkerTypeEnum.PHARMACY) {
                 _currentCategory.value = null
                 _coronaSelected.value = false
+                _coronaSecureSelected.value = false
                 _categoryShow.value = false
             } else {
                 _categoryShow.value = true
@@ -187,19 +189,23 @@ internal class NaverMapViewModel(private val dispatchers: DispatcherProvider,
         }
     }
 
-    fun checkClickCoronaTag(){
-        _coronaTagSelected.value = _coronaSelected.value == true || _coronaSecureSelected.value == true
+    private fun checkClickCoronaTag(){
+        _coronaTagSelected.value = _coronaSelected.value ?: false || _coronaSecureSelected.value ?: false
     }
 
     fun onClickCoronaBtn(){
-        _coronaSelected.value = _coronaSelected.value != true
-        _categoryShow.value = false
+        val isSelect = _coronaSelected.value ?: true
+        _coronaSelected.value = !isSelect
+        _coronaSecureSelected.value = false
+        _categoryShow.value = !(_coronaSelected.value ?: false || _coronaSecureSelected.value ?: false)
         checkClickCoronaTag()
     }
 
     fun onClickCoronaSecureBtn(){
-        _coronaSecureSelected.value = _coronaSecureSelected.value != true
-        _categoryShow.value = false
+        val isSelect = _coronaSecureSelected.value ?: true
+        _coronaSelected.value = false
+        _coronaSecureSelected.value = !isSelect
+        _categoryShow.value = !(_coronaSelected.value ?: false || _coronaSecureSelected.value ?: false)
         checkClickCoronaTag()
     }
 

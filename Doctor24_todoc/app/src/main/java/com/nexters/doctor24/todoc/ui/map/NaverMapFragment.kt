@@ -115,7 +115,7 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
                     }
                     STATE_COLLAPSED ->{
                         viewModelTime.setBottomSheetState(newState)
-                        if(viewModel.coronaSelected.value == true) Toast.makeText(context, getString(R.string.map_corona_disable_message), Toast.LENGTH_SHORT).show()
+                        if(viewModel.coronaTagSelected.value == true) showCoronaToast()
                     }
                 }
                 if (newState == STATE_COLLAPSED) {
@@ -126,7 +126,7 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
             }
 
             override fun onSlide(bottomSheet: View, slideOffset: Float) {
-                if(viewModel.coronaSelected.value == true) {
+                if(viewModel.coronaTagSelected.value == true) {
                     bottomSheetBehavior.state = STATE_COLLAPSED
                 } else {
                     if (slideOffset > 0 && slideOffset < 1) {
@@ -148,17 +148,17 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
     private fun initView() {
 
         binding.textTabHospital.setOnClickListener {
-            if(viewModel.coronaSelected.value == false) {
+            if(viewModel.coronaTagSelected.value == false) {
                 viewModel.onChangeTab(MarkerTypeEnum.HOSPITAL)
             } else {
-                Toast.makeText(context, getString(R.string.map_corona_disable_message), Toast.LENGTH_SHORT).show()
+                showCoronaToast()
             }
         }
         binding.textTabPharmacy.setOnClickListener {
-            if(viewModel.coronaSelected.value == false) {
+            if(viewModel.coronaTagSelected.value == false) {
                 viewModel.onChangeTab(MarkerTypeEnum.PHARMACY)
             } else {
-                Toast.makeText(context, getString(R.string.map_corona_disable_message), Toast.LENGTH_SHORT).show()
+                showCoronaToast()
             }
         }
 
@@ -202,6 +202,22 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
         }
 
         initCategoryView()
+    }
+
+    private fun showCoronaToast() {
+        val title = when {
+            viewModel.coronaSelected.value == true -> {
+                getString(R.string.map_corona_button)
+            }
+            viewModel.coronaSecureSelected.value == true -> {
+                getString(R.string.map_secure_button)
+            }
+            else -> {
+                getString(R.string.map_corona_button)
+            }
+        }
+        val message = String.format(getString(R.string.map_corona_disable_message), title, title)
+        Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
     }
 
     private fun initCategoryView() {
@@ -279,7 +295,7 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
             } else {
                 markerManager.setMarker(it)
                 hideRefresh()
-                if(viewModel.coronaSelected.value == true) {
+                if(viewModel.coronaTagSelected.value == true) {
                     val cameraUpdate = CameraUpdate.fitBounds(markerManager.makeBounds(), 100).animate(CameraAnimation.Easing)
                     naverMap.apply{
                         minZoom = MAP_ZOOM_LEVEL_CORONA

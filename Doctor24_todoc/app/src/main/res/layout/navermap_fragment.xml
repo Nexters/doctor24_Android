@@ -124,7 +124,7 @@
                 android:gravity="center"
                 android:textSize="14dp"
                 android:textColor="@color/selector_text_corona_button"
-                android:background="@drawable/selector_corona_button_bg"
+                android:background="@drawable/selector_secure_button_bg"
                 android:onClick="@{()->vm.onClickCoronaSecureBtn()}"
                 android:visibility="@{vm.tabChangeEvent != MarkerTypeEnum.PHARMACY}"
                 android:layout_marginTop="16dp"
