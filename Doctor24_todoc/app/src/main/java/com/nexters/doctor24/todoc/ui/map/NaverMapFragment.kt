@@ -36,6 +36,7 @@ import com.nexters.doctor24.todoc.ui.map.category.categoryItemList
 import com.nexters.doctor24.todoc.ui.map.list.MedicalListActivity
 import com.nexters.doctor24.todoc.ui.map.marker.MapMarkerManager
 import com.nexters.doctor24.todoc.ui.map.marker.group.GroupMarkerListDialog
+import com.nexters.doctor24.todoc.ui.map.popup.IntroPopUpDialog
 import com.nexters.doctor24.todoc.ui.map.preview.PreviewFragment
 import com.nexters.doctor24.todoc.ui.map.preview.PreviewViewModel
 import com.nexters.doctor24.todoc.util.isCurrentMapDarkMode
@@ -368,6 +369,9 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
                 setTypeface(null, if(it) Typeface.BOLD else Typeface.NORMAL)
             }
             if (it) {
+                IntroPopUpDialog().apply {
+                }.show(childFragmentManager, IntroPopUpDialog.TAG)
+
                 if (::markerManager.isInitialized) markerManager.setMarker(arrayListOf())
                 viewModel.reqCoronaMarker(naverMap.cameraPosition.target)
             }
