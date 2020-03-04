@@ -22,6 +22,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import retrofit2.HttpException
 import timber.log.Timber
+import java.net.SocketException
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -119,6 +120,10 @@ internal class NaverMapViewModel(private val dispatchers: DispatcherProvider,
                     is HttpException -> {
                         _errorData.postValue(handleError(e.code(), e.message()))
                     }
+                    is SocketException -> {
+                        _errorData.postValue(handleError(0, e.message ?: "SocketException"))
+                    }
+                    else -> _errorData.postValue(handleError(-100, "서버에서 데이터를 받아오지 못하였습니다."))
                 }
             }
         }
@@ -148,6 +153,10 @@ internal class NaverMapViewModel(private val dispatchers: DispatcherProvider,
                     is HttpException -> {
                         _errorData.postValue(handleError(e.code(), e.message()))
                     }
+                    is SocketException -> {
+                        _errorData.postValue(handleError(0, e.message ?: "SocketException"))
+                    }
+                    else -> _errorData.postValue(handleError(-100, "서버에서 데이터를 받아오지 못하였습니다."))
                 }
             }
         }
