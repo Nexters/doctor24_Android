@@ -305,7 +305,7 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
 
         viewModel.medicalListData.observe(viewLifecycleOwner, EventObserver {
             listIntent.apply {
-                if(!it.isNullOrEmpty()) putExtra(MedicalListActivity.KEY_MEDI_LIST, it)
+                putExtra(MedicalListActivity.KEY_MEDI_LIST, it)
             }
         })
 
