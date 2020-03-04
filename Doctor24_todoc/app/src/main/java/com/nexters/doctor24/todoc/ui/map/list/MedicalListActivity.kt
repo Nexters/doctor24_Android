@@ -46,9 +46,9 @@ internal class MedicalListActivity : BaseActivity<ActivityMedicalListBinding, Me
 
         binding.vm = viewModel
         intent.extras?.apply {
-            getParcelableArrayList<ResMapMarker>(KEY_MEDI_LIST)?.let {
-                groupData = it
-            }
+            groupData = getParcelableArrayList<ResMapMarker>(KEY_MEDI_LIST)?.let {
+                it
+            } ?: arrayListOf()
             getDoubleArray(KEY_MEDI_MY_LOCATION)?.let{
                 location = LatLng(it[0], it[1])
             }
