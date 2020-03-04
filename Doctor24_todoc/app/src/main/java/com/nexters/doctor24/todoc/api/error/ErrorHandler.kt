@@ -11,6 +11,7 @@ import retrofit2.HttpException
 import retrofit2.converter.gson.GsonConverterFactory
 import timber.log.Timber
 import java.io.IOException
+/*
 
 object ErrorHandler {
 
@@ -58,4 +59,13 @@ object ErrorHandler {
         return null
     }
 
+}*/
+fun handleError(
+    code: Int,
+    message: String
+) : ErrorResponse{
+    return ErrorResponse(
+        code = code,
+        message = message
+    )
 }

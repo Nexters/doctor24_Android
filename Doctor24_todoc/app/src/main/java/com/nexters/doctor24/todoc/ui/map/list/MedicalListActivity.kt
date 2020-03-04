@@ -45,16 +45,23 @@ internal class MedicalListActivity : BaseActivity<ActivityMedicalListBinding, Me
         super.onCreate(savedInstanceState)
 
         binding.vm = viewModel
-        groupData = intent.extras?.let{
+        intent.extras?.apply {
+            getParcelableArrayList<ResMapMarker>(KEY_MEDI_LIST)?.let {
+                groupData = it
+            }
+            getDoubleArray(KEY_MEDI_MY_LOCATION)?.let{
+                location = LatLng(it[0], it[1])
+            }
+        }
+        /*groupData = intent.extras?.let{
             it.getParcelableArrayList<ResMapMarker>(KEY_MEDI_LIST) as ArrayList<ResMapMarker>
         }
-        Timber.d("groupData : $groupData")
         val loc = intent.extras?.let {
             it.getDoubleArray(KEY_MEDI_MY_LOCATION)
         }
         location = loc?.let { LatLng(it[0], it[1]) }
 
-        Timber.d("location : $location")
+        Timber.d("location : $location")*/
         initView()
         initObserve()
     }
