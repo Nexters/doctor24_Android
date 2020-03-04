@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.TextView
+import android.widget.Toast
 import androidx.core.net.toUri
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.GridLayoutManager
@@ -27,6 +28,7 @@ import com.nexters.doctor24.todoc.ui.findload.FindLoadDialog
 import com.nexters.doctor24.todoc.ui.findload.FindLoadViewModel
 import com.nexters.doctor24.todoc.util.isCurrentMapDarkMode
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import timber.log.Timber
 
 internal class DetailedActivity : BaseActivity<DetailedFragmentBinding, DetailedViewModel>(),
     OnMapReadyCallback {
@@ -113,6 +115,11 @@ internal class DetailedActivity : BaseActivity<DetailedFragmentBinding, Detailed
                     adapter = dayAdapter.apply { addItem(it) }
                 }
             }
+        })
+
+        viewModel.errorData.observe(this, Observer {
+            Timber.e("Exception: ${it.code}")
+            Toast.makeText(this, it.message, Toast.LENGTH_SHORT).show()
         })
     }
 

@@ -397,8 +397,8 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
         })
 
         viewModel.errorData.observe(viewLifecycleOwner, Observer {
-            Timber.e("HTTP Exception: ${it.code}")
-            Toast.makeText(context, "${it.message}", Toast.LENGTH_SHORT).show()
+            Timber.e("Exception: ${it.code}")
+            Toast.makeText(context, it.message, Toast.LENGTH_SHORT).show()
         })
 
         categoryViewModel.currentSelectItem.observe(viewLifecycleOwner, Observer {

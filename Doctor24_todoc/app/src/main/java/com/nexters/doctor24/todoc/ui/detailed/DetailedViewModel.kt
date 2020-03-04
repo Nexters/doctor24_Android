@@ -4,6 +4,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.NaverMap
+import com.nexters.doctor24.todoc.api.error.ErrorResponse
+import com.nexters.doctor24.todoc.api.error.handleError
 import com.nexters.doctor24.todoc.base.BaseViewModel
 import com.nexters.doctor24.todoc.base.DispatcherProvider
 import com.nexters.doctor24.todoc.base.SingleLiveEvent
@@ -15,7 +17,9 @@ import com.nexters.doctor24.todoc.util.toHHmmFormat
 import com.nexters.doctor24.todoc.util.toWeekDayWord
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import retrofit2.HttpException
 import timber.log.Timber
+import java.net.SocketException
 
 internal class DetailedViewModel(
     private val dispatchers: DispatcherProvider,
@@ -33,6 +37,9 @@ internal class DetailedViewModel(
 
     private val _closeDetailed = SingleLiveEvent<Unit>()
     val closeDetailed : LiveData<Unit> get() = _closeDetailed
+
+    private val _errorData = MutableLiveData<ErrorResponse>()
+    val errorData: LiveData<ErrorResponse> get() = _errorData
 
     val corona = "corona"
 
@@ -61,7 +68,15 @@ internal class DetailedViewModel(
                     _openDayData.value = list
                 }
             } catch (e: Exception) {
-
+                when (e) {
+                    is HttpException -> {
+                        _errorData.postValue(handleError(e.code(), e.message()))
+                    }
+                    is SocketException -> {
+                        _errorData.postValue(handleError(0, e.message ?: "SocketException"))
+                    }
+                    else -> _errorData.postValue(handleError(-100, "서버에서 데이터를 받아오지 못하였습니다."))
+                }
             }
         }
     }
