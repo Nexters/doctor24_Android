@@ -175,7 +175,7 @@ internal class NaverMapViewModel(private val dispatchers: DispatcherProvider,
     }
 
     fun onChangeTab(type: MarkerTypeEnum) {
-        if(_coronaSelected.value == false) {
+        if(_coronaTagSelected.value == false) {
             _tabChangeEvent.value = type
             if(type == MarkerTypeEnum.PHARMACY) {
                 _currentCategory.value = null
