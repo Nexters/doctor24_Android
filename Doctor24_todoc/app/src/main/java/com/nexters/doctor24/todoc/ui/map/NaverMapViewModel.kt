@@ -2,6 +2,7 @@ package com.nexters.doctor24.todoc.ui.map
 
 import android.content.SharedPreferences
 import android.location.Location
+import androidx.core.content.edit
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
@@ -33,6 +34,7 @@ internal class NaverMapViewModel(private val dispatchers: DispatcherProvider,
 
     companion object {
         const val KEY_PREF_FILTER_CATEGORY = "KEY_PREF_FILTER_CATEGORY"
+        const val KEY_PREF_CORONA_SECURE_POPUP = "KEY_PREF_CORONA_SECURE_POPUP"
         val dateFormat = SimpleDateFormat("HH:mm:ss", Locale.KOREA)
     }
 
@@ -97,6 +99,9 @@ internal class NaverMapViewModel(private val dispatchers: DispatcherProvider,
 
     private val _coronaTagSelected = MutableLiveData<Boolean>().apply { postValue(false) }
     val coronaTagSelected : LiveData<Boolean> get() = _coronaTagSelected
+
+    private val _showPopup = MutableLiveData<Boolean>()
+    val showPopup : LiveData<Boolean> get() = _showPopup
 
     private val _errorData = MutableLiveData<ErrorResponse>()
     val errorData: LiveData<ErrorResponse> get() = _errorData
@@ -230,6 +235,10 @@ internal class NaverMapViewModel(private val dispatchers: DispatcherProvider,
         _coronaSecureSelected.value = !isSelect
         _categoryShow.value = !(_coronaSelected.value ?: false || _coronaSecureSelected.value ?: false)
         checkClickCoronaTag()
+        if(!sharedPreferences.getBoolean(KEY_PREF_CORONA_SECURE_POPUP, false)) {
+            _showPopup.value = true
+            sharedPreferences.edit { putBoolean(KEY_PREF_CORONA_SECURE_POPUP, true) }
+        }
     }
 
     fun onClickFilter() {

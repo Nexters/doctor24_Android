@@ -369,12 +369,13 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
                 setTypeface(null, if(it) Typeface.BOLD else Typeface.NORMAL)
             }
             if (it) {
-                IntroPopUpDialog().apply {
-                }.show(childFragmentManager, IntroPopUpDialog.TAG)
-
                 if (::markerManager.isInitialized) markerManager.setMarker(arrayListOf())
                 viewModel.reqCoronaMarker(naverMap.cameraPosition.target)
             }
+        })
+
+        viewModel.showPopup.observe(viewLifecycleOwner, Observer {
+            if(it) IntroPopUpDialog().show(childFragmentManager, IntroPopUpDialog.TAG)
         })
 
         viewModel.coronaTagSelected.observe(viewLifecycleOwner, Observer {
