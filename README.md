@@ -1,6 +1,8 @@
 # doctor24_Android
 👩‍⚕️👨‍⚕️닥터24 프로젝트 🔍토닥토닥 Android App
 
+<img src="https://user-images.githubusercontent.com/7722921/74671373-5d716400-51ee-11ea-9b15-a327257f8c78.png" width="20%"/>
+
 ## Build Status
 [Build Status]
 

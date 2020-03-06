@@ -8,5 +8,5 @@ import org.koin.dsl.module
  * Created by jiyoung on 09/01/2020
  */
 val dbModule = module {
-    single { PreferenceManager.getDefaultSharedPreferences(get()) as SharedPreferences }
+//    single { PreferenceManager.getDefaultSharedPreferences(get()) as SharedPreferences }
 }
