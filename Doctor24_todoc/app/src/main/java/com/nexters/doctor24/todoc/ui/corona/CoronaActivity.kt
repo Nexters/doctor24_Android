@@ -3,25 +3,28 @@ package com.nexters.doctor24.todoc.ui.corona
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.pm.ActivityInfo
-import android.graphics.Typeface
 import android.os.Bundle
 import android.view.Gravity
 import android.view.animation.AnimationUtils
 import android.widget.Toast
 import androidx.core.view.isVisible
+import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.Observer
-import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.naver.maps.map.*
+import com.naver.maps.map.overlay.Marker
 import com.naver.maps.map.util.FusedLocationSource
 import com.nexters.doctor24.todoc.R
 import com.nexters.doctor24.todoc.base.BaseActivity
 import com.nexters.doctor24.todoc.base.EventObserver
-import com.nexters.doctor24.todoc.data.marker.MarkerTypeEnum
+import com.nexters.doctor24.todoc.data.marker.response.ResMapMarker
 import com.nexters.doctor24.todoc.databinding.ActivityCoronaMapBinding
+import com.nexters.doctor24.todoc.ui.map.MarkerUIData
 import com.nexters.doctor24.todoc.ui.map.NaverMapFragment
 import com.nexters.doctor24.todoc.ui.map.list.MedicalListActivity
 import com.nexters.doctor24.todoc.ui.map.marker.MapMarkerManager
+import com.nexters.doctor24.todoc.ui.map.marker.group.GroupMarkerListDialog
 import com.nexters.doctor24.todoc.ui.map.popup.IntroPopUpDialog
+import com.nexters.doctor24.todoc.ui.map.preview.PreviewFragment
 import com.nexters.doctor24.todoc.util.isCurrentMapDarkMode
 import com.nexters.doctor24.todoc.util.selectStyle
 import com.nexters.doctor24.todoc.util.toDp
@@ -29,7 +32,7 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 import timber.log.Timber
 
 internal class CoronaActivity : BaseActivity<ActivityCoronaMapBinding, CoronaMapViewModel>(),
-    OnMapReadyCallback {
+    OnMapReadyCallback, MapMarkerManager.MarkerClickListener, PreviewFragment.PreviewListener {
     override val layoutResId: Int
         get() = R.layout.activity_corona_map
     override val viewModel: CoronaMapViewModel by viewModel()
@@ -45,6 +48,8 @@ internal class CoronaActivity : BaseActivity<ActivityCoronaMapBinding, CoronaMap
     private lateinit var naverMap: NaverMap
     private lateinit var markerManager: MapMarkerManager
     private val listIntent by lazy { Intent(this, MedicalListActivity::class.java) }
+
+    private var isMarkerSelected = false
 
     @SuppressLint("SourceLockedOrientationActivity")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -83,6 +88,68 @@ internal class CoronaActivity : BaseActivity<ActivityCoronaMapBinding, CoronaMap
             minZoom = MAP_ZOOM_LEVEL_CORONA
             maxZoom = MAP_ZOOM_LEVEL_MAX
         }
+
+        markerManager = MapMarkerManager(this, naverMap).apply { listener = this@CoronaActivity }
+
+        map.addOnCameraIdleListener {
+            showRefresh()
+        }
+    }
+
+    override fun markerClick(marker: Marker) {
+        deSelectMarker()
+        marker.apply {
+            isHideCollidedMarkers = true
+            isHideCollidedSymbols = true
+            isHideCollidedCaptions = true
+        }
+        marker.tag?.let{
+            if((it as ArrayList<ResMapMarker>).isNotEmpty()) {
+                val medicalData = Bundle().apply {
+                    putParcelable(PreviewFragment.KEY_MEDICAL, it[0])
+                    naverMap.cameraPosition.target?.let { loc->
+                        Timber.d("MapApps - $loc")
+                        putDoubleArray(PreviewFragment.KEY_MY_LOCATION, doubleArrayOf(loc.latitude, loc.longitude))
+                    }
+                }
+                PreviewFragment().apply {
+                    setStyle(DialogFragment.STYLE_NORMAL, R.style.PreviewBottomSheetDialog)
+                    arguments = medicalData
+                    listener = this@CoronaActivity
+                }.show(supportFragmentManager, PreviewFragment.TAG)
+            }
+        }
+        markerManager.getMarkerItem(marker)?.run {
+            if (markerManager.isEqualsSelectMarker(this)) return
+            selectMarker(this)
+        }
+        moveMarkerBoundary(marker)
+    }
+
+    override fun markerBundleClick(marker: Marker) {
+        deSelectMarker()
+
+        Timber.d("marker tag : ${marker.tag}")
+        marker.tag?.let {
+            if ((it as ArrayList<ResMapMarker>).isNotEmpty()) {
+                val groupData = Bundle().apply {
+                    putParcelableArrayList(GroupMarkerListDialog.KEY_LIST, it)
+                    naverMap.cameraPosition.target?.let { loc->
+                        Timber.d("MapApps - $loc")
+                        putDoubleArray(GroupMarkerListDialog.KEY_MY_LOCATION, doubleArrayOf(loc.latitude, loc.longitude))
+                    }
+                }
+                GroupMarkerListDialog().apply {
+                    arguments = groupData
+                }.show(supportFragmentManager, GroupMarkerListDialog.TAG)
+            }
+
+        }
+        moveMarkerBoundary(marker)
+    }
+
+    override fun onClosedPreview() {
+        deSelectMarker()
     }
 
     private fun initObserve() {
@@ -95,13 +162,11 @@ internal class CoronaActivity : BaseActivity<ActivityCoronaMapBinding, CoronaMap
             } else {
                 markerManager.setMarker(it)
                 hideRefresh()
-                if(viewModel.coronaTagSelected.value == true) {
-                    val cameraUpdate = CameraUpdate.fitBounds(markerManager.makeBounds(), 100).animate(
-                        CameraAnimation.Easing)
-                    naverMap.apply{
-                        minZoom = MAP_ZOOM_LEVEL_CORONA
-                        moveCamera(cameraUpdate)
-                    }
+                val cameraUpdate = CameraUpdate.fitBounds(markerManager.makeBounds(), 100).animate(
+                    CameraAnimation.Easing)
+                naverMap.apply{
+                    minZoom = MAP_ZOOM_LEVEL_CORONA
+                    moveCamera(cameraUpdate)
                 }
             }
         })
@@ -123,6 +188,15 @@ internal class CoronaActivity : BaseActivity<ActivityCoronaMapBinding, CoronaMap
             listIntent.apply {
                 putExtra(MedicalListActivity.KEY_MEDI_LIST, it)
             }
+        })
+
+        viewModel.medicalListEvent.observe(this, Observer {
+            naverMap.cameraPosition.target?.let { loc->
+                listIntent.apply{
+                    putExtra(MedicalListActivity.KEY_MEDI_MY_LOCATION, doubleArrayOf(loc.latitude, loc.longitude))
+                }
+            }
+            startActivity(listIntent)
         })
 
         viewModel.maskSelected.observe(this, Observer {
@@ -156,7 +230,7 @@ internal class CoronaActivity : BaseActivity<ActivityCoronaMapBinding, CoronaMap
     }
 
     private fun showRefresh() {
-        if(!binding.btnRefresh.isVisible) {
+        if(!binding.btnRefresh.isVisible && !isMarkerSelected) {
             deSelectMarker()
             binding.btnRefresh.apply {
                 isVisible = true
@@ -169,7 +243,22 @@ internal class CoronaActivity : BaseActivity<ActivityCoronaMapBinding, CoronaMap
         if(!markerManager.isMarkerEmpty()) binding.btnRefresh.isVisible = false
     }
 
+    private fun moveMarkerBoundary(marker: Marker) {
+        val cameraUpdate = CameraUpdate.scrollTo(marker.position).animate(CameraAnimation.Easing)
+        naverMap.setContentPadding(0, 0, 0, 270.toDp)
+        naverMap.moveCamera(cameraUpdate)
+    }
+
+    private fun selectMarker(markerItem: MarkerUIData?) {
+        markerItem?.run {
+            hideRefresh()
+            isMarkerSelected = true
+            markerManager.selectMarker(this)
+        }
+    }
+
     private fun deSelectMarker() {
+        isMarkerSelected = false
         markerManager.deSelectMarker()
         naverMap.setContentPadding(0, 0, 0, 0)
     }

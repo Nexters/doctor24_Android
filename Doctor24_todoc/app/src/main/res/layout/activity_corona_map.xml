@@ -88,6 +88,7 @@
             android:layout_height="70dp"
             android:layout_marginTop="20dp"
             android:src="@drawable/ic_medical_list"
+            android:onClick="@{() -> vm.onClickList()}"
             app:layout_constraintTop_toBottomOf="@id/text_btn_secure"
             app:layout_constraintEnd_toEndOf="@id/text_btn_secure"
             />

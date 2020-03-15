@@ -78,6 +78,8 @@ internal class CoronaMapViewModel(private val dispatchers: DispatcherProvider,
     private val _showPopup = MutableLiveData<Boolean>()
     val showPopup : LiveData<Boolean> get() = _showPopup
 
+    private val _medicalListEvent = SingleLiveEvent<Unit>()
+    val medicalListEvent : LiveData<Unit> get() = _medicalListEvent
 
     private val _currentSelectType = MediatorLiveData<MarkerTypeEnum>().apply {
         addSource(maskSelected) { postValue(currentType()) }
@@ -155,6 +157,10 @@ internal class CoronaMapViewModel(private val dispatchers: DispatcherProvider,
 
     private fun checkClickCoronaTag(){
         _coronaTagSelected.value = _coronaSelected.value ?: false || _coronaSecureSelected.value ?: false
+    }
+
+    fun onClickList() {
+        _medicalListEvent.call()
     }
 
     fun onClickRefresh() {
