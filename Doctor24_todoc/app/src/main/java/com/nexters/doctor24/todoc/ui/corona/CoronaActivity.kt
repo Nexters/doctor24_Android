@@ -242,6 +242,14 @@ internal class CoronaActivity : BaseActivity<ActivityCoronaMapBinding, CoronaMap
 
         viewModel.coronaTagSelected.observe(this, Observer {
             binding.buttonList.isVisible = it
+            binding.bottomBanner.isVisible = !it
+        })
+
+        viewModel.stockSwitchEvent.observe(this, Observer {
+            binding.textStockSwitch.apply{
+                isSelected = it
+                text = if(it) getString(R.string.mask_stock_on) else getString(R.string.mask_stock_off)
+            }
         })
 
         viewModel.showPopup.observe(this, Observer {

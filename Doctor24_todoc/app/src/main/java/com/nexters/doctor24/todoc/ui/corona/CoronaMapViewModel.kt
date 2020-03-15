@@ -81,6 +81,9 @@ internal class CoronaMapViewModel(private val dispatchers: DispatcherProvider,
     private val _medicalListEvent = SingleLiveEvent<Unit>()
     val medicalListEvent : LiveData<Unit> get() = _medicalListEvent
 
+    private val _stockSwitchEvent = MutableLiveData<Boolean>().apply { postValue(false) }
+    val stockSwitchEvent : LiveData<Boolean> get() = _stockSwitchEvent
+
     private val _currentSelectType = MediatorLiveData<MarkerTypeEnum>().apply {
         addSource(maskSelected) { postValue(currentType()) }
         addSource(coronaSelected) { postValue(currentType()) }
@@ -172,6 +175,10 @@ internal class CoronaMapViewModel(private val dispatchers: DispatcherProvider,
                 }
             }
         }*/
+    }
+
+    fun onClickStockBtn() {
+        _stockSwitchEvent.value = !(stockSwitchEvent.value ?: false)
     }
 
     fun onClickClose() {

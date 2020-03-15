@@ -22,6 +22,13 @@
     <item name="android:textColor">@color/black</item>
   </style>
 
+  <style name="AndH2CenterMediumWhite22">
+    <item name="android:gravity">center_horizontal</item>
+    <item name="android:textSize">22sp</item>
+    <item name="android:lineSpacingExtra">0sp</item>
+    <item name="android:textColor">@color/white</item>
+  </style>
+
   <style name="AndH2CenterMediumEnable22">
     <item name="android:gravity">center_horizontal</item>
     <item name="android:textSize">22sp</item>
