@@ -24,7 +24,7 @@ class TodocApplication : Application() {
 
         startKoin {
             androidContext(this@TodocApplication)
-            modules(listOf(networkModule, dbModule, appModule, repositoryModule, preferencesModule))
+            modules(listOf(networkModule, dbModule, appModule, repositoryModule, preferencesModule, maskNetworkModule))
         }
     }
 }

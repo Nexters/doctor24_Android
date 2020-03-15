@@ -6,6 +6,7 @@ import com.nexters.doctor24.todoc.base.DispatcherProvider
 import com.nexters.doctor24.todoc.ui.corona.CoronaMapViewModel
 import com.nexters.doctor24.todoc.ui.detailed.DetailedViewModel
 import com.nexters.doctor24.todoc.ui.findload.FindLoadViewModel
+import com.nexters.doctor24.todoc.ui.map.MaskViewModel
 import com.nexters.doctor24.todoc.ui.map.NaverMapViewModel
 import com.nexters.doctor24.todoc.ui.map.TimeViewModel
 import com.nexters.doctor24.todoc.ui.map.category.CategoryViewModel
@@ -21,6 +22,7 @@ val appModule = module {
     factory { DefaultDispatcherProvider() as DispatcherProvider }
     viewModel { NaverMapViewModel(get(), get(named("filterPrefs")), get()) }
     viewModel { TimeViewModel(get()) }
+    viewModel { MaskViewModel(get(),get(named("mask"))) }
     viewModel { CategoryViewModel() }
     viewModel { DetailedViewModel(get(),get()) }
     viewModel { PreviewViewModel() }
