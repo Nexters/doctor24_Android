@@ -2,8 +2,11 @@ package com.nexters.doctor24.todoc.ui.corona
 
 import android.annotation.SuppressLint
 import android.content.pm.ActivityInfo
+import android.graphics.Typeface
 import android.os.Bundle
 import android.view.Gravity
+import androidx.core.view.isVisible
+import androidx.lifecycle.Observer
 import com.naver.maps.map.LocationTrackingMode
 import com.naver.maps.map.MapView
 import com.naver.maps.map.NaverMap
@@ -13,7 +16,9 @@ import com.nexters.doctor24.todoc.R
 import com.nexters.doctor24.todoc.base.BaseActivity
 import com.nexters.doctor24.todoc.databinding.ActivityCoronaMapBinding
 import com.nexters.doctor24.todoc.ui.map.NaverMapFragment
+import com.nexters.doctor24.todoc.ui.map.popup.IntroPopUpDialog
 import com.nexters.doctor24.todoc.util.isCurrentMapDarkMode
+import com.nexters.doctor24.todoc.util.selectStyle
 import com.nexters.doctor24.todoc.util.toDp
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -39,9 +44,14 @@ internal class CoronaActivity : BaseActivity<ActivityCoronaMapBinding, CoronaMap
         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
         fusedLocationSource = FusedLocationSource(this, NaverMapFragment.LOCATION_PERMISSION_REQUEST_CODE)
 
+        binding.apply {
+            vm = viewModel
+        }
         mapView = binding.coronaMapView
         mapView.onCreate(savedInstanceState)
         mapView.getMapAsync(this)
+
+        initObserve()
     }
 
     override fun onMapReady(map: NaverMap) {
@@ -63,6 +73,41 @@ internal class CoronaActivity : BaseActivity<ActivityCoronaMapBinding, CoronaMap
             minZoom = MAP_ZOOM_LEVEL_CORONA
             maxZoom = MAP_ZOOM_LEVEL_MAX
         }
+    }
+
+    private fun initObserve() {
+        viewModel.closeEvent.observe(this, Observer {
+            finish()
+        })
+
+        viewModel.maskSelected.observe(this, Observer {
+            binding.textBtnMask.selectStyle(it)
+        })
+
+        viewModel.coronaSelected.observe(this, Observer {
+            binding.textBtnCorona.selectStyle(it)
+            /*if (it) {
+                if (::markerManager.isInitialized) markerManager.setMarker(arrayListOf())
+                viewModel.reqCoronaMarker(naverMap.cameraPosition.target)
+            }*/
+        })
+
+        viewModel.coronaSecureSelected.observe(this, Observer {
+            binding.textBtnSecure.selectStyle(it)
+            /*if (it) {
+                if (::markerManager.isInitialized) markerManager.setMarker(arrayListOf())
+                viewModel.reqCoronaMarker(naverMap.cameraPosition.target)
+            }*/
+        })
+
+        viewModel.coronaTagSelected.observe(this, Observer {
+            binding.buttonList.isVisible = it
+        })
+
+        viewModel.showPopup.observe(this, Observer {
+            if(it) IntroPopUpDialog().show(supportFragmentManager, IntroPopUpDialog.TAG)
+        })
+
     }
 
     override fun onStart() {
