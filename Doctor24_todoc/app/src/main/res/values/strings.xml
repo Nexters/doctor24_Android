@@ -49,6 +49,7 @@
     <string name="end_time_error_message">종료시간은 시작시간보다 늦어야 합니다.</string>
     <string name="set_time_error_message">종료시간은 시작시간보다 이후로 설정해주세요.</string>
 
+    <string name="medical_empty_corona">현재 운영중인 기관이 없습니다.</string>
     <string name="map_mask_button">마스크</string>
     <string name="map_corona_button">코로나진료소</string>
     <string name="map_secure_button">국민안심병원</string>

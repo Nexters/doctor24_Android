@@ -26,5 +26,5 @@ val appModule = module {
     viewModel { PreviewViewModel() }
     viewModel { FindLoadViewModel() }
     viewModel { MedicalListViewModel() }
-    viewModel { CoronaMapViewModel(get(named("filterPrefs"))) }
+    viewModel { CoronaMapViewModel(get(), get(named("filterPrefs")), get()) }
 }
