@@ -1,5 +1,7 @@
 package com.nexters.doctor24.todoc.base
 
+import android.annotation.SuppressLint
+import android.content.pm.ActivityInfo
 import android.os.Bundle
 import android.os.PersistableBundle
 import androidx.annotation.CallSuper

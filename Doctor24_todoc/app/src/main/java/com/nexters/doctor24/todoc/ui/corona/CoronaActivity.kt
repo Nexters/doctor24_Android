@@ -1,5 +1,7 @@
 package com.nexters.doctor24.todoc.ui.corona
 
+import android.annotation.SuppressLint
+import android.content.pm.ActivityInfo
 import android.os.Bundle
 import android.view.Gravity
 import com.naver.maps.map.LocationTrackingMode
@@ -31,9 +33,10 @@ internal class CoronaActivity : BaseActivity<ActivityCoronaMapBinding, CoronaMap
     private var locationState : LocationTrackingMode = LocationTrackingMode.Follow
     private lateinit var mapView: MapView
 
+    @SuppressLint("SourceLockedOrientationActivity")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
+        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
         fusedLocationSource = FusedLocationSource(this, NaverMapFragment.LOCATION_PERMISSION_REQUEST_CODE)
 
         mapView = binding.coronaMapView
@@ -49,7 +52,7 @@ internal class CoronaActivity : BaseActivity<ActivityCoronaMapBinding, CoronaMap
             isLocationButtonEnabled = false
             isTiltGesturesEnabled = false
             logoGravity = Gravity.TOP or Gravity.END
-            setLogoMargin(0, 138.toDp, 24.toDp, 0)
+            setLogoMargin(0, 40.toDp, 24.toDp, 0)
         }
         map.apply {
             locationSource = fusedLocationSource
