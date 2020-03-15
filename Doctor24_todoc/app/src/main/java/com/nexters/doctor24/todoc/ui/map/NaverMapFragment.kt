@@ -164,17 +164,17 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
 
         binding.buttonLocation.setOnClickListener {
             when(locationState) {
-                LocationTrackingMode.Follow -> {
-                    locationState = LocationTrackingMode.None
+                LocationTrackingMode.Face -> {
+                    locationState = LocationTrackingMode.NoFollow
                     binding.buttonLocation.setImageResource(R.drawable.ic_location_none)
                 }
                 LocationTrackingMode.NoFollow -> {
                     locationState = LocationTrackingMode.Follow
-                    binding.buttonLocation.setImageResource(R.drawable.ic_location_follow)
-                }
-                LocationTrackingMode.None -> {
-                    locationState = LocationTrackingMode.NoFollow
                     binding.buttonLocation.setImageResource(R.drawable.ic_location_local)
+                }
+                LocationTrackingMode.Follow -> {
+                    locationState = LocationTrackingMode.Face
+                    binding.buttonLocation.setImageResource(R.drawable.ic_location_follow)
                 }
             }
             naverMap.locationTrackingMode = locationState
@@ -596,7 +596,7 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
         naverMap = map
         map.uiSettings.apply {
             isCompassEnabled = false
-            isRotateGesturesEnabled = false
+            isRotateGesturesEnabled = true
             isZoomControlEnabled = false
             isLocationButtonEnabled = false
             isTiltGesturesEnabled = false

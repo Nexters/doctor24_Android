@@ -65,6 +65,7 @@ internal class CoronaActivity : BaseActivity<ActivityCoronaMapBinding, CoronaMap
             getMapAsync(this@CoronaActivity)
         }
 
+        initView()
         initObserve()
     }
 
@@ -72,7 +73,7 @@ internal class CoronaActivity : BaseActivity<ActivityCoronaMapBinding, CoronaMap
         naverMap = map
         map.uiSettings.apply {
             isCompassEnabled = false
-            isRotateGesturesEnabled = false
+            isRotateGesturesEnabled = true
             isZoomControlEnabled = false
             isLocationButtonEnabled = false
             isTiltGesturesEnabled = false
@@ -150,6 +151,26 @@ internal class CoronaActivity : BaseActivity<ActivityCoronaMapBinding, CoronaMap
 
     override fun onClosedPreview() {
         deSelectMarker()
+    }
+
+    private fun initView() {
+        binding.buttonLocation.setOnClickListener {
+            when(locationState) {
+                LocationTrackingMode.Face -> {
+                    locationState = LocationTrackingMode.NoFollow
+                    binding.buttonLocation.setImageResource(R.drawable.ic_location_none)
+                }
+                LocationTrackingMode.NoFollow -> {
+                    locationState = LocationTrackingMode.Follow
+                    binding.buttonLocation.setImageResource(R.drawable.ic_location_local)
+                }
+                LocationTrackingMode.Follow -> {
+                    locationState = LocationTrackingMode.Face
+                    binding.buttonLocation.setImageResource(R.drawable.ic_location_follow)
+                }
+            }
+            naverMap.locationTrackingMode = locationState
+        }
     }
 
     private fun initObserve() {
