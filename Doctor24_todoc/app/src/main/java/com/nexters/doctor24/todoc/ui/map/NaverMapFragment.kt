@@ -30,6 +30,7 @@ import com.nexters.doctor24.todoc.base.EventObserver
 import com.nexters.doctor24.todoc.data.marker.MarkerTypeEnum
 import com.nexters.doctor24.todoc.data.marker.response.ResMapMarker
 import com.nexters.doctor24.todoc.databinding.NavermapFragmentBinding
+import com.nexters.doctor24.todoc.ui.corona.CoronaActivity
 import com.nexters.doctor24.todoc.ui.map.category.CategoryAdapter
 import com.nexters.doctor24.todoc.ui.map.category.CategoryViewModel
 import com.nexters.doctor24.todoc.ui.map.category.categoryItemList
@@ -50,7 +51,7 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
     OnMapReadyCallback, MapMarkerManager.MarkerClickListener, CategoryAdapter.CategoryListener, PreviewFragment.PreviewListener {
 
     companion object {
-        private const val LOCATION_PERMISSION_REQUEST_CODE = 1000
+        const val LOCATION_PERMISSION_REQUEST_CODE = 1000
         private const val LAYOUT_SPAN_COUNT = 5
 
         private const val MAP_ZOOM_LEVEL_MIN = 12.0
@@ -399,6 +400,10 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
                     )
                 }
             }
+        })
+
+        viewModel.coronaModeEvent.observe(viewLifecycleOwner, Observer {
+            startActivity(Intent(context, CoronaActivity::class.java))
         })
 
         viewModel.errorData.observe(viewLifecycleOwner, Observer {

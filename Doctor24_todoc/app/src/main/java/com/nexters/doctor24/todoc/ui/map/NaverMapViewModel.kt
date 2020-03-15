@@ -103,6 +103,9 @@ internal class NaverMapViewModel(private val dispatchers: DispatcherProvider,
     private val _showPopup = MutableLiveData<Boolean>()
     val showPopup : LiveData<Boolean> get() = _showPopup
 
+    private val _coronaModeEvent = SingleLiveEvent<Boolean>()
+    val coronaModeEvent : LiveData<Boolean> get() = _coronaModeEvent
+
     private val _errorData = MutableLiveData<ErrorResponse>()
     val errorData: LiveData<ErrorResponse> get() = _errorData
 
@@ -243,6 +246,10 @@ internal class NaverMapViewModel(private val dispatchers: DispatcherProvider,
 
     fun onClickFilter() {
         _categoryEvent.value = sharedPreferences.getInt(KEY_PREF_FILTER_CATEGORY, 0)
+    }
+
+    fun onClickCoronaMode() {
+        _coronaModeEvent.call()
     }
 
     fun onClosePreview() {
