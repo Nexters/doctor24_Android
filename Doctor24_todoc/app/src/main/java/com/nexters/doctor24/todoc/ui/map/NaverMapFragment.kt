@@ -99,8 +99,6 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
         initObserve()
         setBottomSheet()
 
-        maskViewModel.reqMarker(1,500)
-
     }
 
     private fun setBottomSheet() {
@@ -150,6 +148,10 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
     }
 
     private fun initView() {
+
+        Timber.e("yo1")
+        viewModel.reqMaskMarker(1,500)
+        Timber.e("yo2")
 
         binding.textTabHospital.setOnClickListener {
             if(viewModel.coronaTagSelected.value == false) {

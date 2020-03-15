@@ -20,9 +20,9 @@ import org.koin.dsl.module
 val appModule = module {
     single { androidContext().resources as Resources }
     factory { DefaultDispatcherProvider() as DispatcherProvider }
-    viewModel { NaverMapViewModel(get(), get(named("filterPrefs")), get()) }
+    viewModel { NaverMapViewModel(get(), get(named("filterPrefs")), get(), get()) }
     viewModel { TimeViewModel(get()) }
-    viewModel { MaskViewModel(get(),get(named("mask"))) }
+    viewModel { MaskViewModel(get(),get()) }
     viewModel { CategoryViewModel() }
     viewModel { DetailedViewModel(get(),get()) }
     viewModel { PreviewViewModel() }

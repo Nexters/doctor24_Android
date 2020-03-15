@@ -29,6 +29,7 @@ val maskNetworkModule: Module = module {
             .build()
     }
 
-    single{ MaskStoreDataSourceImpl(get()) as MaskStoreDataSource }
+    single{ MaskStoreDataSourceImpl(get(named("mask"))) as MaskStoreDataSource }
+
 }
 

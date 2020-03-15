@@ -6,7 +6,6 @@ import com.nexters.doctor24.todoc.repository.DetailedInfoRepositoryImpl
 import com.nexters.doctor24.todoc.repository.MarkerRepository
 import com.nexters.doctor24.todoc.repository.MarkerRepositoryImpl
 import com.nexters.doctor24.todoc.repository.MaskStoreRepositoryImpl
-import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
 val repositoryModule = module {
