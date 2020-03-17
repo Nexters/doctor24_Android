@@ -148,6 +148,7 @@ internal class MapMarkerManager(val context: Context, private val naverMap: Nave
                 MarkerTypeEnum.PHARMACY -> R.drawable.ic_marker_pharmacy
                 MarkerTypeEnum.CORONA -> R.drawable.ic_marker_corona
                 MarkerTypeEnum.SECURE -> R.drawable.ic_marke_secure
+                MarkerTypeEnum.MASK -> R.drawable.ic_marker_hospital_normal
             }
         )
     }
@@ -158,6 +159,7 @@ internal class MapMarkerManager(val context: Context, private val naverMap: Nave
             MarkerTypeEnum.PHARMACY -> R.drawable.ic_marker_pharmacy
             MarkerTypeEnum.CORONA -> R.drawable.ic_marker_corona
             MarkerTypeEnum.SECURE -> R.drawable.ic_marke_secure
+            MarkerTypeEnum.MASK -> R.drawable.ic_marker_hospital_normal
         })
         countView.text = total.toString()
         return OverlayImage.fromView(view)
@@ -170,6 +172,7 @@ internal class MapMarkerManager(val context: Context, private val naverMap: Nave
                 MarkerTypeEnum.PHARMACY -> R.drawable.ic_marker_pharmacy_select
                 MarkerTypeEnum.CORONA -> R.drawable.ic_marker_corona_select
                 MarkerTypeEnum.SECURE -> R.drawable.ic_marker_secure_select
+                MarkerTypeEnum.MASK -> R.drawable.ic_marker_hospital_normal
             }
         )
     }

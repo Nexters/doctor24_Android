@@ -1,6 +1,7 @@
 package com.nexters.doctor24.todoc.ui.corona
 
 import android.content.SharedPreferences
+import android.location.Location
 import androidx.core.content.edit
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
@@ -16,7 +17,9 @@ import com.nexters.doctor24.todoc.base.SingleLiveEvent
 import com.nexters.doctor24.todoc.data.marker.MarkerTypeEnum
 import com.nexters.doctor24.todoc.data.marker.response.ResMapLocation
 import com.nexters.doctor24.todoc.data.marker.response.ResMapMarker
+import com.nexters.doctor24.todoc.data.mask.response.ResStoreSaleResult
 import com.nexters.doctor24.todoc.repository.MarkerRepository
+import com.nexters.doctor24.todoc.repository.MaskStoreRepository
 import com.nexters.doctor24.todoc.ui.map.MarkerUIData
 import com.nexters.doctor24.todoc.ui.map.NaverMapViewModel
 import kotlinx.coroutines.launch
@@ -28,26 +31,47 @@ import java.util.ArrayList
 
 internal class CoronaMapViewModel(private val dispatchers: DispatcherProvider,
                                   private val sharedPreferences: SharedPreferences,
-                                  private val repo: MarkerRepository
+                                  private val repo: MarkerRepository,
+                                  private val maskRepo: MaskStoreRepository
 ) : BaseViewModel() {
 
     private val _markerList = MutableLiveData<List<ResMapLocation>>()
-    private val _hospitalMarkerDatas = Transformations.map(_markerList) {
-        val list = arrayListOf<MarkerUIData>()
-        it.forEach {res->
-            list.add(
-                MarkerUIData(
-                    location = LatLng(res.latitude, res.longitude),
-                    count = res.total,
-                    medicalType = res.facilities[0].medicalType,
-                    isEmergency = res.facilities[0].emergency,
-                    isNight = res.facilities[0].nightTimeServe,
-                    name = res.facilities[0].placeName,
-                    group = res.facilities
+    private val _maskMarkerList = MutableLiveData<ResStoreSaleResult>()
+    private val _hospitalMarkerDatas = MediatorLiveData<Event<ArrayList<MarkerUIData>>>().apply {
+        addSource (_markerList) {
+            val list = arrayListOf<MarkerUIData>()
+            it.forEach { res ->
+                list.add(
+                    MarkerUIData(
+                        location = LatLng(res.latitude, res.longitude),
+                        count = res.total,
+                        medicalType = res.facilities[0].medicalType,
+                        isEmergency = res.facilities[0].emergency,
+                        isNight = res.facilities[0].nightTimeServe,
+                        name = res.facilities[0].placeName,
+                        group = res.facilities
+                    )
                 )
-            )
+            }
+            postValue(Event(list))
         }
-        Event(list)
+
+        addSource(_maskMarkerList) {
+            val list = arrayListOf<MarkerUIData>()
+            it.stores?.forEach { res ->
+                list.add(
+                    MarkerUIData(
+                        location = LatLng(res.lat.toDouble(), res.lng.toDouble()),
+                        count = 1,
+                        medicalType = "mask",
+                        isEmergency = false,
+                        isNight = false,
+                        name = res.name
+                    )
+                )
+            }
+            postValue(Event(list))
+        }
     }
     private val _medicalListData = Transformations.map(_markerList) { response ->
         val list = arrayListOf<ResMapMarker>()
@@ -57,10 +81,30 @@ internal class CoronaMapViewModel(private val dispatchers: DispatcherProvider,
     val medicalListData : LiveData<Event<ArrayList<ResMapMarker>>> get() = _medicalListData
     val hospitalMarkerDatas : LiveData<Event<ArrayList<MarkerUIData>>> get() = _hospitalMarkerDatas
 
+    /*private val _maskMarkerDatas = Transformations.map(_maskMarkerList) {
+        val list = arrayListOf<MarkerUIData>()
+        it.stores?.forEach { res ->
+            list.add(
+                MarkerUIData(
+                    location = LatLng(res.lat.toDouble(), res.lng.toDouble()),
+                    count = 1,
+                    medicalType = res.type,
+                    isEmergency = false,
+                    isNight = false,
+                    name = res.name
+                )
+            )
+        }
+        Event(list)
+    }
+    val maskMarkerDatas : LiveData<Event<ArrayList<MarkerUIData>>> get() = _maskMarkerDatas*/
+
     private val _errorData = MutableLiveData<ErrorResponse>()
     val errorData: LiveData<ErrorResponse> get() = _errorData
 
-    private val _maskSelected = MutableLiveData<Boolean>().apply { value = true }
+    var currentMyLocation : LatLng? = null // 현재 사용자의 위치
+
+    private val _maskSelected = MutableLiveData<Boolean>()
     val maskSelected : LiveData<Boolean> get() = _maskSelected
 
     private val _coronaSelected = MutableLiveData<Boolean>().apply { postValue(false) }
@@ -84,16 +128,9 @@ internal class CoronaMapViewModel(private val dispatchers: DispatcherProvider,
     private val _stockSwitchEvent = MutableLiveData<Boolean>().apply { postValue(false) }
     val stockSwitchEvent : LiveData<Boolean> get() = _stockSwitchEvent
 
-    private val _currentSelectType = MediatorLiveData<MarkerTypeEnum>().apply {
-        addSource(maskSelected) { postValue(currentType()) }
-        addSource(coronaSelected) { postValue(currentType()) }
-        addSource(coronaSecureSelected) { postValue(currentType()) }
-    }
-    val currentSelectType : LiveData<MarkerTypeEnum> get() = _currentSelectType
-
-    private fun currentType() : MarkerTypeEnum = when {
+    fun currentType() : MarkerTypeEnum = when {
         maskSelected.value == true -> {
-            MarkerTypeEnum.CORONA
+            MarkerTypeEnum.MASK
         }
         coronaSelected.value == true -> {
             MarkerTypeEnum.CORONA
@@ -101,7 +138,7 @@ internal class CoronaMapViewModel(private val dispatchers: DispatcherProvider,
         coronaSecureSelected.value == true -> {
             MarkerTypeEnum.SECURE
         }
-        else -> MarkerTypeEnum.CORONA
+        else -> MarkerTypeEnum.MASK
     }
 
     private val _closeEvent = SingleLiveEvent<Unit>()
@@ -115,7 +152,7 @@ internal class CoronaMapViewModel(private val dispatchers: DispatcherProvider,
                     type = currentType()
                 )
                 withContext(dispatchers.main()) {
-                    _markerList.value = result
+                    _markerList.postValue(result)
                 }
 
                 Timber.d(result.toString())
@@ -130,6 +167,46 @@ internal class CoronaMapViewModel(private val dispatchers: DispatcherProvider,
                     else -> _errorData.postValue(handleError(-100, "서버에서 데이터를 받아오지 못하였습니다."))
                 }
             }
+        }
+    }
+
+    fun reqMaskMarker(center: LatLng) {
+        uiScope.launch(dispatchers.io()) {
+            try {
+                val lat = center.latitude.run {
+                    if(this < 33) 33.0 else if (this > 43) 43.0 else this
+                }
+                val lng = center.longitude.run {
+                    if(this < 124) 124.0 else if (this > 132) 132.0 else this
+                }
+                val result = maskRepo.getMaskStore(
+                    lat = lat.toFloat(),
+                    lng = lng.toFloat(),
+                    m = 2000
+                )
+                withContext(dispatchers.main()) {
+                    _maskMarkerList.postValue(result)
+                }
+                Timber.e("마스크 결과")
+                Timber.e(result.toString())
+            } catch (e: Exception) {
+                when (e) {
+                    is HttpException -> {
+                        _errorData.postValue(handleError(e.code(), e.message()))
+                    }
+                    is SocketException -> {
+                        _errorData.postValue(handleError(0, e.message ?: "SocketException"))
+                    }
+                    else -> _errorData.postValue(handleError(-100, "서버에서 데이터를 받아오지 못하였습니다."))
+                }
+            }
+        }
+    }
+
+    fun onChangedMyLocation(location : Location) {
+        val loc = LatLng(location.latitude, location.longitude)
+        if(currentMyLocation == null || currentMyLocation != loc) {
+            currentMyLocation = loc
         }
     }
 

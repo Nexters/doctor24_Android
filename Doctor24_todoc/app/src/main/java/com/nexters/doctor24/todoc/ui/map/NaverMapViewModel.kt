@@ -276,36 +276,6 @@ internal class NaverMapViewModel(private val dispatchers: DispatcherProvider,
         _dialogCloseEvent.call()
     }
 
-
-    fun reqMaskMarker(page: Int, perPage: Int) {
-        uiScope.launch(dispatchers.io()) {
-            try {
-                val result = repoMask.getMaskStore(
-                    page = page,
-                    perPage = perPage
-                )
-/*                withContext(dispatchers.main()) {
-                    _markerList.value = result.storeInfos
-                }*/
-                Timber.e("마스크 결과")
-                Timber.e(result.toString())
-            } catch (e: Exception) {
-                when (e) {
-                    is HttpException -> {
-                        _errorData.postValue(handleError(e.code(), e.message()))
-                        Timber.e("으이구"+e.code() + e.message())
-                    }
-                    is SocketException -> {
-                        _errorData.postValue(handleError(0, e.message ?: "SocketException"))
-                    }
-                    else -> {
-                        _errorData.postValue(handleError(-100, "서버에서 데이터를 받아오지 못하였습니다."))
-                    }
-
-                }
-            }
-        }
-    }
 }
 
 internal data class MarkerUIData(
@@ -315,5 +285,5 @@ internal data class MarkerUIData(
     val isEmergency: Boolean = false,
     val isNight: Boolean = false,
     val name: String,
-    val group: ArrayList<ResMapMarker>
+    val group: ArrayList<ResMapMarker>? = arrayListOf()
 )

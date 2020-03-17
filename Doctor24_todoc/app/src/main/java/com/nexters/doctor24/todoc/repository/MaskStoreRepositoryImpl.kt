@@ -1,11 +1,10 @@
 package com.nexters.doctor24.todoc.repository
 
 import com.nexters.doctor24.todoc.data.mask.MaskStoreDataSource
-import com.nexters.doctor24.todoc.data.mask.response.ResMaskStore
+import com.nexters.doctor24.todoc.data.mask.response.ResStoreSaleResult
 
 internal class MaskStoreRepositoryImpl(private val dataSource: MaskStoreDataSource) :
     MaskStoreRepository {
-    override suspend fun getMaskStore(page: Int, perPage: Int): ResMaskStore {
-        return dataSource.getMaskStores(page, perPage)
-    }
+    override suspend fun getMaskStore(lat: Float, lng: Float, m: Int): ResStoreSaleResult
+         = dataSource.getMaskStores(lat, lng, m)
 }

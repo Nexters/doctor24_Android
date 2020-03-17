@@ -67,7 +67,6 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
     val viewModelTime: TimeViewModel by viewModel()
     private val categoryViewModel : CategoryViewModel by viewModel()
     private val previewViewModel : PreviewViewModel by viewModel()
-    private val maskViewModel : MaskViewModel by viewModel()
 
     private lateinit var naverMap: NaverMap
     private lateinit var markerManager: MapMarkerManager
@@ -148,10 +147,6 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
     }
 
     private fun initView() {
-
-        Timber.e("yo1")
-        viewModel.reqMaskMarker(1,500)
-        Timber.e("yo2")
 
         binding.textTabHospital.setOnClickListener {
             if(viewModel.coronaTagSelected.value == false) {

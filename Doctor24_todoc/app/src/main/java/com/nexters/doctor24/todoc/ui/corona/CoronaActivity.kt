@@ -16,6 +16,7 @@ import com.naver.maps.map.util.FusedLocationSource
 import com.nexters.doctor24.todoc.R
 import com.nexters.doctor24.todoc.base.BaseActivity
 import com.nexters.doctor24.todoc.base.EventObserver
+import com.nexters.doctor24.todoc.data.marker.MarkerTypeEnum
 import com.nexters.doctor24.todoc.data.marker.response.ResMapMarker
 import com.nexters.doctor24.todoc.databinding.ActivityCoronaMapBinding
 import com.nexters.doctor24.todoc.ui.map.MarkerUIData
@@ -86,7 +87,7 @@ internal class CoronaActivity : BaseActivity<ActivityCoronaMapBinding, CoronaMap
             isNightModeEnabled = isCurrentMapDarkMode()
             setBackgroundResource(NaverMap.DEFAULT_BACKGROUND_DRWABLE_DARK)
             mapType = NaverMap.MapType.Navi
-            minZoom = MAP_ZOOM_LEVEL_CORONA
+            minZoom = MAP_ZOOM_LEVEL_MIN
             maxZoom = MAP_ZOOM_LEVEL_MAX
         }
 
@@ -95,6 +96,12 @@ internal class CoronaActivity : BaseActivity<ActivityCoronaMapBinding, CoronaMap
         map.addOnCameraIdleListener {
             showRefresh()
         }
+
+        map.addOnLocationChangeListener {
+            viewModel.onChangedMyLocation(it)
+        }
+
+        binding.textBtnMask.performClick()
     }
 
     override fun markerClick(marker: Marker) {
@@ -183,11 +190,16 @@ internal class CoronaActivity : BaseActivity<ActivityCoronaMapBinding, CoronaMap
             } else {
                 markerManager.setMarker(it)
                 hideRefresh()
-                val cameraUpdate = CameraUpdate.fitBounds(markerManager.makeBounds(), 100).animate(
-                    CameraAnimation.Easing)
-                naverMap.apply{
-                    minZoom = MAP_ZOOM_LEVEL_CORONA
-                    moveCamera(cameraUpdate)
+                when(viewModel.currentType()) {
+                    MarkerTypeEnum.MASK -> naverMap.minZoom = MAP_ZOOM_LEVEL_MIN
+                    else -> {
+                        val cameraUpdate = CameraUpdate.fitBounds(markerManager.makeBounds(), 100).animate(
+                            CameraAnimation.Easing)
+                        naverMap.apply{
+                            minZoom = MAP_ZOOM_LEVEL_CORONA
+                            moveCamera(cameraUpdate)
+                        }
+                    }
                 }
             }
         })
@@ -198,7 +210,16 @@ internal class CoronaActivity : BaseActivity<ActivityCoronaMapBinding, CoronaMap
         })
 
         viewModel.refreshEvent.observe(this, Observer {
-            viewModel.reqCoronaMarker(naverMap.cameraPosition.target)
+            when(viewModel.currentType()) {
+                MarkerTypeEnum.MASK -> {
+                    if (::markerManager.isInitialized) markerManager.setMarker(arrayListOf())
+                    viewModel.reqMaskMarker(viewModel.currentMyLocation ?: naverMap.cameraPosition.target)
+                }
+                else -> {
+                    if (::markerManager.isInitialized) markerManager.setMarker(arrayListOf())
+                    viewModel.reqCoronaMarker(viewModel.currentMyLocation ?: naverMap.cameraPosition.target)
+                }
+            }
         })
 
         viewModel.closeEvent.observe(this, Observer {
@@ -212,7 +233,7 @@ internal class CoronaActivity : BaseActivity<ActivityCoronaMapBinding, CoronaMap
         })
 
         viewModel.medicalListEvent.observe(this, Observer {
-            naverMap.cameraPosition.target?.let { loc->
+            naverMap.cameraPosition.target.let { loc->
                 listIntent.apply{
                     putExtra(MedicalListActivity.KEY_MEDI_MY_LOCATION, doubleArrayOf(loc.latitude, loc.longitude))
                 }
@@ -222,13 +243,17 @@ internal class CoronaActivity : BaseActivity<ActivityCoronaMapBinding, CoronaMap
 
         viewModel.maskSelected.observe(this, Observer {
             binding.textBtnMask.selectStyle(it)
+            if (it) {
+                if (::markerManager.isInitialized) markerManager.setMarker(arrayListOf())
+                viewModel.reqMaskMarker(viewModel.currentMyLocation ?: naverMap.cameraPosition.target)
+            }
         })
 
         viewModel.coronaSelected.observe(this, Observer {
             binding.textBtnCorona.selectStyle(it)
             if (it) {
                 if (::markerManager.isInitialized) markerManager.setMarker(arrayListOf())
-                viewModel.reqCoronaMarker(naverMap.cameraPosition.target)
+                viewModel.reqCoronaMarker(viewModel.currentMyLocation ?: naverMap.cameraPosition.target)
             }
         })
 
@@ -236,7 +261,7 @@ internal class CoronaActivity : BaseActivity<ActivityCoronaMapBinding, CoronaMap
             binding.textBtnSecure.selectStyle(it)
             if (it) {
                 if (::markerManager.isInitialized) markerManager.setMarker(arrayListOf())
-                viewModel.reqCoronaMarker(naverMap.cameraPosition.target)
+                viewModel.reqCoronaMarker(viewModel.currentMyLocation ?: naverMap.cameraPosition.target)
             }
         })
 

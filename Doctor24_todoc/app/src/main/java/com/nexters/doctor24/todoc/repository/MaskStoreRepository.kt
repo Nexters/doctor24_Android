@@ -1,7 +1,7 @@
 package com.nexters.doctor24.todoc.repository
 
-import com.nexters.doctor24.todoc.data.mask.response.ResMaskStore
+import com.nexters.doctor24.todoc.data.mask.response.ResStoreSaleResult
 
 internal interface MaskStoreRepository {
-    suspend fun getMaskStore(page: Int, perPage: Int): ResMaskStore
+    suspend fun getMaskStore(lat: Float, lng: Float, m: Int): ResStoreSaleResult
 }
