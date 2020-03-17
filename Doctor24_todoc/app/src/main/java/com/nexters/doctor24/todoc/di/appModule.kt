@@ -6,6 +6,7 @@ import com.nexters.doctor24.todoc.base.DispatcherProvider
 import com.nexters.doctor24.todoc.ui.corona.CoronaMapViewModel
 import com.nexters.doctor24.todoc.ui.detailed.DetailedViewModel
 import com.nexters.doctor24.todoc.ui.findload.FindLoadViewModel
+import com.nexters.doctor24.todoc.ui.map.MaskViewModel
 import com.nexters.doctor24.todoc.ui.map.NaverMapViewModel
 import com.nexters.doctor24.todoc.ui.map.TimeViewModel
 import com.nexters.doctor24.todoc.ui.map.category.CategoryViewModel
@@ -19,8 +20,9 @@ import org.koin.dsl.module
 val appModule = module {
     single { androidContext().resources as Resources }
     factory { DefaultDispatcherProvider() as DispatcherProvider }
-    viewModel { NaverMapViewModel(get(), get(named("filterPrefs")), get()) }
+    viewModel { NaverMapViewModel(get(), get(named("filterPrefs")), get(), get()) }
     viewModel { TimeViewModel(get()) }
+    viewModel { MaskViewModel(get(),get()) }
     viewModel { CategoryViewModel() }
     viewModel { DetailedViewModel(get(),get()) }
     viewModel { PreviewViewModel() }

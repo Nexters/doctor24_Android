@@ -17,6 +17,7 @@ import com.nexters.doctor24.todoc.data.marker.MarkerTypeEnum
 import com.nexters.doctor24.todoc.data.marker.response.ResMapLocation
 import com.nexters.doctor24.todoc.data.marker.response.ResMapMarker
 import com.nexters.doctor24.todoc.repository.MarkerRepository
+import com.nexters.doctor24.todoc.repository.MaskStoreRepository
 import com.nexters.doctor24.todoc.util.isCurrentMapDarkMode
 import com.nexters.doctor24.todoc.util.to24hourString
 import kotlinx.coroutines.launch
@@ -30,7 +31,9 @@ import java.util.*
 
 internal class NaverMapViewModel(private val dispatchers: DispatcherProvider,
                                  private val sharedPreferences: SharedPreferences,
-                                 private val repo: MarkerRepository) : BaseViewModel() {
+                                 private val repo: MarkerRepository,
+                                 private val repoMask: MaskStoreRepository
+) : BaseViewModel() {
 
     companion object {
         const val KEY_PREF_FILTER_CATEGORY = "KEY_PREF_FILTER_CATEGORY"
@@ -271,6 +274,37 @@ internal class NaverMapViewModel(private val dispatchers: DispatcherProvider,
 
     fun onCloseDialog() {
         _dialogCloseEvent.call()
+    }
+
+
+    fun reqMaskMarker(page: Int, perPage: Int) {
+        uiScope.launch(dispatchers.io()) {
+            try {
+                val result = repoMask.getMaskStore(
+                    page = page,
+                    perPage = perPage
+                )
+/*                withContext(dispatchers.main()) {
+                    _markerList.value = result.storeInfos
+                }*/
+                Timber.e("마스크 결과")
+                Timber.e(result.toString())
+            } catch (e: Exception) {
+                when (e) {
+                    is HttpException -> {
+                        _errorData.postValue(handleError(e.code(), e.message()))
+                        Timber.e("으이구"+e.code() + e.message())
+                    }
+                    is SocketException -> {
+                        _errorData.postValue(handleError(0, e.message ?: "SocketException"))
+                    }
+                    else -> {
+                        _errorData.postValue(handleError(-100, "서버에서 데이터를 받아오지 못하였습니다."))
+                    }
+
+                }
+            }
+        }
     }
 }
 
