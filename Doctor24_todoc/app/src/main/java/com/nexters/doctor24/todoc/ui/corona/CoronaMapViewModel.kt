@@ -15,6 +15,7 @@ import com.nexters.doctor24.todoc.base.DispatcherProvider
 import com.nexters.doctor24.todoc.base.Event
 import com.nexters.doctor24.todoc.base.SingleLiveEvent
 import com.nexters.doctor24.todoc.data.marker.MarkerTypeEnum
+import com.nexters.doctor24.todoc.data.marker.MaskStateEnum.Companion.getMaskState
 import com.nexters.doctor24.todoc.data.marker.response.ResMapLocation
 import com.nexters.doctor24.todoc.data.marker.response.ResMapMarker
 import com.nexters.doctor24.todoc.data.mask.response.ResStoreSaleResult
@@ -68,7 +69,7 @@ internal class CoronaMapViewModel(private val dispatchers: DispatcherProvider,
                         isNight = false,
                         name = res.name,
                         maskType = res.type,
-                        maskState = res.state
+                        maskState = getMaskState(res.state)
                     )
                 )
             }

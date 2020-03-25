@@ -639,28 +639,4 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
         })
     }
 
-
-
-    /*private fun handleResponse(result: Result<ResMapAddress>) {
-        when (result) {
-            //comment this Success check if you are observing data from DB
-            is Success<ResMapAddress> -> {
-                result.data.addressData?.get(0)?.region?.area2?.areaName?.let {
-                    Toast.makeText(context, "현재 구 주소 : $it", Toast.LENGTH_SHORT).show()
-                }
-            }
-            is Error -> {
-                view?.let { view ->
-                    ErrorHandler.handleError(
-                        view,
-                        result
-                    )
-                }
-            }
-            is Progress -> {
-                binding.progressBar.isVisible = result.isLoading
-            }
-        }
-    }*/
-
 }

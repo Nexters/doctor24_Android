@@ -14,6 +14,7 @@ import com.nexters.doctor24.todoc.base.DispatcherProvider
 import com.nexters.doctor24.todoc.base.Event
 import com.nexters.doctor24.todoc.base.SingleLiveEvent
 import com.nexters.doctor24.todoc.data.marker.MarkerTypeEnum
+import com.nexters.doctor24.todoc.data.marker.MaskStateEnum
 import com.nexters.doctor24.todoc.data.marker.response.ResMapLocation
 import com.nexters.doctor24.todoc.data.marker.response.ResMapMarker
 import com.nexters.doctor24.todoc.repository.MarkerRepository
@@ -287,5 +288,5 @@ internal data class MarkerUIData(
     val name: String,
     val group: ArrayList<ResMapMarker>? = arrayListOf(),
     val maskType: String = "",
-    val maskState: String? = ""
+    val maskState: MaskStateEnum = MaskStateEnum.REMAIN_BREAK
 )

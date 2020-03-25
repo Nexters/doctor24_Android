@@ -39,21 +39,20 @@ enum class MaskTypeEnum(val type: String, val title: String) {
     }
 }
 
-enum class MaskStateEnum(val state: String, val title : String, val drawable: Int) {
-    REMAIN_PLENTY("plenty","충분", R.drawable.and_mask_small_enough_marker_withoutshadow),
-    REMAIN_SOME("some","보통", R.drawable.and_mask_small_nomal_marker_withoutshadow),
-    REMAIN_FEW("few","부족", R.drawable.and_mask_small_shortage_marker_withoutshadow),
-    REMAIN_EMPTY("empty","품절", R.drawable.and_mask_small_soldout_marker_withoutshadow),
-    REMAIN_BREAK("break","중단", -1);
+enum class MaskStateEnum(val state: String, val title : String, val color : Int, val drawable: Int) {
+    REMAIN_PLENTY("plenty","100개 이상", R.color.light_green, R.drawable.and_mask_small_enough_marker_withoutshadow),
+    REMAIN_SOME("some","30개~100개", R.color.orange, R.drawable.and_mask_small_nomal_marker_withoutshadow),
+    REMAIN_FEW("few","2개~29개", R.color.light_red, R.drawable.and_mask_small_shortage_marker_withoutshadow),
+    REMAIN_EMPTY("empty","재고 없음", R.color.grey_2, R.drawable.and_mask_small_soldout_marker_withoutshadow),
+    REMAIN_BREAK("break","중단", -1,-1);
 
     companion object {
-        fun getMaskState(state: String) : MaskStateEnum? = when(state) {
+        fun getMaskState(state: String?) : MaskStateEnum = when(state) {
             REMAIN_PLENTY.state -> REMAIN_PLENTY
             REMAIN_SOME.state -> REMAIN_SOME
             REMAIN_FEW.state -> REMAIN_FEW
             REMAIN_EMPTY.state -> REMAIN_EMPTY
-            REMAIN_BREAK.state -> REMAIN_BREAK
-            else -> null
+            else -> REMAIN_BREAK
         }
     }
 }

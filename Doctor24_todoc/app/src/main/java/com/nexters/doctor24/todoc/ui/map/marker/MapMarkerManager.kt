@@ -1,6 +1,7 @@
 package com.nexters.doctor24.todoc.ui.map.marker
 
 import android.content.Context
+import android.graphics.Typeface
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.ImageView
@@ -14,18 +15,13 @@ import com.naver.maps.map.overlay.OverlayImage
 import com.nexters.doctor24.todoc.R
 import com.nexters.doctor24.todoc.data.marker.MarkerTypeEnum
 import com.nexters.doctor24.todoc.data.marker.MarkerTypeEnum.Companion.getMarkerType
-import com.nexters.doctor24.todoc.data.marker.MaskStateEnum.Companion.getMaskState
-import com.nexters.doctor24.todoc.data.marker.MaskTypeEnum
-import com.nexters.doctor24.todoc.data.marker.MaskTypeEnum.Companion.getMaskType
+import com.nexters.doctor24.todoc.data.marker.MaskStateEnum
 import com.nexters.doctor24.todoc.ui.custom.MapMarkerBounce
 import com.nexters.doctor24.todoc.ui.custom.MapMarkerFade
 import com.nexters.doctor24.todoc.ui.map.MarkerUIData
 import java.util.*
 import kotlin.collections.ArrayList
-import kotlin.collections.forEach
-import kotlin.collections.map
 import kotlin.collections.set
-import kotlin.collections.withIndex
 
 internal class MapMarkerManager(val context: Context, private val naverMap: NaverMap) {
 
@@ -105,11 +101,11 @@ internal class MapMarkerManager(val context: Context, private val naverMap: Nave
             getMarkerType(it.medicalType)?.let { type ->
                 return when {
                     type == MarkerTypeEnum.MASK -> {
-                        drawMaskMarkerIcon(it.maskState ?: "")?.let{ ic->
+                        it.maskState?.let{ state->
                             Marker().apply {
                                 position = it.location
                                 tag = it.name
-                                icon = ic
+                                icon = drawMaskMarkerIcon(state)
                                 zIndex = ZINDEX_NORAML
                                 setOnClickListener { overlay ->
                                     overlay.tag = it.group
@@ -173,11 +169,7 @@ internal class MapMarkerManager(val context: Context, private val naverMap: Nave
         )
     }
 
-    private fun drawMaskMarkerIcon(state: String) : OverlayImage? {
-        getMaskState(state)?.let {
-            return OverlayImage.fromResource(it.drawable)
-        } ?: return null
-    }
+    private fun drawMaskMarkerIcon(state: MaskStateEnum) : OverlayImage = OverlayImage.fromResource(state.drawable)
 
     private fun drawCountMarkerIcon(type: MarkerTypeEnum, total: Int): OverlayImage {
         markerView.setImageResource(when(type) {
@@ -203,6 +195,18 @@ internal class MapMarkerManager(val context: Context, private val naverMap: Nave
         )
     }
 
+    private fun drawMaskSelectMarkerIcon(type: MaskStateEnum) : OverlayImage {
+        return OverlayImage.fromResource(
+            when(type) {
+                MaskStateEnum.REMAIN_PLENTY -> R.drawable.and_mask_big_enough_marker_withoutshadow
+                MaskStateEnum.REMAIN_SOME -> R.drawable.and_mask_big_nomal_marker_withoutshadow
+                MaskStateEnum.REMAIN_FEW -> R.drawable.and_mask_big_shortage_marker_withoutshadow
+                MaskStateEnum.REMAIN_EMPTY -> R.drawable.and_mask_big_soldout_marker_withoutshadow
+                MaskStateEnum.REMAIN_BREAK -> -1
+            }
+        )
+    }
+
     fun makeBounds() : LatLngBounds {
         val bounds = LatLngBounds.Builder()
         mapMarkers.map{ it.key.location }.forEach { bounds.include(it) }
@@ -214,7 +218,9 @@ internal class MapMarkerManager(val context: Context, private val naverMap: Nave
         selectMarker?.run {
             selectMarkerItem = markerItem
             getMarkerType(markerItem.medicalType)?.let {
-                selectMarker.icon = drawSelectMarkerIcon(it)
+                selectMarker.icon = if(it == MarkerTypeEnum.MASK) {
+                    drawMaskSelectMarkerIcon(markerItem.maskState)
+                } else drawSelectMarkerIcon(it)
                 InfoWindow().apply {
                     adapter = MarkerTagAdapter(markerItem)
                     offsetY = -80
@@ -254,11 +260,24 @@ internal class MapMarkerManager(val context: Context, private val naverMap: Nave
 
     inner class MarkerTagAdapter(private val markerItem: MarkerUIData) : InfoWindow.ViewAdapter() {
         private val view = LayoutInflater.from(context).inflate(R.layout.item_marker_name, null)
-        private val name = view.findViewById<TextView>(R.id.text_name)
+        private val tvName = view.findViewById<TextView>(R.id.text_name)
 
         override fun getView(window: InfoWindow): View {
-            name.text = markerItem.name
+            if(markerItem.maskState == MaskStateEnum.REMAIN_BREAK) {
+                tvName.text = markerItem.name
+                tvName.setTypeface(null, Typeface.NORMAL)
+            } else {
+                setMaskInfo()
+            }
             return view
+        }
+
+        private fun setMaskInfo() {
+            markerItem.maskState.apply {
+                tvName.setTypeface(null, Typeface.BOLD)
+                tvName.setTextColor(context.getColor(color))
+                tvName.text = title
+            }
         }
     }
 }
