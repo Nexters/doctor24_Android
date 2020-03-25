@@ -285,5 +285,7 @@ internal data class MarkerUIData(
     val isEmergency: Boolean = false,
     val isNight: Boolean = false,
     val name: String,
-    val group: ArrayList<ResMapMarker>? = arrayListOf()
+    val group: ArrayList<ResMapMarker>? = arrayListOf(),
+    val maskType: String = "",
+    val maskState: String? = ""
 )

@@ -66,7 +66,9 @@ internal class CoronaMapViewModel(private val dispatchers: DispatcherProvider,
                         medicalType = "mask",
                         isEmergency = false,
                         isNight = false,
-                        name = res.name
+                        name = res.name,
+                        maskType = res.type,
+                        maskState = res.state
                     )
                 )
             }
@@ -80,24 +82,6 @@ internal class CoronaMapViewModel(private val dispatchers: DispatcherProvider,
     }
     val medicalListData : LiveData<Event<ArrayList<ResMapMarker>>> get() = _medicalListData
     val hospitalMarkerDatas : LiveData<Event<ArrayList<MarkerUIData>>> get() = _hospitalMarkerDatas
-
-    /*private val _maskMarkerDatas = Transformations.map(_maskMarkerList) {
-        val list = arrayListOf<MarkerUIData>()
-        it.stores?.forEach { res ->
-            list.add(
-                MarkerUIData(
-                    location = LatLng(res.lat.toDouble(), res.lng.toDouble()),
-                    count = 1,
-                    medicalType = res.type,
-                    isEmergency = false,
-                    isNight = false,
-                    name = res.name
-                )
-            )
-        }
-        Event(list)
-    }
-    val maskMarkerDatas : LiveData<Event<ArrayList<MarkerUIData>>> get() = _maskMarkerDatas*/
 
     private val _errorData = MutableLiveData<ErrorResponse>()
     val errorData: LiveData<ErrorResponse> get() = _errorData
@@ -182,13 +166,11 @@ internal class CoronaMapViewModel(private val dispatchers: DispatcherProvider,
                 val result = maskRepo.getMaskStore(
                     lat = lat.toFloat(),
                     lng = lng.toFloat(),
-                    m = 2000
+                    m = 1500
                 )
                 withContext(dispatchers.main()) {
                     _maskMarkerList.postValue(result)
                 }
-                Timber.e("마스크 결과")
-                Timber.e(result.toString())
             } catch (e: Exception) {
                 when (e) {
                     is HttpException -> {
