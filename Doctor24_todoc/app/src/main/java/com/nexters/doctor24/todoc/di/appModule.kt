@@ -3,7 +3,7 @@ package com.nexters.doctor24.todoc.di
 import android.content.res.Resources
 import com.nexters.doctor24.todoc.base.DefaultDispatcherProvider
 import com.nexters.doctor24.todoc.base.DispatcherProvider
-import com.nexters.doctor24.todoc.ui.corona.CoronaMapViewModel
+import com.nexters.doctor24.todoc.ui.mask.MaskMapViewModel
 import com.nexters.doctor24.todoc.ui.detailed.DetailedViewModel
 import com.nexters.doctor24.todoc.ui.findload.FindLoadViewModel
 import com.nexters.doctor24.todoc.ui.map.NaverMapViewModel
@@ -26,5 +26,5 @@ val appModule = module {
     viewModel { PreviewViewModel() }
     viewModel { FindLoadViewModel() }
     viewModel { MedicalListViewModel() }
-    viewModel { CoronaMapViewModel(get(), get(named("filterPrefs")), get(), get()) }
+    viewModel { MaskMapViewModel(get(), get(named("filterPrefs")), get(), get()) }
 }

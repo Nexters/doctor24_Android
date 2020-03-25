@@ -162,7 +162,7 @@ internal class MapMarkerManager(val context: Context, private val naverMap: Nave
                     else -> R.drawable.ic_marker_hospital_normal
                 }
                 MarkerTypeEnum.PHARMACY -> R.drawable.ic_marker_pharmacy
-                MarkerTypeEnum.CORONA -> R.drawable.ic_marker_corona
+                MarkerTypeEnum.CLINIC -> R.drawable.ic_marker_corona
                 MarkerTypeEnum.SECURE -> R.drawable.ic_marke_secure
                 else -> -1
             }
@@ -175,7 +175,7 @@ internal class MapMarkerManager(val context: Context, private val naverMap: Nave
         markerView.setImageResource(when(type) {
             MarkerTypeEnum.HOSPITAL -> R.drawable.ic_marker_hospital_normal
             MarkerTypeEnum.PHARMACY -> R.drawable.ic_marker_pharmacy
-            MarkerTypeEnum.CORONA -> R.drawable.ic_marker_corona
+            MarkerTypeEnum.CLINIC -> R.drawable.ic_marker_corona
             MarkerTypeEnum.SECURE -> R.drawable.ic_marke_secure
             MarkerTypeEnum.MASK -> R.drawable.ic_marker_hospital_normal
         })
@@ -188,7 +188,7 @@ internal class MapMarkerManager(val context: Context, private val naverMap: Nave
             when(type) {
                 MarkerTypeEnum.HOSPITAL -> R.drawable.ic_marker_hospital_select
                 MarkerTypeEnum.PHARMACY -> R.drawable.ic_marker_pharmacy_select
-                MarkerTypeEnum.CORONA -> R.drawable.ic_marker_corona_select
+                MarkerTypeEnum.CLINIC -> R.drawable.ic_marker_corona_select
                 MarkerTypeEnum.SECURE -> R.drawable.ic_marker_secure_select
                 MarkerTypeEnum.MASK -> R.drawable.ic_marker_hospital_normal
             }

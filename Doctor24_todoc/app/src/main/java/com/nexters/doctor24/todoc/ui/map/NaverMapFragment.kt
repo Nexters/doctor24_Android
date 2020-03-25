@@ -30,7 +30,7 @@ import com.nexters.doctor24.todoc.base.EventObserver
 import com.nexters.doctor24.todoc.data.marker.MarkerTypeEnum
 import com.nexters.doctor24.todoc.data.marker.response.ResMapMarker
 import com.nexters.doctor24.todoc.databinding.NavermapFragmentBinding
-import com.nexters.doctor24.todoc.ui.corona.CoronaActivity
+import com.nexters.doctor24.todoc.ui.mask.MaskActivity
 import com.nexters.doctor24.todoc.ui.map.category.CategoryAdapter
 import com.nexters.doctor24.todoc.ui.map.category.CategoryViewModel
 import com.nexters.doctor24.todoc.ui.map.category.categoryItemList
@@ -44,7 +44,6 @@ import com.nexters.doctor24.todoc.util.isCurrentMapDarkMode
 import com.nexters.doctor24.todoc.util.to24hourString
 import com.nexters.doctor24.todoc.util.toDp
 import org.koin.androidx.viewmodel.ext.android.viewModel
-import org.koin.core.qualifier.named
 import timber.log.Timber
 
 
@@ -57,7 +56,7 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
 
         private const val MAP_ZOOM_LEVEL_MIN = 12.0
         private const val MAP_ZOOM_LEVEL_MAX = 17.0
-        private const val MAP_ZOOM_LEVEL_CORONA = 8.0
+        private const val MAP_ZOOM_LEVEL_MASK = 8.0
     }
 
     private lateinit var locationSource: FusedLocationSource
@@ -208,16 +207,16 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
     private fun showCoronaToast() {
         val title = when {
             viewModel.coronaSelected.value == true -> {
-                getString(R.string.map_corona_button)
+                getString(R.string.map_clinic_button)
             }
             viewModel.coronaSecureSelected.value == true -> {
                 getString(R.string.map_secure_button)
             }
             else -> {
-                getString(R.string.map_corona_button)
+                getString(R.string.map_clinic_button)
             }
         }
-        val message = String.format(getString(R.string.map_corona_disable_message), title, title)
+        val message = String.format(getString(R.string.map_clinic_disable_message), title, title)
         Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
     }
 
@@ -299,7 +298,7 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
                 if(viewModel.coronaTagSelected.value == true) {
                     val cameraUpdate = CameraUpdate.fitBounds(markerManager.makeBounds(), 100).animate(CameraAnimation.Easing)
                     naverMap.apply{
-                        minZoom = MAP_ZOOM_LEVEL_CORONA
+                        minZoom = MAP_ZOOM_LEVEL_MASK
                         moveCamera(cameraUpdate)
                     }
                 }
@@ -355,7 +354,7 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
         })
 
         viewModel.coronaSelected.observe(viewLifecycleOwner, Observer {
-            binding.textBtnCorona.apply{
+            binding.textBtnClinic.apply{
                 isSelected = it
                 setTypeface(null, if(it) Typeface.BOLD else Typeface.NORMAL)
             }
@@ -404,7 +403,7 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
         })
 
         viewModel.coronaModeEvent.observe(viewLifecycleOwner, Observer {
-            startActivity(Intent(context, CoronaActivity::class.java))
+            startActivity(Intent(context, MaskActivity::class.java))
         })
 
         viewModel.errorData.observe(viewLifecycleOwner, Observer {

@@ -8,7 +8,7 @@ import com.nexters.doctor24.todoc.R
 enum class MarkerTypeEnum(val type: String, val title: String) {
     HOSPITAL("hospital", "병원"),
     PHARMACY("pharmacy", "약국"),
-    CORONA("corona", "코로나진료소"),
+    CLINIC("corona", "선별진료소"),
     SECURE("secure", "안심병원"),
     MASK("mask", "마스크");
 
@@ -16,7 +16,7 @@ enum class MarkerTypeEnum(val type: String, val title: String) {
         fun getMarkerType(type: String) : MarkerTypeEnum? = when(type) {
             HOSPITAL.type -> HOSPITAL
             PHARMACY.type -> PHARMACY
-            CORONA.type -> CORONA
+            CLINIC.type -> CLINIC
             SECURE.type -> SECURE
             MASK.type -> MASK
             else -> null

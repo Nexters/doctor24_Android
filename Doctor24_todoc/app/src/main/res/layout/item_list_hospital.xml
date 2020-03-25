@@ -40,7 +40,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="6dp"
-                android:visibility="@{marker.CORONA.type.equals(item.type)}"
+                android:visibility="@{marker.CLINIC.type.equals(item.type)}"
                 android:src="@drawable/corona" />
 
             <androidx.appcompat.widget.AppCompatImageView
@@ -67,7 +67,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="6dp"
                 android:src="@drawable/ic_badge_normal"
-                android:visibility="@{item.normal &amp;&amp; !marker.CORONA.type.equals(item.type) &amp;&amp; !marker.SECURE.type.equals(item.type)}"
+                android:visibility="@{item.normal &amp;&amp; !marker.CLINIC.type.equals(item.type) &amp;&amp; !marker.SECURE.type.equals(item.type)}"
                 app:layout_constraintStart_toEndOf="@id/image_badge_night"
                 app:layout_constraintTop_toTopOf="parent" />
         </LinearLayout>

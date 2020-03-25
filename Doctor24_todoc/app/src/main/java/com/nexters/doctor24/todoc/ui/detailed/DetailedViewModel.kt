@@ -41,8 +41,6 @@ internal class DetailedViewModel(
     private val _errorData = MutableLiveData<ErrorResponse>()
     val errorData: LiveData<ErrorResponse> get() = _errorData
 
-    val corona = "corona"
-
     fun reqDetailedInfo(type: String, facilityId: String) {
         uiScope.launch(dispatchers.io()) {
             try {

@@ -6,7 +6,7 @@
     <data>
         <variable
             name="vm"
-            type="com.nexters.doctor24.todoc.ui.corona.CoronaMapViewModel" />
+            type="com.nexters.doctor24.todoc.ui.mask.MaskMapViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -14,7 +14,7 @@
         android:layout_height="match_parent">
 
         <com.naver.maps.map.MapView
-            android:id="@+id/corona_map_view"
+            android:id="@+id/mask_map_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
 
@@ -37,7 +37,7 @@
             android:text="@string/map_mask_button"
             android:gravity="center"
             android:textSize="14dp"
-            android:textColor="@color/selector_text_corona_button"
+            android:textColor="@color/selector_text_mask_button"
             android:background="@drawable/selector_mask_button_bg"
             android:onClick="@{()->vm.onClickMaskBtn()}"
             android:layout_marginTop="10dp"
@@ -45,18 +45,18 @@
             app:layout_constraintHorizontal_chainStyle="spread_inside"
             app:layout_constraintTop_toBottomOf="@id/button_close"
             app:layout_constraintStart_toStartOf="@id/button_close"
-            app:layout_constraintEnd_toStartOf="@id/text_btn_corona"/>
+            app:layout_constraintEnd_toStartOf="@id/text_btn_clinic"/>
 
         <TextView
-            android:id="@+id/text_btn_corona"
+            android:id="@+id/text_btn_clinic"
             android:layout_width="122dp"
             android:layout_height="44dp"
-            android:text="@string/map_corona_button"
+            android:text="@string/map_clinic_button"
             android:gravity="center"
             android:textSize="14dp"
-            android:textColor="@color/selector_text_corona_button"
-            android:background="@drawable/selector_corona_button_bg"
-            android:onClick="@{()->vm.onClickCoronaBtn()}"
+            android:textColor="@color/selector_text_mask_button"
+            android:background="@drawable/selector_clinic_button_bg"
+            android:onClick="@{()->vm.onClickClinicBtn()}"
             android:paddingBottom="4dp"
             app:layout_constraintTop_toTopOf="@id/text_btn_mask"
             app:layout_constraintBottom_toBottomOf="@id/text_btn_mask"
@@ -71,14 +71,14 @@
             android:text="@string/map_secure_button"
             android:gravity="center"
             android:textSize="14dp"
-            android:textColor="@color/selector_text_corona_button"
+            android:textColor="@color/selector_text_mask_button"
             android:background="@drawable/selector_secure_button_bg"
-            android:onClick="@{()->vm.onClickCoronaSecureBtn()}"
+            android:onClick="@{()->vm.onClickSecureBtn()}"
             android:layout_marginEnd="24dp"
             android:paddingBottom="4dp"
-            app:layout_constraintTop_toTopOf="@id/text_btn_corona"
-            app:layout_constraintBottom_toBottomOf="@id/text_btn_corona"
-            app:layout_constraintStart_toEndOf="@id/text_btn_corona"
+            app:layout_constraintTop_toTopOf="@id/text_btn_clinic"
+            app:layout_constraintBottom_toBottomOf="@id/text_btn_clinic"
+            app:layout_constraintStart_toEndOf="@id/text_btn_clinic"
             app:layout_constraintEnd_toEndOf="parent"/>
 
 

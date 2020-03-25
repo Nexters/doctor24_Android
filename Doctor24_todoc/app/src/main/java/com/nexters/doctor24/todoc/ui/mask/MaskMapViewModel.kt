@@ -1,4 +1,4 @@
-package com.nexters.doctor24.todoc.ui.corona
+package com.nexters.doctor24.todoc.ui.mask
 
 import android.content.SharedPreferences
 import android.location.Location
@@ -30,10 +30,10 @@ import timber.log.Timber
 import java.net.SocketException
 import java.util.ArrayList
 
-internal class CoronaMapViewModel(private val dispatchers: DispatcherProvider,
-                                  private val sharedPreferences: SharedPreferences,
-                                  private val repo: MarkerRepository,
-                                  private val maskRepo: MaskStoreRepository
+internal class MaskMapViewModel(private val dispatchers: DispatcherProvider,
+                                private val sharedPreferences: SharedPreferences,
+                                private val repo: MarkerRepository,
+                                private val maskRepo: MaskStoreRepository
 ) : BaseViewModel() {
 
     private val _markerList = MutableLiveData<List<ResMapLocation>>()
@@ -92,14 +92,14 @@ internal class CoronaMapViewModel(private val dispatchers: DispatcherProvider,
     private val _maskSelected = MutableLiveData<Boolean>()
     val maskSelected : LiveData<Boolean> get() = _maskSelected
 
-    private val _coronaSelected = MutableLiveData<Boolean>().apply { postValue(false) }
-    val coronaSelected : LiveData<Boolean> get() = _coronaSelected
+    private val _virusSelected = MutableLiveData<Boolean>().apply { postValue(false) }
+    val virusSelected : LiveData<Boolean> get() = _virusSelected
 
-    private val _coronaSecureSelected = MutableLiveData<Boolean>().apply { postValue(false) }
-    val coronaSecureSelected : LiveData<Boolean> get() = _coronaSecureSelected
+    private val _secureSelected = MutableLiveData<Boolean>().apply { postValue(false) }
+    val secureSelected : LiveData<Boolean> get() = _secureSelected
 
-    private val _coronaTagSelected = MutableLiveData<Boolean>().apply { postValue(false) }
-    val coronaTagSelected : LiveData<Boolean> get() = _coronaTagSelected
+    private val _tagSelected = MutableLiveData<Boolean>().apply { postValue(false) }
+    val tagSelected : LiveData<Boolean> get() = _tagSelected
 
     private val _refreshEvent = SingleLiveEvent<Unit>()
     val refreshEvent : LiveData<Unit> get() = _refreshEvent
@@ -117,10 +117,10 @@ internal class CoronaMapViewModel(private val dispatchers: DispatcherProvider,
         maskSelected.value == true -> {
             MarkerTypeEnum.MASK
         }
-        coronaSelected.value == true -> {
-            MarkerTypeEnum.CORONA
+        virusSelected.value == true -> {
+            MarkerTypeEnum.CLINIC
         }
-        coronaSecureSelected.value == true -> {
+        secureSelected.value == true -> {
             MarkerTypeEnum.SECURE
         }
         else -> MarkerTypeEnum.MASK
@@ -129,7 +129,7 @@ internal class CoronaMapViewModel(private val dispatchers: DispatcherProvider,
     private val _closeEvent = SingleLiveEvent<Unit>()
     val closeEvent : LiveData<Unit> get() = _closeEvent
 
-    fun reqCoronaMarker(center: LatLng) {
+    fun reqVirusMarker(center: LatLng) {
         uiScope.launch(dispatchers.io()) {
             try {
                 val result = repo.getMarkers(
@@ -195,31 +195,31 @@ internal class CoronaMapViewModel(private val dispatchers: DispatcherProvider,
 
     fun onClickMaskBtn(){
         _maskSelected.value = true
-        _coronaSelected.value = false
-        _coronaSecureSelected.value = false
-        checkClickCoronaTag()
+        _virusSelected.value = false
+        _secureSelected.value = false
+        checkClickTag()
     }
 
-    fun onClickCoronaBtn(){
+    fun onClickClinicBtn(){
         _maskSelected.value = false
-        _coronaSelected.value = true
-        _coronaSecureSelected.value = false
-        checkClickCoronaTag()
+        _virusSelected.value = true
+        _secureSelected.value = false
+        checkClickTag()
     }
 
-    fun onClickCoronaSecureBtn(){
+    fun onClickSecureBtn(){
         _maskSelected.value = false
-        _coronaSelected.value = false
-        _coronaSecureSelected.value = true
-        checkClickCoronaTag()
-        if(!sharedPreferences.getBoolean(NaverMapViewModel.KEY_PREF_CORONA_SECURE_POPUP, false)) {
+        _virusSelected.value = false
+        _secureSelected.value = true
+        checkClickTag()
+        if(!sharedPreferences.getBoolean(NaverMapViewModel.KEY_PREF_SECURE_POPUP, false)) {
             _showPopup.value = true
-            sharedPreferences.edit { putBoolean(NaverMapViewModel.KEY_PREF_CORONA_SECURE_POPUP, true) }
+            sharedPreferences.edit { putBoolean(NaverMapViewModel.KEY_PREF_SECURE_POPUP, true) }
         }
     }
 
-    private fun checkClickCoronaTag(){
-        _coronaTagSelected.value = _coronaSelected.value ?: false || _coronaSecureSelected.value ?: false
+    private fun checkClickTag(){
+        _tagSelected.value = _virusSelected.value ?: false || _secureSelected.value ?: false
     }
 
     fun onClickList() {
@@ -228,13 +228,6 @@ internal class CoronaMapViewModel(private val dispatchers: DispatcherProvider,
 
     fun onClickRefresh() {
         _refreshEvent.call()
-        /*_currentLocation.value?.let { location ->
-            _currentZoom.value?.let { zoom ->
-                if(_coronaTagSelected.value == true){
-                    reqCoronaMarker(location)
-                }
-            }
-        }*/
     }
 
     fun onClickStockBtn() {

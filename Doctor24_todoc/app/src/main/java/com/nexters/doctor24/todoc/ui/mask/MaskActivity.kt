@@ -1,4 +1,4 @@
-package com.nexters.doctor24.todoc.ui.corona
+package com.nexters.doctor24.todoc.ui.mask
 
 import android.annotation.SuppressLint
 import android.content.Intent
@@ -18,7 +18,7 @@ import com.nexters.doctor24.todoc.base.BaseActivity
 import com.nexters.doctor24.todoc.base.EventObserver
 import com.nexters.doctor24.todoc.data.marker.MarkerTypeEnum
 import com.nexters.doctor24.todoc.data.marker.response.ResMapMarker
-import com.nexters.doctor24.todoc.databinding.ActivityCoronaMapBinding
+import com.nexters.doctor24.todoc.databinding.ActivityMaskMapBinding
 import com.nexters.doctor24.todoc.ui.map.MarkerUIData
 import com.nexters.doctor24.todoc.ui.map.NaverMapFragment
 import com.nexters.doctor24.todoc.ui.map.list.MedicalListActivity
@@ -32,11 +32,11 @@ import com.nexters.doctor24.todoc.util.toDp
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import timber.log.Timber
 
-internal class CoronaActivity : BaseActivity<ActivityCoronaMapBinding, CoronaMapViewModel>(),
+internal class MaskActivity : BaseActivity<ActivityMaskMapBinding, MaskMapViewModel>(),
     OnMapReadyCallback, MapMarkerManager.MarkerClickListener, PreviewFragment.PreviewListener {
     override val layoutResId: Int
-        get() = R.layout.activity_corona_map
-    override val viewModel: CoronaMapViewModel by viewModel()
+        get() = R.layout.activity_mask_map
+    override val viewModel: MaskMapViewModel by viewModel()
 
     companion object {
         private const val MAP_ZOOM_LEVEL_MIN = 12.0
@@ -61,9 +61,9 @@ internal class CoronaActivity : BaseActivity<ActivityCoronaMapBinding, CoronaMap
         binding.apply {
             vm = viewModel
         }
-        binding.coronaMapView.apply {
+        binding.maskMapView.apply {
             onCreate(savedInstanceState)
-            getMapAsync(this@CoronaActivity)
+            getMapAsync(this@MaskActivity)
         }
 
         initView()
@@ -91,7 +91,7 @@ internal class CoronaActivity : BaseActivity<ActivityCoronaMapBinding, CoronaMap
             maxZoom = MAP_ZOOM_LEVEL_MAX
         }
 
-        markerManager = MapMarkerManager(this, naverMap).apply { listener = this@CoronaActivity }
+        markerManager = MapMarkerManager(this, naverMap).apply { listener = this@MaskActivity }
 
         map.addOnCameraIdleListener {
             showRefresh()
@@ -123,7 +123,7 @@ internal class CoronaActivity : BaseActivity<ActivityCoronaMapBinding, CoronaMap
                 PreviewFragment().apply {
                     setStyle(DialogFragment.STYLE_NORMAL, R.style.PreviewBottomSheetDialog)
                     arguments = medicalData
-                    listener = this@CoronaActivity
+                    listener = this@MaskActivity
                 }.show(supportFragmentManager, PreviewFragment.TAG)
             }
         }
@@ -183,7 +183,7 @@ internal class CoronaActivity : BaseActivity<ActivityCoronaMapBinding, CoronaMap
     private fun initObserve() {
         viewModel.hospitalMarkerDatas.observe(this, EventObserver {
             if (it.isEmpty()) {
-                val message = String.format(getString(R.string.medical_empty_corona))
+                val message = String.format(getString(R.string.medical_empty_mask))
                 Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
                 markerManager.setMarker(arrayListOf())
                 showRefresh()
@@ -217,7 +217,7 @@ internal class CoronaActivity : BaseActivity<ActivityCoronaMapBinding, CoronaMap
                 }
                 else -> {
                     if (::markerManager.isInitialized) markerManager.setMarker(arrayListOf())
-                    viewModel.reqCoronaMarker(viewModel.currentMyLocation ?: naverMap.cameraPosition.target)
+                    viewModel.reqVirusMarker(viewModel.currentMyLocation ?: naverMap.cameraPosition.target)
                 }
             }
         })
@@ -249,23 +249,23 @@ internal class CoronaActivity : BaseActivity<ActivityCoronaMapBinding, CoronaMap
             }
         })
 
-        viewModel.coronaSelected.observe(this, Observer {
-            binding.textBtnCorona.selectStyle(it)
+        viewModel.virusSelected.observe(this, Observer {
+            binding.textBtnClinic.selectStyle(it)
             if (it) {
                 if (::markerManager.isInitialized) markerManager.setMarker(arrayListOf())
-                viewModel.reqCoronaMarker(viewModel.currentMyLocation ?: naverMap.cameraPosition.target)
+                viewModel.reqVirusMarker(viewModel.currentMyLocation ?: naverMap.cameraPosition.target)
             }
         })
 
-        viewModel.coronaSecureSelected.observe(this, Observer {
+        viewModel.secureSelected.observe(this, Observer {
             binding.textBtnSecure.selectStyle(it)
             if (it) {
                 if (::markerManager.isInitialized) markerManager.setMarker(arrayListOf())
-                viewModel.reqCoronaMarker(viewModel.currentMyLocation ?: naverMap.cameraPosition.target)
+                viewModel.reqVirusMarker(viewModel.currentMyLocation ?: naverMap.cameraPosition.target)
             }
         })
 
-        viewModel.coronaTagSelected.observe(this, Observer {
+        viewModel.tagSelected.observe(this, Observer {
             binding.buttonList.isVisible = it
             binding.bottomBanner.isVisible = !it
         })
@@ -319,36 +319,36 @@ internal class CoronaActivity : BaseActivity<ActivityCoronaMapBinding, CoronaMap
 
     override fun onStart() {
         super.onStart()
-        binding.coronaMapView.onStart()
+        binding.maskMapView.onStart()
     }
 
     override fun onResume() {
         super.onResume()
-        binding.coronaMapView.onResume()
+        binding.maskMapView.onResume()
     }
 
     override fun onPause() {
         super.onPause()
-        binding.coronaMapView.onPause()
+        binding.maskMapView.onPause()
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        binding.coronaMapView.onSaveInstanceState(outState)
+        binding.maskMapView.onSaveInstanceState(outState)
     }
 
     override fun onStop() {
         super.onStop()
-        binding.coronaMapView.onStop()
+        binding.maskMapView.onStop()
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        binding.coronaMapView.onDestroy()
+        binding.maskMapView.onDestroy()
     }
 
     override fun onLowMemory() {
         super.onLowMemory()
-        binding.coronaMapView.onLowMemory()
+        binding.maskMapView.onLowMemory()
     }
 }

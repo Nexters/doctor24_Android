@@ -121,7 +121,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginEnd="6dp"
-                                android:visibility="@{marker.CORONA.type.equals(data.medicalType)}"
+                                android:visibility="@{marker.CLINIC.type.equals(data.medicalType)}"
                                 android:src="@drawable/corona"/>
                             <ImageView
                                 android:id="@+id/iv_detailed_frag_normal"
@@ -129,7 +129,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_marginEnd="6dp"
                                 android:src="@drawable/nomal"
-                                android:visibility="@{!data.emergency &amp;&amp; !data.nightTimeServe  &amp;&amp; !marker.CORONA.type.equals(data.medicalType) &amp;&amp; !marker.SECURE.type.equals(data.medicalType)}" />
+                                android:visibility="@{!data.emergency &amp;&amp; !data.nightTimeServe  &amp;&amp; !marker.CLINIC.type.equals(data.medicalType) &amp;&amp; !marker.SECURE.type.equals(data.medicalType)}" />
 
                             <ImageView
                                 android:id="@+id/iv_detailed_frag_emergency"
