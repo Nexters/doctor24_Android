@@ -115,7 +115,6 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
                     }
                     STATE_COLLAPSED ->{
                         viewModelTime.setBottomSheetState(newState)
-                        if(viewModel.coronaTagSelected.value == true) showCoronaToast()
                     }
                 }
                 if (newState == STATE_COLLAPSED) {
@@ -126,17 +125,13 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
             }
 
             override fun onSlide(bottomSheet: View, slideOffset: Float) {
-                if(viewModel.coronaTagSelected.value == true) {
-                    bottomSheetBehavior.state = STATE_COLLAPSED
-                } else {
-                    if (slideOffset > 0 && slideOffset < 1) {
-                        bgShape.setColor(Color.argb((100*2.55).toInt(),239, 242, 248))
-                        bgShape.alpha = floatToAlpha(slideOffset)
-                    }
-
-                    if(slideOffset == 0.toFloat())
-                        bgShape.setColor(Color.WHITE)
+                if (slideOffset > 0 && slideOffset < 1) {
+                    bgShape.setColor(Color.argb((100*2.55).toInt(),239, 242, 248))
+                    bgShape.alpha = floatToAlpha(slideOffset)
                 }
+
+                if(slideOffset == 0.toFloat())
+                    bgShape.setColor(Color.WHITE)
             }
         })
     }
@@ -148,18 +143,10 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
     private fun initView() {
 
         binding.textTabHospital.setOnClickListener {
-            if(viewModel.coronaTagSelected.value == false) {
-                viewModel.onChangeTab(MarkerTypeEnum.HOSPITAL)
-            } else {
-                showCoronaToast()
-            }
+            viewModel.onChangeTab(MarkerTypeEnum.HOSPITAL)
         }
         binding.textTabPharmacy.setOnClickListener {
-            if(viewModel.coronaTagSelected.value == false) {
-                viewModel.onChangeTab(MarkerTypeEnum.PHARMACY)
-            } else {
-                showCoronaToast()
-            }
+            viewModel.onChangeTab(MarkerTypeEnum.PHARMACY)
         }
 
         binding.buttonLocation.setOnClickListener {
@@ -202,22 +189,6 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
         }
 
         initCategoryView()
-    }
-
-    private fun showCoronaToast() {
-        val title = when {
-            viewModel.coronaSelected.value == true -> {
-                getString(R.string.map_clinic_button)
-            }
-            viewModel.coronaSecureSelected.value == true -> {
-                getString(R.string.map_secure_button)
-            }
-            else -> {
-                getString(R.string.map_clinic_button)
-            }
-        }
-        val message = String.format(getString(R.string.map_clinic_disable_message), title, title)
-        Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
     }
 
     private fun initCategoryView() {
@@ -295,13 +266,13 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
             } else {
                 markerManager.setMarker(it)
                 hideRefresh()
-                if(viewModel.coronaTagSelected.value == true) {
+                /*if(viewModel.coronaTagSelected.value == true) {
                     val cameraUpdate = CameraUpdate.fitBounds(markerManager.makeBounds(), 100).animate(CameraAnimation.Easing)
                     naverMap.apply{
                         minZoom = MAP_ZOOM_LEVEL_MASK
                         moveCamera(cameraUpdate)
                     }
-                }
+                }*/
             }
         })
 
@@ -353,56 +324,11 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
             }
         })
 
-        viewModel.coronaSelected.observe(viewLifecycleOwner, Observer {
-            binding.textBtnClinic.apply{
-                isSelected = it
-                setTypeface(null, if(it) Typeface.BOLD else Typeface.NORMAL)
-            }
-            if (it) {
-                if (::markerManager.isInitialized) markerManager.setMarker(arrayListOf())
-                viewModel.reqCoronaMarker(naverMap.cameraPosition.target)
-            }
-        })
-
-        viewModel.coronaSecureSelected.observe(viewLifecycleOwner, Observer {
-            binding.textBtnSecure.apply{
-                isSelected = it
-                setTypeface(null, if(it) Typeface.BOLD else Typeface.NORMAL)
-            }
-            if (it) {
-                if (::markerManager.isInitialized) markerManager.setMarker(arrayListOf())
-                viewModel.reqCoronaMarker(naverMap.cameraPosition.target)
-            }
-        })
-
         viewModel.showPopup.observe(viewLifecycleOwner, Observer {
             if(it) IntroPopUpDialog().show(childFragmentManager, IntroPopUpDialog.TAG)
         })
 
-        viewModel.coronaTagSelected.observe(viewLifecycleOwner, Observer {
-            if (it) {
-                bottomSheetBehavior.peekHeight = 60.toDp
-            } else {
-                bottomSheetBehavior.peekHeight = 132.toDp
-                bottomSheetBehavior.state = STATE_COLLAPSED
-
-                if (::markerManager.isInitialized) markerManager.setMarker(arrayListOf())
-                if (::naverMap.isInitialized) {
-                    naverMap.apply {
-                        minZoom = MAP_ZOOM_LEVEL_MIN
-                        moveCamera(CameraUpdate.zoomTo(15.0).animate(CameraAnimation.Easing))
-                    }
-                    viewModel.reqMarker(
-                        naverMap.cameraPosition.target,
-                        naverMap.cameraPosition.zoom,
-                        viewModelTime.startTime.value?.to24hourString(),
-                        viewModelTime.endTime.value?.to24hourString()
-                    )
-                }
-            }
-        })
-
-        viewModel.coronaModeEvent.observe(viewLifecycleOwner, Observer {
+        viewModel.maskModeEvent.observe(viewLifecycleOwner, Observer {
             startActivity(Intent(context, MaskActivity::class.java))
         })
 

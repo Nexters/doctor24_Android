@@ -94,20 +94,11 @@ internal class NaverMapViewModel(private val dispatchers: DispatcherProvider,
     private val _dialogCloseEvent = SingleLiveEvent<Unit>()
     val dialogCloseEvent : LiveData<Unit> get() = _dialogCloseEvent
 
-    private val _coronaSelected = MutableLiveData<Boolean>().apply { postValue(false) }
-    val coronaSelected : LiveData<Boolean> get() = _coronaSelected
-
-    private val _coronaSecureSelected = MutableLiveData<Boolean>().apply { postValue(false) }
-    val coronaSecureSelected : LiveData<Boolean> get() = _coronaSecureSelected
-
-    private val _coronaTagSelected = MutableLiveData<Boolean>().apply { postValue(false) }
-    val coronaTagSelected : LiveData<Boolean> get() = _coronaTagSelected
-
     private val _showPopup = MutableLiveData<Boolean>()
     val showPopup : LiveData<Boolean> get() = _showPopup
 
-    private val _coronaModeEvent = SingleLiveEvent<Boolean>()
-    val coronaModeEvent : LiveData<Boolean> get() = _coronaModeEvent
+    private val _maskModeEvent = SingleLiveEvent<Boolean>()
+    val maskModeEvent : LiveData<Boolean> get() = _maskModeEvent
 
     private val _errorData = MutableLiveData<ErrorResponse>()
     val errorData: LiveData<ErrorResponse> get() = _errorData
@@ -126,39 +117,6 @@ internal class NaverMapViewModel(private val dispatchers: DispatcherProvider,
                 withContext(dispatchers.main()) {
                     _markerList.value = result
                 }
-            } catch (e:Exception) {
-                when (e) {
-                    is HttpException -> {
-                        _errorData.postValue(handleError(e.code(), e.message()))
-                    }
-                    is SocketException -> {
-                        _errorData.postValue(handleError(0, e.message ?: "SocketException"))
-                    }
-                    else -> _errorData.postValue(handleError(-100, "서버에서 데이터를 받아오지 못하였습니다."))
-                }
-            }
-        }
-    }
-
-    fun reqCoronaMarker(center: LatLng) {
-
-        val type : MarkerTypeEnum = if(_coronaSelected.value == true) {
-            MarkerTypeEnum.CLINIC
-        } else if(_coronaSecureSelected.value == true) {
-            MarkerTypeEnum.SECURE
-        } else MarkerTypeEnum.CLINIC
-
-        uiScope.launch(dispatchers.io()) {
-            try {
-                val result = repo.getMarkers(
-                    center = center,
-                    type = type
-                )
-                withContext(dispatchers.main()) {
-                    _markerList.value = result
-                }
-
-                Timber.e(result.toString())
             } catch (e:Exception) {
                 when (e) {
                     is HttpException -> {
@@ -210,40 +168,12 @@ internal class NaverMapViewModel(private val dispatchers: DispatcherProvider,
     }
 
     fun onChangeTab(type: MarkerTypeEnum) {
-        if(_coronaTagSelected.value == false) {
-            _tabChangeEvent.value = type
-            if(type == MarkerTypeEnum.PHARMACY) {
-                _currentCategory.value = null
-                _coronaSelected.value = false
-                _coronaSecureSelected.value = false
-                _categoryShow.value = false
-            } else {
-                _categoryShow.value = true
-            }
-        }
-    }
-
-    private fun checkClickCoronaTag(){
-        _coronaTagSelected.value = _coronaSelected.value ?: false || _coronaSecureSelected.value ?: false
-    }
-
-    fun onClickCoronaBtn(){
-        val isSelect = _coronaSelected.value ?: true
-        _coronaSelected.value = !isSelect
-        _coronaSecureSelected.value = false
-        _categoryShow.value = !(_coronaSelected.value ?: false || _coronaSecureSelected.value ?: false)
-        checkClickCoronaTag()
-    }
-
-    fun onClickCoronaSecureBtn(){
-        val isSelect = _coronaSecureSelected.value ?: true
-        _coronaSelected.value = false
-        _coronaSecureSelected.value = !isSelect
-        _categoryShow.value = !(_coronaSelected.value ?: false || _coronaSecureSelected.value ?: false)
-        checkClickCoronaTag()
-        if(!sharedPreferences.getBoolean(KEY_PREF_SECURE_POPUP, false)) {
-            _showPopup.value = true
-            sharedPreferences.edit { putBoolean(KEY_PREF_SECURE_POPUP, true) }
+        _tabChangeEvent.value = type
+        if(type == MarkerTypeEnum.PHARMACY) {
+            _currentCategory.value = null
+            _categoryShow.value = false
+        } else {
+            _categoryShow.value = true
         }
     }
 
@@ -251,8 +181,8 @@ internal class NaverMapViewModel(private val dispatchers: DispatcherProvider,
         _categoryEvent.value = sharedPreferences.getInt(KEY_PREF_FILTER_CATEGORY, 0)
     }
 
-    fun onClickCoronaMode() {
-        _coronaModeEvent.call()
+    fun onClickMaskMode() {
+        _maskModeEvent.call()
     }
 
     fun onClosePreview() {
@@ -263,11 +193,7 @@ internal class NaverMapViewModel(private val dispatchers: DispatcherProvider,
         _refreshEvent.call()
         _currentLocation.value?.let { location ->
             _currentZoom.value?.let { zoom ->
-                if(_coronaTagSelected.value == true){
-                    reqCoronaMarker(location)
-                }else{
-                    reqMarker(location, zoom, start.to24hourString(), end.to24hourString())
-                }
+                reqMarker(location, zoom, start.to24hourString(), end.to24hourString())
             }
         }
     }
