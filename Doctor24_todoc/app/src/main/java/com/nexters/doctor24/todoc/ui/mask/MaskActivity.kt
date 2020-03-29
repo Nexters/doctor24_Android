@@ -39,9 +39,8 @@ internal class MaskActivity : BaseActivity<ActivityMaskMapBinding, MaskMapViewMo
     override val viewModel: MaskMapViewModel by viewModel()
 
     companion object {
-        private const val MAP_ZOOM_LEVEL_MIN = 12.0
         private const val MAP_ZOOM_LEVEL_MAX = 17.0
-        private const val MAP_ZOOM_LEVEL_CORONA = 8.0
+        private const val MAP_ZOOM_LEVEL_MASK = 8.0
     }
 
     private lateinit var fusedLocationSource: FusedLocationSource
@@ -87,7 +86,7 @@ internal class MaskActivity : BaseActivity<ActivityMaskMapBinding, MaskMapViewMo
             isNightModeEnabled = isCurrentMapDarkMode()
             setBackgroundResource(NaverMap.DEFAULT_BACKGROUND_DRWABLE_DARK)
             mapType = NaverMap.MapType.Navi
-            minZoom = MAP_ZOOM_LEVEL_MIN
+            minZoom = MAP_ZOOM_LEVEL_MASK
             maxZoom = MAP_ZOOM_LEVEL_MAX
         }
 
@@ -189,17 +188,10 @@ internal class MaskActivity : BaseActivity<ActivityMaskMapBinding, MaskMapViewMo
                 showRefresh()
             } else {
                 markerManager.setMarker(it)
-                hideRefresh()
-                when(viewModel.currentType()) {
-                    MarkerTypeEnum.MASK -> naverMap.minZoom = MAP_ZOOM_LEVEL_MIN
-                    else -> {
-                        val cameraUpdate = CameraUpdate.fitBounds(markerManager.makeBounds(), 100).animate(
-                            CameraAnimation.Easing)
-                        naverMap.apply{
-                            minZoom = MAP_ZOOM_LEVEL_CORONA
-                            moveCamera(cameraUpdate)
-                        }
-                    }
+                val cameraUpdate = CameraUpdate.fitBounds(markerManager.makeBounds(), 100).animate(
+                    CameraAnimation.Easing)
+                naverMap.apply{
+                    moveCamera(cameraUpdate)
                 }
             }
         })
@@ -210,16 +202,8 @@ internal class MaskActivity : BaseActivity<ActivityMaskMapBinding, MaskMapViewMo
         })
 
         viewModel.refreshEvent.observe(this, Observer {
-            when(viewModel.currentType()) {
-                MarkerTypeEnum.MASK -> {
-                    if (::markerManager.isInitialized) markerManager.setMarker(arrayListOf())
-                    viewModel.reqMaskMarker(viewModel.currentMyLocation ?: naverMap.cameraPosition.target)
-                }
-                else -> {
-                    if (::markerManager.isInitialized) markerManager.setMarker(arrayListOf())
-                    viewModel.reqVirusMarker(viewModel.currentMyLocation ?: naverMap.cameraPosition.target)
-                }
-            }
+            if (::markerManager.isInitialized) markerManager.setMarker(arrayListOf())
+            viewModel.reqMaskMarker(viewModel.currentMyLocation ?: naverMap.cameraPosition.target)
         })
 
         viewModel.closeEvent.observe(this, Observer {
@@ -247,27 +231,6 @@ internal class MaskActivity : BaseActivity<ActivityMaskMapBinding, MaskMapViewMo
                 if (::markerManager.isInitialized) markerManager.setMarker(arrayListOf())
                 viewModel.reqMaskMarker(viewModel.currentMyLocation ?: naverMap.cameraPosition.target)
             }
-        })
-
-        viewModel.virusSelected.observe(this, Observer {
-            binding.textBtnClinic.selectStyle(it)
-            if (it) {
-                if (::markerManager.isInitialized) markerManager.setMarker(arrayListOf())
-                viewModel.reqVirusMarker(viewModel.currentMyLocation ?: naverMap.cameraPosition.target)
-            }
-        })
-
-        viewModel.secureSelected.observe(this, Observer {
-            binding.textBtnSecure.selectStyle(it)
-            if (it) {
-                if (::markerManager.isInitialized) markerManager.setMarker(arrayListOf())
-                viewModel.reqVirusMarker(viewModel.currentMyLocation ?: naverMap.cameraPosition.target)
-            }
-        })
-
-        viewModel.tagSelected.observe(this, Observer {
-            binding.buttonList.isVisible = it
-            binding.bottomBanner.isVisible = !it
         })
 
         viewModel.stockSwitchEvent.observe(this, Observer {

@@ -92,15 +92,6 @@ internal class MaskMapViewModel(private val dispatchers: DispatcherProvider,
     private val _maskSelected = MutableLiveData<Boolean>()
     val maskSelected : LiveData<Boolean> get() = _maskSelected
 
-    private val _virusSelected = MutableLiveData<Boolean>().apply { postValue(false) }
-    val virusSelected : LiveData<Boolean> get() = _virusSelected
-
-    private val _secureSelected = MutableLiveData<Boolean>().apply { postValue(false) }
-    val secureSelected : LiveData<Boolean> get() = _secureSelected
-
-    private val _tagSelected = MutableLiveData<Boolean>().apply { postValue(false) }
-    val tagSelected : LiveData<Boolean> get() = _tagSelected
-
     private val _refreshEvent = SingleLiveEvent<Unit>()
     val refreshEvent : LiveData<Unit> get() = _refreshEvent
 
@@ -113,47 +104,8 @@ internal class MaskMapViewModel(private val dispatchers: DispatcherProvider,
     private val _stockSwitchEvent = MutableLiveData<Boolean>().apply { postValue(false) }
     val stockSwitchEvent : LiveData<Boolean> get() = _stockSwitchEvent
 
-    fun currentType() : MarkerTypeEnum = when {
-        maskSelected.value == true -> {
-            MarkerTypeEnum.MASK
-        }
-        virusSelected.value == true -> {
-            MarkerTypeEnum.CLINIC
-        }
-        secureSelected.value == true -> {
-            MarkerTypeEnum.SECURE
-        }
-        else -> MarkerTypeEnum.MASK
-    }
-
     private val _closeEvent = SingleLiveEvent<Unit>()
     val closeEvent : LiveData<Unit> get() = _closeEvent
-
-    fun reqVirusMarker(center: LatLng) {
-        uiScope.launch(dispatchers.io()) {
-            try {
-                val result = repo.getMarkers(
-                    center = center,
-                    type = currentType()
-                )
-                withContext(dispatchers.main()) {
-                    _markerList.postValue(result)
-                }
-
-                Timber.d(result.toString())
-            } catch (e:Exception) {
-                when (e) {
-                    is HttpException -> {
-                        _errorData.postValue(handleError(e.code(), e.message()))
-                    }
-                    is SocketException -> {
-                        _errorData.postValue(handleError(0, e.message ?: "SocketException"))
-                    }
-                    else -> _errorData.postValue(handleError(-100, "서버에서 데이터를 받아오지 못하였습니다."))
-                }
-            }
-        }
-    }
 
     fun reqMaskMarker(center: LatLng) {
         uiScope.launch(dispatchers.io()) {
@@ -195,35 +147,6 @@ internal class MaskMapViewModel(private val dispatchers: DispatcherProvider,
 
     fun onClickMaskBtn(){
         _maskSelected.value = true
-        _virusSelected.value = false
-        _secureSelected.value = false
-        checkClickTag()
-    }
-
-    fun onClickClinicBtn(){
-        _maskSelected.value = false
-        _virusSelected.value = true
-        _secureSelected.value = false
-        checkClickTag()
-    }
-
-    fun onClickSecureBtn(){
-        _maskSelected.value = false
-        _virusSelected.value = false
-        _secureSelected.value = true
-        checkClickTag()
-        if(!sharedPreferences.getBoolean(NaverMapViewModel.KEY_PREF_SECURE_POPUP, false)) {
-            _showPopup.value = true
-            sharedPreferences.edit { putBoolean(NaverMapViewModel.KEY_PREF_SECURE_POPUP, true) }
-        }
-    }
-
-    private fun checkClickTag(){
-        _tagSelected.value = _virusSelected.value ?: false || _secureSelected.value ?: false
-    }
-
-    fun onClickList() {
-        _medicalListEvent.call()
     }
 
     fun onClickRefresh() {
