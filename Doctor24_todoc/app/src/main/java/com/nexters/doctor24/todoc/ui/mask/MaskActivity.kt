@@ -16,7 +16,6 @@ import com.naver.maps.map.util.FusedLocationSource
 import com.nexters.doctor24.todoc.R
 import com.nexters.doctor24.todoc.base.BaseActivity
 import com.nexters.doctor24.todoc.base.EventObserver
-import com.nexters.doctor24.todoc.data.marker.MarkerTypeEnum
 import com.nexters.doctor24.todoc.data.marker.response.ResMapMarker
 import com.nexters.doctor24.todoc.databinding.ActivityMaskMapBinding
 import com.nexters.doctor24.todoc.ui.map.MarkerUIData
@@ -180,7 +179,7 @@ internal class MaskActivity : BaseActivity<ActivityMaskMapBinding, MaskMapViewMo
     }
 
     private fun initObserve() {
-        viewModel.hospitalMarkerDatas.observe(this, EventObserver {
+        viewModel.maskMarkerList.observe(this, EventObserver {
             if (it.isEmpty()) {
                 val message = String.format(getString(R.string.medical_empty_mask))
                 Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
@@ -210,21 +209,6 @@ internal class MaskActivity : BaseActivity<ActivityMaskMapBinding, MaskMapViewMo
             finish()
         })
 
-        viewModel.medicalListData.observe(this, EventObserver {
-            listIntent.apply {
-                putExtra(MedicalListActivity.KEY_MEDI_LIST, it)
-            }
-        })
-
-        viewModel.medicalListEvent.observe(this, Observer {
-            naverMap.cameraPosition.target.let { loc->
-                listIntent.apply{
-                    putExtra(MedicalListActivity.KEY_MEDI_MY_LOCATION, doubleArrayOf(loc.latitude, loc.longitude))
-                }
-            }
-            startActivity(listIntent)
-        })
-
         viewModel.maskSelected.observe(this, Observer {
             binding.textBtnMask.selectStyle(it)
             if (it) {
@@ -237,6 +221,9 @@ internal class MaskActivity : BaseActivity<ActivityMaskMapBinding, MaskMapViewMo
             binding.textStockSwitch.apply{
                 isSelected = it
                 text = if(it) getString(R.string.mask_stock_on) else getString(R.string.mask_stock_off)
+            }
+            if (::markerManager.isInitialized && (viewModel.maskDisableList.value ?: arrayListOf()).isNotEmpty()) {
+                markerManager.onOffMarkerItems(viewModel.maskDisableList.value ?: arrayListOf(), !it)
             }
         })
 

@@ -51,6 +51,16 @@ internal class MapMarkerManager(val context: Context, private val naverMap: Nave
         addMarker(markers)
     }
 
+    fun onOffMarkerItems(items: ArrayList<MarkerUIData>, visible : Boolean) {
+        for (item in items) {
+            if (mapMarkers.containsKey(item)) {
+                mapMarkers[item]?.apply {
+                    isVisible = visible
+                }
+            }
+        }
+    }
+
     private fun removeMarker(markers: ArrayList<MarkerUIData>) {
         val removeMakers = ArrayList<MarkerUIData>()
         for (currentMarker in mapMarkers.keys) {
@@ -236,7 +246,9 @@ internal class MapMarkerManager(val context: Context, private val naverMap: Nave
                     zIndex = ZINDEX_NORAML
                 }
                 getMarkerType(medicalType)?.let { type ->
-                    it.icon = drawMarkerIcon(type, isEmergency, isNight)
+                    it.icon = if(type == MarkerTypeEnum.MASK) {
+                        drawMaskMarkerIcon(maskState)
+                    } else drawMarkerIcon(type, isEmergency, isNight)
                     it.infoWindow?.close()
                 }
             }
