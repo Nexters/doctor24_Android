@@ -1,7 +1,6 @@
 package com.nexters.doctor24.todoc.ui.mask
 
 import android.annotation.SuppressLint
-import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.os.Bundle
 import android.view.Gravity
@@ -17,15 +16,14 @@ import com.nexters.doctor24.todoc.R
 import com.nexters.doctor24.todoc.base.BaseActivity
 import com.nexters.doctor24.todoc.base.EventObserver
 import com.nexters.doctor24.todoc.data.marker.response.ResMapMarker
+import com.nexters.doctor24.todoc.data.mask.response.StoreSale
 import com.nexters.doctor24.todoc.databinding.ActivityMaskMapBinding
 import com.nexters.doctor24.todoc.ui.map.MarkerUIData
 import com.nexters.doctor24.todoc.ui.map.NaverMapFragment
-import com.nexters.doctor24.todoc.ui.map.list.MedicalListActivity
 import com.nexters.doctor24.todoc.ui.map.marker.MapMarkerManager
 import com.nexters.doctor24.todoc.ui.map.marker.group.GroupMarkerListDialog
-import com.nexters.doctor24.todoc.ui.map.popup.IntroPopUpDialog
 import com.nexters.doctor24.todoc.ui.map.popup.MaskIntroPopUpDialog
-import com.nexters.doctor24.todoc.ui.map.preview.PreviewFragment
+import com.nexters.doctor24.todoc.ui.mask.preview.PreviewMaskFragment
 import com.nexters.doctor24.todoc.util.isCurrentMapDarkMode
 import com.nexters.doctor24.todoc.util.selectStyle
 import com.nexters.doctor24.todoc.util.toDp
@@ -33,7 +31,7 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 import timber.log.Timber
 
 internal class MaskActivity : BaseActivity<ActivityMaskMapBinding, MaskMapViewModel>(),
-    OnMapReadyCallback, MapMarkerManager.MarkerClickListener, PreviewFragment.PreviewListener {
+    OnMapReadyCallback, MapMarkerManager.MarkerClickListener, PreviewMaskFragment.PreviewListener {
     override val layoutResId: Int
         get() = R.layout.activity_mask_map
     override val viewModel: MaskMapViewModel by viewModel()
@@ -44,7 +42,7 @@ internal class MaskActivity : BaseActivity<ActivityMaskMapBinding, MaskMapViewMo
     }
 
     private lateinit var fusedLocationSource: FusedLocationSource
-    private var locationState : LocationTrackingMode = LocationTrackingMode.Follow
+    private var locationState: LocationTrackingMode = LocationTrackingMode.Follow
     private lateinit var naverMap: NaverMap
     private lateinit var markerManager: MapMarkerManager
 
@@ -54,7 +52,8 @@ internal class MaskActivity : BaseActivity<ActivityMaskMapBinding, MaskMapViewMo
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
-        fusedLocationSource = FusedLocationSource(this, NaverMapFragment.LOCATION_PERMISSION_REQUEST_CODE)
+        fusedLocationSource =
+            FusedLocationSource(this, NaverMapFragment.LOCATION_PERMISSION_REQUEST_CODE)
 
         binding.apply {
             vm = viewModel
@@ -105,25 +104,32 @@ internal class MaskActivity : BaseActivity<ActivityMaskMapBinding, MaskMapViewMo
             isHideCollidedSymbols = true
             isHideCollidedCaptions = true
         }
-        marker.tag?.let{
-            if((it as ArrayList<ResMapMarker>).isNotEmpty()) {
+        marker.tag?.let {
+            if ((it as ArrayList<StoreSale>).isNotEmpty()) {
+                Timber.e(it[0].toString())
+                Timber.e("제발 ㅜㅠ")
                 val medicalData = Bundle().apply {
-                    putParcelable(PreviewFragment.KEY_MEDICAL, it[0])
-                    naverMap.cameraPosition.target?.let { loc->
+                    putParcelable(PreviewMaskFragment.KEY_MEDICAL, it[0])
+                    naverMap.cameraPosition.target?.let { loc ->
                         Timber.d("MapApps - $loc")
-                        putDoubleArray(PreviewFragment.KEY_MY_LOCATION, doubleArrayOf(loc.latitude, loc.longitude))
+                        putDoubleArray(
+                            PreviewMaskFragment.KEY_MY_LOCATION,
+                            doubleArrayOf(loc.latitude, loc.longitude)
+                        )
                     }
                 }
-                PreviewFragment().apply {
+                PreviewMaskFragment().apply {
                     setStyle(DialogFragment.STYLE_NORMAL, R.style.PreviewBottomSheetDialog)
                     arguments = medicalData
                     listener = this@MaskActivity
-                }.show(supportFragmentManager, PreviewFragment.TAG)
+                }.show(supportFragmentManager, PreviewMaskFragment.TAG)
             }
         }
         markerManager.getMarkerItem(marker)?.run {
             if (markerManager.isEqualsSelectMarker(this)) return
             selectMarker(this)
+            Timber.e("제발 ㅜㅠ22")
+
         }
         moveMarkerBoundary(marker)
     }
@@ -136,9 +142,12 @@ internal class MaskActivity : BaseActivity<ActivityMaskMapBinding, MaskMapViewMo
             if ((it as ArrayList<ResMapMarker>).isNotEmpty()) {
                 val groupData = Bundle().apply {
                     putParcelableArrayList(GroupMarkerListDialog.KEY_LIST, it)
-                    naverMap.cameraPosition.target?.let { loc->
+                    naverMap.cameraPosition.target?.let { loc ->
                         Timber.d("MapApps - $loc")
-                        putDoubleArray(GroupMarkerListDialog.KEY_MY_LOCATION, doubleArrayOf(loc.latitude, loc.longitude))
+                        putDoubleArray(
+                            GroupMarkerListDialog.KEY_MY_LOCATION,
+                            doubleArrayOf(loc.latitude, loc.longitude)
+                        )
                     }
                 }
                 GroupMarkerListDialog().apply {
@@ -156,7 +165,7 @@ internal class MaskActivity : BaseActivity<ActivityMaskMapBinding, MaskMapViewMo
 
     private fun initView() {
         binding.buttonLocation.setOnClickListener {
-            when(locationState) {
+            when (locationState) {
                 LocationTrackingMode.Face -> {
                     locationState = LocationTrackingMode.NoFollow
                     binding.buttonLocation.setImageResource(R.drawable.ic_location_none)
@@ -176,7 +185,7 @@ internal class MaskActivity : BaseActivity<ActivityMaskMapBinding, MaskMapViewMo
 
     private fun initObserve() {
         viewModel.currentMyLocation.observe(this, Observer {
-            if(!binding.textBtnMask.isSelected) binding.textBtnMask.performClick()
+            if (!binding.textBtnMask.isSelected) binding.textBtnMask.performClick()
         })
 
         viewModel.maskMarkerList.observe(this, EventObserver {
@@ -189,8 +198,9 @@ internal class MaskActivity : BaseActivity<ActivityMaskMapBinding, MaskMapViewMo
                 markerManager.setMarker(it)
                 showOnlyStock(viewModel.stockSwitchEvent.value ?: false)
                 val cameraUpdate = CameraUpdate.fitBounds(markerManager.makeBounds(), 100).animate(
-                    CameraAnimation.Easing)
-                naverMap.apply{
+                    CameraAnimation.Easing
+                )
+                naverMap.apply {
                     moveCamera(cameraUpdate)
                 }
             }
@@ -213,7 +223,7 @@ internal class MaskActivity : BaseActivity<ActivityMaskMapBinding, MaskMapViewMo
         viewModel.maskSelected.observe(this, Observer {
             binding.textBtnMask.selectStyle(it)
             if (it) {
-                viewModel.currentMyLocation.value?.let{
+                viewModel.currentMyLocation.value?.let {
                     if (::markerManager.isInitialized) markerManager.setMarker(arrayListOf())
                     viewModel.reqMaskMarker(it ?: naverMap.cameraPosition.target)
                 }
@@ -225,27 +235,33 @@ internal class MaskActivity : BaseActivity<ActivityMaskMapBinding, MaskMapViewMo
         })
 
         viewModel.stockSwitchEvent.observe(this, Observer {
-            binding.textStockSwitch.apply{
+            binding.textStockSwitch.apply {
                 isSelected = it
-                text = if(it) getString(R.string.mask_stock_on) else getString(R.string.mask_stock_off)
+                text =
+                    if (it) getString(R.string.mask_stock_on) else getString(R.string.mask_stock_off)
             }
             showOnlyStock(it)
         })
 
         viewModel.showPopup.observe(this, Observer {
-            if(it) MaskIntroPopUpDialog().show(supportFragmentManager, MaskIntroPopUpDialog.TAG)
+            if (it) MaskIntroPopUpDialog().show(supportFragmentManager, MaskIntroPopUpDialog.TAG)
         })
 
     }
 
     private fun showOnlyStock(switch: Boolean) {
-        if (::markerManager.isInitialized && (viewModel.maskDisableList.value ?: arrayListOf()).isNotEmpty()) {
-            markerManager.onOffMarkerItems(viewModel.maskDisableList.value ?: arrayListOf(), !switch)
+        if (::markerManager.isInitialized && (viewModel.maskDisableList.value
+                ?: arrayListOf()).isNotEmpty()
+        ) {
+            markerManager.onOffMarkerItems(
+                viewModel.maskDisableList.value ?: arrayListOf(),
+                !switch
+            )
         }
     }
 
     private fun showRefresh() {
-        if(!binding.btnRefresh.isVisible && !isMarkerSelected) {
+        if (!binding.btnRefresh.isVisible && !isMarkerSelected) {
             deSelectMarker()
             binding.btnRefresh.apply {
                 isVisible = true
@@ -255,7 +271,7 @@ internal class MaskActivity : BaseActivity<ActivityMaskMapBinding, MaskMapViewMo
     }
 
     private fun hideRefresh() {
-        if(!markerManager.isMarkerEmpty()) binding.btnRefresh.isVisible = false
+        if (!markerManager.isMarkerEmpty()) binding.btnRefresh.isVisible = false
     }
 
     private fun moveMarkerBoundary(marker: Marker) {

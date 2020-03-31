@@ -11,6 +11,7 @@ import com.nexters.doctor24.todoc.ui.map.TimeViewModel
 import com.nexters.doctor24.todoc.ui.map.category.CategoryViewModel
 import com.nexters.doctor24.todoc.ui.map.list.MedicalListViewModel
 import com.nexters.doctor24.todoc.ui.map.preview.PreviewViewModel
+import com.nexters.doctor24.todoc.ui.mask.preview.PreviewMaskViewModel
 import org.koin.android.ext.koin.androidContext
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.core.qualifier.named
@@ -24,6 +25,7 @@ val appModule = module {
     viewModel { CategoryViewModel() }
     viewModel { DetailedViewModel(get(),get()) }
     viewModel { PreviewViewModel() }
+    viewModel { PreviewMaskViewModel() }
     viewModel { FindLoadViewModel() }
     viewModel { MedicalListViewModel() }
     viewModel { MaskMapViewModel(get(), get(named("filterPrefs")), get()) }

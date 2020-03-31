@@ -4,9 +4,6 @@
 
     <data>
         <variable
-            name="marker"
-            type="com.nexters.doctor24.todoc.data.marker.MarkerTypeEnum" />
-        <variable
             name="item"
             type="com.nexters.doctor24.todoc.ui.mask.preview.PreviewMaskFragment.PreviewMaskUiData" />
     </data>
