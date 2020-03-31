@@ -214,5 +214,6 @@ internal data class MarkerUIData(
     val group: ArrayList<ResMapMarker>? = arrayListOf(),
     val maskType: String = "",
     val maskState: MaskStateEnum = MaskStateEnum.REMAIN_BREAK,
-    val maskAddress: String = ""
+    val maskAddress: String = "",
+    val maskStock: String = ""
 )

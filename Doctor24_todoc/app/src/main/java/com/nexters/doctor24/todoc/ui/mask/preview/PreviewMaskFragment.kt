@@ -10,11 +10,13 @@ import androidx.databinding.DataBindingUtil
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.naver.maps.geometry.LatLng
 import com.nexters.doctor24.todoc.R
+import com.nexters.doctor24.todoc.data.marker.MaskStateEnum
 import com.nexters.doctor24.todoc.data.mask.response.StoreSale
 import com.nexters.doctor24.todoc.databinding.PreviewMaskFragmentBinding
 import com.nexters.doctor24.todoc.ui.findload.FindLoadDialog
 import com.nexters.doctor24.todoc.ui.findload.FindLoadViewModel
 import com.nexters.doctor24.todoc.util.toDistance
+import kotlinx.android.synthetic.main.preview_mask_fragment.*
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -58,7 +60,8 @@ internal class PreviewMaskFragment : BottomSheetDialogFragment() {
                 placeName = it.name,
                 stockAt = it.stockAt,
                 address = it.addr,
-                distance = to.toDistance(from)
+                distance = to.toDistance(from),
+                state = it.state!!
             )
             findLoadViewModel.centerName = it.name
             findLoadViewModel.determineLocation = to
@@ -98,6 +101,8 @@ internal class PreviewMaskFragment : BottomSheetDialogFragment() {
             findLoadDialog.show(childFragmentManager, FindLoadDialog.TAG)
         }
 
+        drawMaskIcon(previewMaskData!!.state)
+
     }
 
     override fun onDestroy() {
@@ -105,12 +110,18 @@ internal class PreviewMaskFragment : BottomSheetDialogFragment() {
         listener?.onClosedPreview()
     }
 
+    private fun drawMaskIcon(state: String) {
+        iv_preview_mask_stock.setImageResource(MaskStateEnum.getMaskState(state).drawableMask)
+    }
+
+
     data class PreviewMaskUiData(
         val id: String,
         val type: String,
         val placeName: String = "",
         val stockAt: String = "",
         val address: String = "",
-        val distance: String = ""
+        val distance: String = "",
+        val state : String = ""
     )
 }

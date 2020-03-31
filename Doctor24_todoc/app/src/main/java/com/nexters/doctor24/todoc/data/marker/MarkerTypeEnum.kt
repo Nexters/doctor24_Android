@@ -35,12 +35,12 @@ enum class MaskTypeEnum(val type: String, val title: String) {
     }
 }
 
-enum class MaskStateEnum(val state: String, val title : String, val color : Int, val drawable: Int) {
-    REMAIN_PLENTY("plenty","100개 이상", R.color.light_green, R.drawable.and_mask_small_enough_marker_withoutshadow),
-    REMAIN_SOME("some","30개~100개", R.color.orange, R.drawable.and_mask_small_nomal_marker_withoutshadow),
-    REMAIN_FEW("few","2개~29개", R.color.light_red, R.drawable.and_mask_small_shortage_marker_withoutshadow),
-    REMAIN_EMPTY("empty","재고 없음", R.color.grey_2, R.drawable.and_mask_small_soldout_marker_withoutshadow),
-    REMAIN_BREAK("break","중단", -1,-1);
+enum class MaskStateEnum(val state: String, val title : String, val color : Int, val drawable: Int, val drawableMask : Int) {
+    REMAIN_PLENTY("plenty","100개 이상", R.color.light_green, R.drawable.and_mask_small_enough_marker_withoutshadow, R.drawable.icon_mask_enough),
+    REMAIN_SOME("some","30개~100개", R.color.orange, R.drawable.and_mask_small_nomal_marker_withoutshadow,R.drawable.icon_mask_normal),
+    REMAIN_FEW("few","2개~29개", R.color.light_red, R.drawable.and_mask_small_shortage_marker_withoutshadow, R.drawable.icon_mask_shortage),
+    REMAIN_EMPTY("empty","재고 없음", R.color.grey_2, R.drawable.and_mask_small_soldout_marker_withoutshadow,R.drawable.icon_mask_soldout),
+    REMAIN_BREAK("break","중단", -1,-1,-1);
 
     companion object {
         fun getMaskState(state: String?) : MaskStateEnum = when(state) {

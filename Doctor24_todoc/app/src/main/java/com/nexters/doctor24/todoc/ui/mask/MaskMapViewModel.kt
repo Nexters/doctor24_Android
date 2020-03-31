@@ -51,7 +51,8 @@ internal class MaskMapViewModel(private val dispatchers: DispatcherProvider,
                     name = res.name,
                     maskType = res.type,
                     maskState = getMaskState(res.state),
-                    maskAddress = res.addr
+                    maskAddress = res.addr,
+                    maskStock = res.stockAt
                 )
             )
             if (getMaskState(res.state) == MaskStateEnum.REMAIN_EMPTY || getMaskState(res.state) == MaskStateEnum.REMAIN_BREAK) {
@@ -65,7 +66,8 @@ internal class MaskMapViewModel(private val dispatchers: DispatcherProvider,
                         name = res.name,
                         maskType = res.type,
                         maskState = getMaskState(res.state),
-                        maskAddress = res.addr
+                        maskAddress = res.addr,
+                        maskStock = res.stockAt
                     )
                 )
             }
