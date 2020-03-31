@@ -2,6 +2,7 @@ package com.nexters.doctor24.todoc.ui.mask
 
 import android.content.SharedPreferences
 import android.location.Location
+import androidx.core.content.edit
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
@@ -28,6 +29,10 @@ internal class MaskMapViewModel(private val dispatchers: DispatcherProvider,
                                 private val sharedPreferences: SharedPreferences,
                                 private val maskRepo: MaskStoreRepository
 ) : BaseViewModel() {
+
+    companion object {
+        const val KEY_PREF_MASK_POPUP = "KEY_PREF_MASK_POPUP"
+    }
 
     private val _maskMarkerList = MutableLiveData<ResStoreSaleResult>()
     private val _maskDisableList = MutableLiveData<ArrayList<MarkerUIData>>()
@@ -93,6 +98,10 @@ internal class MaskMapViewModel(private val dispatchers: DispatcherProvider,
     private val _closeEvent = SingleLiveEvent<Unit>()
     val closeEvent : LiveData<Unit> get() = _closeEvent
 
+
+    private val _dialogCloseEvent = SingleLiveEvent<Unit>()
+    val dialogCloseEvent : LiveData<Unit> get() = _dialogCloseEvent
+
     fun reqMaskMarker(center: LatLng) {
         uiScope.launch(dispatchers.io()) {
             try {
@@ -133,6 +142,11 @@ internal class MaskMapViewModel(private val dispatchers: DispatcherProvider,
 
     fun onClickMaskBtn(){
         _maskSelected.value = true
+        _showPopup.value = true
+        /*if(!sharedPreferences.getBoolean(KEY_PREF_MASK_POPUP, false)) {
+            _showPopup.value = true
+            sharedPreferences.edit { putBoolean(KEY_PREF_MASK_POPUP, true) }
+        }*/
     }
 
     fun onClickRefresh() {
@@ -145,5 +159,9 @@ internal class MaskMapViewModel(private val dispatchers: DispatcherProvider,
 
     fun onClickClose() {
         _closeEvent.call()
+    }
+
+    fun onCloseDialog() {
+        _dialogCloseEvent.call()
     }
 }

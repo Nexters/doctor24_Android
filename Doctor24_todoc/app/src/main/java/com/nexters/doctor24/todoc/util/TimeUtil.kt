@@ -30,6 +30,30 @@ fun String.toHour() : Int {
     return HOUR_FORMAT.parse(this)!!.hours
 }
 
+fun getDayOfWeek() : String {
+    val cal = Calendar.getInstance()
+    return when(cal.get(Calendar.DAY_OF_WEEK)) {
+        Calendar.MONDAY -> "월요일"
+        Calendar.TUESDAY -> "화요일"
+        Calendar.WEDNESDAY -> "수요일"
+        Calendar.THURSDAY -> "목요일"
+        Calendar.FRIDAY -> "금요일"
+        else -> "토요일 일요일"
+    }
+}
+
+fun getDayOfWeekBuy() : String {
+    val cal = Calendar.getInstance()
+    val dayOfWeek= cal.get(Calendar.DAY_OF_WEEK)
+    val second = 4
+    return if(dayOfWeek in 2..6) {
+        "${dayOfWeek-1},${dayOfWeek+second%10}"
+    } else {
+        "모두"
+    }
+
+}
+
 fun isCurrentMapDarkMode() = when (getCurrentTimeHours()) {
     in 8..18 -> false
     else -> true

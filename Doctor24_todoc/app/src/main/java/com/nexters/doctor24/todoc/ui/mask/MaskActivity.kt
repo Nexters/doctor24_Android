@@ -24,6 +24,7 @@ import com.nexters.doctor24.todoc.ui.map.list.MedicalListActivity
 import com.nexters.doctor24.todoc.ui.map.marker.MapMarkerManager
 import com.nexters.doctor24.todoc.ui.map.marker.group.GroupMarkerListDialog
 import com.nexters.doctor24.todoc.ui.map.popup.IntroPopUpDialog
+import com.nexters.doctor24.todoc.ui.map.popup.MaskIntroPopUpDialog
 import com.nexters.doctor24.todoc.ui.map.preview.PreviewFragment
 import com.nexters.doctor24.todoc.util.isCurrentMapDarkMode
 import com.nexters.doctor24.todoc.util.selectStyle
@@ -46,7 +47,6 @@ internal class MaskActivity : BaseActivity<ActivityMaskMapBinding, MaskMapViewMo
     private var locationState : LocationTrackingMode = LocationTrackingMode.Follow
     private lateinit var naverMap: NaverMap
     private lateinit var markerManager: MapMarkerManager
-    private val listIntent by lazy { Intent(this, MedicalListActivity::class.java) }
 
     private var isMarkerSelected = false
 
@@ -233,7 +233,7 @@ internal class MaskActivity : BaseActivity<ActivityMaskMapBinding, MaskMapViewMo
         })
 
         viewModel.showPopup.observe(this, Observer {
-            if(it) IntroPopUpDialog().show(supportFragmentManager, IntroPopUpDialog.TAG)
+            if(it) MaskIntroPopUpDialog().show(supportFragmentManager, MaskIntroPopUpDialog.TAG)
         })
 
     }
