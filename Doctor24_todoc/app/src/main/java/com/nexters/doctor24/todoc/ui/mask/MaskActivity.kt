@@ -187,6 +187,7 @@ internal class MaskActivity : BaseActivity<ActivityMaskMapBinding, MaskMapViewMo
                 showRefresh()
             } else {
                 markerManager.setMarker(it)
+                showOnlyStock(viewModel.stockSwitchEvent.value ?: false)
                 val cameraUpdate = CameraUpdate.fitBounds(markerManager.makeBounds(), 100).animate(
                     CameraAnimation.Easing)
                 naverMap.apply{
@@ -217,20 +218,28 @@ internal class MaskActivity : BaseActivity<ActivityMaskMapBinding, MaskMapViewMo
             }
         })
 
+        viewModel.maskStockCount.observe(this, Observer {
+            binding.textStockCount.text = getString(R.string.mask_stock_count, it)
+        })
+
         viewModel.stockSwitchEvent.observe(this, Observer {
             binding.textStockSwitch.apply{
                 isSelected = it
                 text = if(it) getString(R.string.mask_stock_on) else getString(R.string.mask_stock_off)
             }
-            if (::markerManager.isInitialized && (viewModel.maskDisableList.value ?: arrayListOf()).isNotEmpty()) {
-                markerManager.onOffMarkerItems(viewModel.maskDisableList.value ?: arrayListOf(), !it)
-            }
+            showOnlyStock(it)
         })
 
         viewModel.showPopup.observe(this, Observer {
             if(it) IntroPopUpDialog().show(supportFragmentManager, IntroPopUpDialog.TAG)
         })
 
+    }
+
+    private fun showOnlyStock(switch: Boolean) {
+        if (::markerManager.isInitialized && (viewModel.maskDisableList.value ?: arrayListOf()).isNotEmpty()) {
+            markerManager.onOffMarkerItems(viewModel.maskDisableList.value ?: arrayListOf(), !switch)
+        }
     }
 
     private fun showRefresh() {

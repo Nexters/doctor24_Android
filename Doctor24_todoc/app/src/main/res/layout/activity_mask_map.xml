@@ -131,7 +131,6 @@
                 android:id="@+id/text_stock_count"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="19곳"
                 style="@style/AndH2CenterMediumWhite22"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"

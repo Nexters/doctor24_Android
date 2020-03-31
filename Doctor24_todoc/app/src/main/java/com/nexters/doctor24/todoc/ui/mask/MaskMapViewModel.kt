@@ -15,23 +15,22 @@ import com.nexters.doctor24.todoc.base.SingleLiveEvent
 import com.nexters.doctor24.todoc.data.marker.MaskStateEnum
 import com.nexters.doctor24.todoc.data.marker.MaskStateEnum.Companion.getMaskState
 import com.nexters.doctor24.todoc.data.mask.response.ResStoreSaleResult
-import com.nexters.doctor24.todoc.repository.MarkerRepository
 import com.nexters.doctor24.todoc.repository.MaskStoreRepository
 import com.nexters.doctor24.todoc.ui.map.MarkerUIData
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import retrofit2.HttpException
 import java.net.SocketException
-import java.util.ArrayList
+import java.util.*
 
 internal class MaskMapViewModel(private val dispatchers: DispatcherProvider,
                                 private val sharedPreferences: SharedPreferences,
-                                private val repo: MarkerRepository,
                                 private val maskRepo: MaskStoreRepository
 ) : BaseViewModel() {
 
     private val _maskMarkerList = MutableLiveData<ResStoreSaleResult>()
     private val _maskDisableList = MutableLiveData<ArrayList<MarkerUIData>>()
+    private val _maskStockCount = MutableLiveData<Int>().apply { postValue(0) }
     private val _maskEnableMarkerList = Transformations.map(_maskMarkerList) {
         val list = arrayListOf<MarkerUIData>()
         val disableList = arrayListOf<MarkerUIData>()
@@ -64,11 +63,13 @@ internal class MaskMapViewModel(private val dispatchers: DispatcherProvider,
             }
         }
         _maskDisableList.value = disableList
+        _maskStockCount.postValue(list.count() - disableList.count())
         Event(list)
     }
 
     val maskMarkerList : LiveData<Event<ArrayList<MarkerUIData>>> get() = _maskEnableMarkerList
     val maskDisableList : LiveData<ArrayList<MarkerUIData>> get() = _maskDisableList
+    val maskStockCount : LiveData<Int> get() = _maskStockCount
 
     private val _errorData = MutableLiveData<ErrorResponse>()
     val errorData: LiveData<ErrorResponse> get() = _errorData

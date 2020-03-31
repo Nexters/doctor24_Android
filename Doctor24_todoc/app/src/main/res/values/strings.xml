@@ -63,4 +63,5 @@
     <string name="mask_banner_title">해당 위치\n마스크 구매 가능 지점</string>
     <string name="mask_stock_on">재고 ON</string>
     <string name="mask_stock_off">재고 OFF</string>
+    <string name="mask_stock_count">%d 곳</string>
 </resources>
