@@ -63,4 +63,7 @@
     <string name="mask_banner_title">해당 위치\n마스크 구매 가능 지점</string>
     <string name="mask_stock_on">재고 ON</string>
     <string name="mask_stock_off">재고 OFF</string>
+    <string name="mask_load_btn">길찾기</string>
+    <string name="mask_arrival_time">오늘 입고</string>
+    <string name="mask_update_guide">* 공공데이터 정보로 5~10분 단위로 업데이트 됩니다.</string>
 </resources>
