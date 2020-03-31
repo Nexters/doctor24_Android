@@ -6,6 +6,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import com.naver.maps.geometry.LatLng
+import com.naver.maps.map.NaverMap
 import com.nexters.doctor24.todoc.api.error.ErrorResponse
 import com.nexters.doctor24.todoc.api.error.handleError
 import com.nexters.doctor24.todoc.base.BaseViewModel
@@ -74,7 +75,8 @@ internal class MaskMapViewModel(private val dispatchers: DispatcherProvider,
     private val _errorData = MutableLiveData<ErrorResponse>()
     val errorData: LiveData<ErrorResponse> get() = _errorData
 
-    var currentMyLocation : LatLng? = null // 현재 사용자의 위치
+    private val _currentMyLocation = MutableLiveData<LatLng>() // 현재 사용자의 위치
+    val currentMyLocation : LiveData<LatLng> get() = _currentMyLocation
 
     private val _maskSelected = MutableLiveData<Boolean>()
     val maskSelected : LiveData<Boolean> get() = _maskSelected
@@ -124,8 +126,8 @@ internal class MaskMapViewModel(private val dispatchers: DispatcherProvider,
 
     fun onChangedMyLocation(location : Location) {
         val loc = LatLng(location.latitude, location.longitude)
-        if(currentMyLocation == null || currentMyLocation != loc) {
-            currentMyLocation = loc
+        if(_currentMyLocation.value == null || _currentMyLocation.value != loc) {
+            _currentMyLocation.value = loc
         }
     }
 

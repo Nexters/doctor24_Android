@@ -70,7 +70,7 @@ internal class MaskActivity : BaseActivity<ActivityMaskMapBinding, MaskMapViewMo
 
     override fun onMapReady(map: NaverMap) {
         naverMap = map
-        map.uiSettings.apply {
+        naverMap.uiSettings.apply {
             isCompassEnabled = false
             isRotateGesturesEnabled = true
             isZoomControlEnabled = false
@@ -79,7 +79,7 @@ internal class MaskActivity : BaseActivity<ActivityMaskMapBinding, MaskMapViewMo
             logoGravity = Gravity.TOP or Gravity.END
             setLogoMargin(0, 40.toDp, 24.toDp, 0)
         }
-        map.apply {
+        naverMap.apply {
             locationSource = fusedLocationSource
             locationTrackingMode = locationState
             isNightModeEnabled = isCurrentMapDarkMode()
@@ -91,15 +91,11 @@ internal class MaskActivity : BaseActivity<ActivityMaskMapBinding, MaskMapViewMo
 
         markerManager = MapMarkerManager(this, naverMap).apply { listener = this@MaskActivity }
 
-        map.addOnCameraIdleListener {
-            showRefresh()
+        naverMap.apply {
+            addOnCameraIdleListener { showRefresh() }
+            addOnLocationChangeListener { viewModel.onChangedMyLocation(it) }
+            setOnMapClickListener { _, _ -> deSelectMarker() }
         }
-
-        map.addOnLocationChangeListener {
-            viewModel.onChangedMyLocation(it)
-        }
-
-        binding.textBtnMask.performClick()
     }
 
     override fun markerClick(marker: Marker) {
@@ -179,6 +175,10 @@ internal class MaskActivity : BaseActivity<ActivityMaskMapBinding, MaskMapViewMo
     }
 
     private fun initObserve() {
+        viewModel.currentMyLocation.observe(this, Observer {
+            if(!binding.textBtnMask.isSelected) binding.textBtnMask.performClick()
+        })
+
         viewModel.maskMarkerList.observe(this, EventObserver {
             if (it.isEmpty()) {
                 val message = String.format(getString(R.string.medical_empty_mask))
@@ -203,7 +203,7 @@ internal class MaskActivity : BaseActivity<ActivityMaskMapBinding, MaskMapViewMo
 
         viewModel.refreshEvent.observe(this, Observer {
             if (::markerManager.isInitialized) markerManager.setMarker(arrayListOf())
-            viewModel.reqMaskMarker(viewModel.currentMyLocation ?: naverMap.cameraPosition.target)
+            viewModel.reqMaskMarker(naverMap.cameraPosition.target)
         })
 
         viewModel.closeEvent.observe(this, Observer {
@@ -213,8 +213,10 @@ internal class MaskActivity : BaseActivity<ActivityMaskMapBinding, MaskMapViewMo
         viewModel.maskSelected.observe(this, Observer {
             binding.textBtnMask.selectStyle(it)
             if (it) {
-                if (::markerManager.isInitialized) markerManager.setMarker(arrayListOf())
-                viewModel.reqMaskMarker(viewModel.currentMyLocation ?: naverMap.cameraPosition.target)
+                viewModel.currentMyLocation.value?.let{
+                    if (::markerManager.isInitialized) markerManager.setMarker(arrayListOf())
+                    viewModel.reqMaskMarker(it ?: naverMap.cameraPosition.target)
+                }
             }
         })
 
