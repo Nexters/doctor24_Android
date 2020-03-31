@@ -110,26 +110,12 @@
                             app:layout_constraintTop_toTopOf="parent">
 
                             <ImageView
-                                android:id="@+id/iv_detailed_frag_secure"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginEnd="6dp"
-                                android:visibility="@{marker.SECURE.type.equals(data.medicalType)}"
-                                android:src="@drawable/secure"/>
-                            <ImageView
-                                android:id="@+id/iv_detailed_frag_corona"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginEnd="6dp"
-                                android:visibility="@{marker.CLINIC.type.equals(data.medicalType)}"
-                                android:src="@drawable/corona"/>
-                            <ImageView
                                 android:id="@+id/iv_detailed_frag_normal"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginEnd="6dp"
                                 android:src="@drawable/nomal"
-                                android:visibility="@{!data.emergency &amp;&amp; !data.nightTimeServe  &amp;&amp; !marker.CLINIC.type.equals(data.medicalType) &amp;&amp; !marker.SECURE.type.equals(data.medicalType)}" />
+                                android:visibility="@{!data.emergency &amp;&amp; !data.nightTimeServe}" />
 
                             <ImageView
                                 android:id="@+id/iv_detailed_frag_emergency"

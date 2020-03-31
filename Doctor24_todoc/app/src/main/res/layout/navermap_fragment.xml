@@ -104,7 +104,7 @@
                 android:id="@+id/btn_refresh"
                 android:layout_width="124dp"
                 android:layout_height="56dp"
-                android:layout_marginTop="64dp"
+                android:layout_marginTop="24dp"
                 android:background="@drawable/ic_refresh_layout"
                 android:onClick="@{()->vm.onClickRefresh(vmTime.startTime, vmTime.endTime)}"
                 app:layout_constraintEnd_toEndOf="parent"

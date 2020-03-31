@@ -16,7 +16,6 @@ import com.naver.maps.map.util.FusedLocationSource
 import com.nexters.doctor24.todoc.R
 import com.nexters.doctor24.todoc.base.BaseActivity
 import com.nexters.doctor24.todoc.base.EventObserver
-import com.nexters.doctor24.todoc.data.marker.MarkerTypeEnum
 import com.nexters.doctor24.todoc.data.marker.response.ResMapMarker
 import com.nexters.doctor24.todoc.databinding.ActivityMaskMapBinding
 import com.nexters.doctor24.todoc.ui.map.MarkerUIData
@@ -25,6 +24,7 @@ import com.nexters.doctor24.todoc.ui.map.list.MedicalListActivity
 import com.nexters.doctor24.todoc.ui.map.marker.MapMarkerManager
 import com.nexters.doctor24.todoc.ui.map.marker.group.GroupMarkerListDialog
 import com.nexters.doctor24.todoc.ui.map.popup.IntroPopUpDialog
+import com.nexters.doctor24.todoc.ui.map.popup.MaskIntroPopUpDialog
 import com.nexters.doctor24.todoc.ui.map.preview.PreviewFragment
 import com.nexters.doctor24.todoc.util.isCurrentMapDarkMode
 import com.nexters.doctor24.todoc.util.selectStyle
@@ -39,16 +39,14 @@ internal class MaskActivity : BaseActivity<ActivityMaskMapBinding, MaskMapViewMo
     override val viewModel: MaskMapViewModel by viewModel()
 
     companion object {
-        private const val MAP_ZOOM_LEVEL_MIN = 12.0
         private const val MAP_ZOOM_LEVEL_MAX = 17.0
-        private const val MAP_ZOOM_LEVEL_CORONA = 8.0
+        private const val MAP_ZOOM_LEVEL_MASK = 8.0
     }
 
     private lateinit var fusedLocationSource: FusedLocationSource
     private var locationState : LocationTrackingMode = LocationTrackingMode.Follow
     private lateinit var naverMap: NaverMap
     private lateinit var markerManager: MapMarkerManager
-    private val listIntent by lazy { Intent(this, MedicalListActivity::class.java) }
 
     private var isMarkerSelected = false
 
@@ -72,7 +70,7 @@ internal class MaskActivity : BaseActivity<ActivityMaskMapBinding, MaskMapViewMo
 
     override fun onMapReady(map: NaverMap) {
         naverMap = map
-        map.uiSettings.apply {
+        naverMap.uiSettings.apply {
             isCompassEnabled = false
             isRotateGesturesEnabled = true
             isZoomControlEnabled = false
@@ -81,27 +79,23 @@ internal class MaskActivity : BaseActivity<ActivityMaskMapBinding, MaskMapViewMo
             logoGravity = Gravity.TOP or Gravity.END
             setLogoMargin(0, 40.toDp, 24.toDp, 0)
         }
-        map.apply {
+        naverMap.apply {
             locationSource = fusedLocationSource
             locationTrackingMode = locationState
             isNightModeEnabled = isCurrentMapDarkMode()
             setBackgroundResource(NaverMap.DEFAULT_BACKGROUND_DRWABLE_DARK)
             mapType = NaverMap.MapType.Navi
-            minZoom = MAP_ZOOM_LEVEL_MIN
+            minZoom = MAP_ZOOM_LEVEL_MASK
             maxZoom = MAP_ZOOM_LEVEL_MAX
         }
 
         markerManager = MapMarkerManager(this, naverMap).apply { listener = this@MaskActivity }
 
-        map.addOnCameraIdleListener {
-            showRefresh()
+        naverMap.apply {
+            addOnCameraIdleListener { showRefresh() }
+            addOnLocationChangeListener { viewModel.onChangedMyLocation(it) }
+            setOnMapClickListener { _, _ -> deSelectMarker() }
         }
-
-        map.addOnLocationChangeListener {
-            viewModel.onChangedMyLocation(it)
-        }
-
-        binding.textBtnMask.performClick()
     }
 
     override fun markerClick(marker: Marker) {
@@ -181,7 +175,11 @@ internal class MaskActivity : BaseActivity<ActivityMaskMapBinding, MaskMapViewMo
     }
 
     private fun initObserve() {
-        viewModel.hospitalMarkerDatas.observe(this, EventObserver {
+        viewModel.currentMyLocation.observe(this, Observer {
+            if(!binding.textBtnMask.isSelected) binding.textBtnMask.performClick()
+        })
+
+        viewModel.maskMarkerList.observe(this, EventObserver {
             if (it.isEmpty()) {
                 val message = String.format(getString(R.string.medical_empty_mask))
                 Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
@@ -189,17 +187,11 @@ internal class MaskActivity : BaseActivity<ActivityMaskMapBinding, MaskMapViewMo
                 showRefresh()
             } else {
                 markerManager.setMarker(it)
-                hideRefresh()
-                when(viewModel.currentType()) {
-                    MarkerTypeEnum.MASK -> naverMap.minZoom = MAP_ZOOM_LEVEL_MIN
-                    else -> {
-                        val cameraUpdate = CameraUpdate.fitBounds(markerManager.makeBounds(), 100).animate(
-                            CameraAnimation.Easing)
-                        naverMap.apply{
-                            minZoom = MAP_ZOOM_LEVEL_CORONA
-                            moveCamera(cameraUpdate)
-                        }
-                    }
+                showOnlyStock(viewModel.stockSwitchEvent.value ?: false)
+                val cameraUpdate = CameraUpdate.fitBounds(markerManager.makeBounds(), 100).animate(
+                    CameraAnimation.Easing)
+                naverMap.apply{
+                    moveCamera(cameraUpdate)
                 }
             }
         })
@@ -210,64 +202,26 @@ internal class MaskActivity : BaseActivity<ActivityMaskMapBinding, MaskMapViewMo
         })
 
         viewModel.refreshEvent.observe(this, Observer {
-            when(viewModel.currentType()) {
-                MarkerTypeEnum.MASK -> {
-                    if (::markerManager.isInitialized) markerManager.setMarker(arrayListOf())
-                    viewModel.reqMaskMarker(viewModel.currentMyLocation ?: naverMap.cameraPosition.target)
-                }
-                else -> {
-                    if (::markerManager.isInitialized) markerManager.setMarker(arrayListOf())
-                    viewModel.reqVirusMarker(viewModel.currentMyLocation ?: naverMap.cameraPosition.target)
-                }
-            }
+            if (::markerManager.isInitialized) markerManager.setMarker(arrayListOf())
+            viewModel.reqMaskMarker(naverMap.cameraPosition.target)
         })
 
         viewModel.closeEvent.observe(this, Observer {
             finish()
         })
 
-        viewModel.medicalListData.observe(this, EventObserver {
-            listIntent.apply {
-                putExtra(MedicalListActivity.KEY_MEDI_LIST, it)
-            }
-        })
-
-        viewModel.medicalListEvent.observe(this, Observer {
-            naverMap.cameraPosition.target.let { loc->
-                listIntent.apply{
-                    putExtra(MedicalListActivity.KEY_MEDI_MY_LOCATION, doubleArrayOf(loc.latitude, loc.longitude))
-                }
-            }
-            startActivity(listIntent)
-        })
-
         viewModel.maskSelected.observe(this, Observer {
             binding.textBtnMask.selectStyle(it)
             if (it) {
-                if (::markerManager.isInitialized) markerManager.setMarker(arrayListOf())
-                viewModel.reqMaskMarker(viewModel.currentMyLocation ?: naverMap.cameraPosition.target)
+                viewModel.currentMyLocation.value?.let{
+                    if (::markerManager.isInitialized) markerManager.setMarker(arrayListOf())
+                    viewModel.reqMaskMarker(it ?: naverMap.cameraPosition.target)
+                }
             }
         })
 
-        viewModel.virusSelected.observe(this, Observer {
-            binding.textBtnClinic.selectStyle(it)
-            if (it) {
-                if (::markerManager.isInitialized) markerManager.setMarker(arrayListOf())
-                viewModel.reqVirusMarker(viewModel.currentMyLocation ?: naverMap.cameraPosition.target)
-            }
-        })
-
-        viewModel.secureSelected.observe(this, Observer {
-            binding.textBtnSecure.selectStyle(it)
-            if (it) {
-                if (::markerManager.isInitialized) markerManager.setMarker(arrayListOf())
-                viewModel.reqVirusMarker(viewModel.currentMyLocation ?: naverMap.cameraPosition.target)
-            }
-        })
-
-        viewModel.tagSelected.observe(this, Observer {
-            binding.buttonList.isVisible = it
-            binding.bottomBanner.isVisible = !it
+        viewModel.maskStockCount.observe(this, Observer {
+            binding.textStockCount.text = getString(R.string.mask_stock_count, it)
         })
 
         viewModel.stockSwitchEvent.observe(this, Observer {
@@ -275,12 +229,19 @@ internal class MaskActivity : BaseActivity<ActivityMaskMapBinding, MaskMapViewMo
                 isSelected = it
                 text = if(it) getString(R.string.mask_stock_on) else getString(R.string.mask_stock_off)
             }
+            showOnlyStock(it)
         })
 
         viewModel.showPopup.observe(this, Observer {
-            if(it) IntroPopUpDialog().show(supportFragmentManager, IntroPopUpDialog.TAG)
+            if(it) MaskIntroPopUpDialog().show(supportFragmentManager, MaskIntroPopUpDialog.TAG)
         })
 
+    }
+
+    private fun showOnlyStock(switch: Boolean) {
+        if (::markerManager.isInitialized && (viewModel.maskDisableList.value ?: arrayListOf()).isNotEmpty()) {
+            markerManager.onOffMarkerItems(viewModel.maskDisableList.value ?: arrayListOf(), !switch)
+        }
     }
 
     private fun showRefresh() {

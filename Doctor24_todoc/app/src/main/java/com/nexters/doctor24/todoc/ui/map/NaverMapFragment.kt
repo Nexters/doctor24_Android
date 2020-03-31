@@ -266,13 +266,11 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
             } else {
                 markerManager.setMarker(it)
                 hideRefresh()
-                /*if(viewModel.coronaTagSelected.value == true) {
-                    val cameraUpdate = CameraUpdate.fitBounds(markerManager.makeBounds(), 100).animate(CameraAnimation.Easing)
-                    naverMap.apply{
-                        minZoom = MAP_ZOOM_LEVEL_MASK
-                        moveCamera(cameraUpdate)
-                    }
-                }*/
+                val cameraUpdate = CameraUpdate.fitBounds(markerManager.makeBounds(), 100).animate(CameraAnimation.Easing)
+                naverMap.apply{
+                    minZoom = MAP_ZOOM_LEVEL_MIN
+                    moveCamera(cameraUpdate)
+                }
             }
         })
 

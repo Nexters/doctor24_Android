@@ -51,6 +51,16 @@ internal class MapMarkerManager(val context: Context, private val naverMap: Nave
         addMarker(markers)
     }
 
+    fun onOffMarkerItems(items: ArrayList<MarkerUIData>, visible : Boolean) {
+        for (item in items) {
+            if (mapMarkers.containsKey(item)) {
+                mapMarkers[item]?.apply {
+                    isVisible = visible
+                }
+            }
+        }
+    }
+
     private fun removeMarker(markers: ArrayList<MarkerUIData>) {
         val removeMakers = ArrayList<MarkerUIData>()
         for (currentMarker in mapMarkers.keys) {
@@ -162,8 +172,6 @@ internal class MapMarkerManager(val context: Context, private val naverMap: Nave
                     else -> R.drawable.ic_marker_hospital_normal
                 }
                 MarkerTypeEnum.PHARMACY -> R.drawable.ic_marker_pharmacy
-                MarkerTypeEnum.CLINIC -> R.drawable.ic_marker_corona
-                MarkerTypeEnum.SECURE -> R.drawable.ic_marke_secure
                 else -> -1
             }
         )
@@ -175,8 +183,6 @@ internal class MapMarkerManager(val context: Context, private val naverMap: Nave
         markerView.setImageResource(when(type) {
             MarkerTypeEnum.HOSPITAL -> R.drawable.ic_marker_hospital_normal
             MarkerTypeEnum.PHARMACY -> R.drawable.ic_marker_pharmacy
-            MarkerTypeEnum.CLINIC -> R.drawable.ic_marker_corona
-            MarkerTypeEnum.SECURE -> R.drawable.ic_marke_secure
             MarkerTypeEnum.MASK -> R.drawable.ic_marker_hospital_normal
         })
         countView.text = total.toString()
@@ -188,8 +194,6 @@ internal class MapMarkerManager(val context: Context, private val naverMap: Nave
             when(type) {
                 MarkerTypeEnum.HOSPITAL -> R.drawable.ic_marker_hospital_select
                 MarkerTypeEnum.PHARMACY -> R.drawable.ic_marker_pharmacy_select
-                MarkerTypeEnum.CLINIC -> R.drawable.ic_marker_corona_select
-                MarkerTypeEnum.SECURE -> R.drawable.ic_marker_secure_select
                 MarkerTypeEnum.MASK -> R.drawable.ic_marker_hospital_normal
             }
         )
@@ -242,7 +246,9 @@ internal class MapMarkerManager(val context: Context, private val naverMap: Nave
                     zIndex = ZINDEX_NORAML
                 }
                 getMarkerType(medicalType)?.let { type ->
-                    it.icon = drawMarkerIcon(type, isEmergency, isNight)
+                    it.icon = if(type == MarkerTypeEnum.MASK) {
+                        drawMaskMarkerIcon(maskState)
+                    } else drawMarkerIcon(type, isEmergency, isNight)
                     it.infoWindow?.close()
                 }
             }
