@@ -15,13 +15,11 @@ import com.naver.maps.map.util.FusedLocationSource
 import com.nexters.doctor24.todoc.R
 import com.nexters.doctor24.todoc.base.BaseActivity
 import com.nexters.doctor24.todoc.base.EventObserver
-import com.nexters.doctor24.todoc.data.marker.response.ResMapMarker
 import com.nexters.doctor24.todoc.data.mask.response.StoreSale
 import com.nexters.doctor24.todoc.databinding.ActivityMaskMapBinding
 import com.nexters.doctor24.todoc.ui.map.MarkerUIData
 import com.nexters.doctor24.todoc.ui.map.NaverMapFragment
 import com.nexters.doctor24.todoc.ui.map.marker.MapMarkerManager
-import com.nexters.doctor24.todoc.ui.map.marker.group.GroupMarkerListDialog
 import com.nexters.doctor24.todoc.ui.map.popup.MaskIntroPopUpDialog
 import com.nexters.doctor24.todoc.ui.mask.preview.PreviewMaskFragment
 import com.nexters.doctor24.todoc.util.isCurrentMapDarkMode
@@ -104,27 +102,26 @@ internal class MaskActivity : BaseActivity<ActivityMaskMapBinding, MaskMapViewMo
             isHideCollidedSymbols = true
             isHideCollidedCaptions = true
         }
-        marker.tag?.let {
-            if ((it as ArrayList<StoreSale>).isNotEmpty()) {
-                Timber.e(it[0].toString())
-                Timber.e("제발 ㅜㅠ")
-                val medicalData = Bundle().apply {
-                    putParcelable(PreviewMaskFragment.KEY_MEDICAL, it[0])
-                    naverMap.cameraPosition.target?.let { loc ->
-                        Timber.d("MapApps - $loc")
-                        putDoubleArray(
-                            PreviewMaskFragment.KEY_MY_LOCATION,
-                            doubleArrayOf(loc.latitude, loc.longitude)
-                        )
-                    }
-                }
-                PreviewMaskFragment().apply {
-                    setStyle(DialogFragment.STYLE_NORMAL, R.style.PreviewBottomSheetDialog)
-                    arguments = medicalData
-                    listener = this@MaskActivity
-                }.show(supportFragmentManager, PreviewMaskFragment.TAG)
+
+        Timber.e("마커마마커 ${marker.tag}")
+
+        val medicalData = Bundle().apply {
+            putParcelable(PreviewMaskFragment.KEY_MEDICAL, StoreSale("","","","",3F,3F,"",""))
+            naverMap.cameraPosition.target?.let { loc ->
+                Timber.d("MapApps - $loc")
+                putDoubleArray(
+                    PreviewMaskFragment.KEY_MY_LOCATION,
+                    doubleArrayOf(loc.latitude, loc.longitude)
+                )
             }
         }
+        PreviewMaskFragment().apply {
+            setStyle(DialogFragment.STYLE_NORMAL, R.style.PreviewBottomSheetDialog)
+            arguments = medicalData
+            listener = this@MaskActivity
+        }.show(supportFragmentManager, PreviewMaskFragment.TAG)
+
+
         markerManager.getMarkerItem(marker)?.run {
             if (markerManager.isEqualsSelectMarker(this)) return
             selectMarker(this)
@@ -135,28 +132,6 @@ internal class MaskActivity : BaseActivity<ActivityMaskMapBinding, MaskMapViewMo
     }
 
     override fun markerBundleClick(marker: Marker) {
-        deSelectMarker()
-
-        Timber.d("marker tag : ${marker.tag}")
-        marker.tag?.let {
-            if ((it as ArrayList<ResMapMarker>).isNotEmpty()) {
-                val groupData = Bundle().apply {
-                    putParcelableArrayList(GroupMarkerListDialog.KEY_LIST, it)
-                    naverMap.cameraPosition.target?.let { loc ->
-                        Timber.d("MapApps - $loc")
-                        putDoubleArray(
-                            GroupMarkerListDialog.KEY_MY_LOCATION,
-                            doubleArrayOf(loc.latitude, loc.longitude)
-                        )
-                    }
-                }
-                GroupMarkerListDialog().apply {
-                    arguments = groupData
-                }.show(supportFragmentManager, GroupMarkerListDialog.TAG)
-            }
-
-        }
-        moveMarkerBoundary(marker)
     }
 
     override fun onClosedPreview() {

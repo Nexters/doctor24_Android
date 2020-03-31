@@ -19,6 +19,7 @@ import com.nexters.doctor24.todoc.data.marker.MaskStateEnum
 import com.nexters.doctor24.todoc.ui.custom.MapMarkerBounce
 import com.nexters.doctor24.todoc.ui.custom.MapMarkerFade
 import com.nexters.doctor24.todoc.ui.map.MarkerUIData
+import timber.log.Timber
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.set
@@ -118,7 +119,8 @@ internal class MapMarkerManager(val context: Context, private val naverMap: Nave
                                 icon = drawMaskMarkerIcon(state)
                                 zIndex = ZINDEX_NORAML
                                 setOnClickListener { overlay ->
-                                    overlay.tag = it.group
+                                    Timber.e("tttttest zz$it")
+                                    overlay.tag = it
                                     listener?.markerClick(overlay as Marker)
                                     true
                                 }
