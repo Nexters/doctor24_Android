@@ -37,6 +37,8 @@ internal class TimeViewModel(val resource: Resources) : BaseViewModel() {
     private val _isSelected =
         MutableLiveData<Boolean>().apply { value = true }     //true - start, false - end
     val isSelected: LiveData<Boolean> get() = _isSelected
+    private val _inputTimeEvent = MutableLiveData<Boolean>()
+    val inputTimeEvent : LiveData<Boolean> get() = _inputTimeEvent
     private val _checkTimeLimit = MutableLiveData<String>()
     val checkTimeLimit: LiveData<String> get() = _checkTimeLimit
 
@@ -54,6 +56,8 @@ internal class TimeViewModel(val resource: Resources) : BaseViewModel() {
 
     private val _isReset = SingleLiveEvent<Unit>()
     val isReset: LiveData<Unit> get() = _isReset
+    private val _timeFilterSetEvent = SingleLiveEvent<Unit>()
+    val timeFilterSetEvent : LiveData<Unit> get() = _timeFilterSetEvent
 
     private val _clickReset = MutableLiveData<Boolean>().apply { postValue(false) }
     val clickReset: LiveData<Boolean> get() = _clickReset
@@ -91,6 +95,7 @@ internal class TimeViewModel(val resource: Resources) : BaseViewModel() {
             _endStoredTime.value = _endTime.value
 
             _isOpen.value = false
+            _timeFilterSetEvent.call()
         }
     }
 
@@ -108,7 +113,7 @@ internal class TimeViewModel(val resource: Resources) : BaseViewModel() {
 
         } else {
             _isOpen.value = true
-            setTimeSelected(true)
+            _isSelected.value = true
         }
         Timber.e("oepn${_isOpen.value}")
     }
@@ -136,6 +141,7 @@ internal class TimeViewModel(val resource: Resources) : BaseViewModel() {
 
     fun setTimeSelected(boolean: Boolean) {
         _isSelected.value = boolean
+        _inputTimeEvent.value = boolean
     }
 
     fun onClickTimeSetting(boolean: Boolean) {
@@ -144,7 +150,7 @@ internal class TimeViewModel(val resource: Resources) : BaseViewModel() {
 
     fun setInitialTime() {
         getCurrentTime()
-        setTimeSelected(true)
+        _isSelected.value = true
 
         if (_isOpen.value != true) {
             //api

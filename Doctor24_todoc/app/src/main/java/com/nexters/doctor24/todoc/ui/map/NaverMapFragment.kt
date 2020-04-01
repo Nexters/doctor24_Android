@@ -2,7 +2,6 @@ package com.nexters.doctor24.todoc.ui.map
 
 import android.content.Intent
 import android.graphics.Color
-import android.graphics.Typeface
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.view.Gravity
@@ -21,10 +20,12 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_COLLAPSED
 import com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_EXPANDED
 import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.google.firebase.analytics.FirebaseAnalytics
 import com.naver.maps.map.*
 import com.naver.maps.map.overlay.Marker
 import com.naver.maps.map.util.FusedLocationSource
 import com.nexters.doctor24.todoc.R
+import com.nexters.doctor24.todoc.analytics.*
 import com.nexters.doctor24.todoc.base.BaseFragment
 import com.nexters.doctor24.todoc.base.EventObserver
 import com.nexters.doctor24.todoc.data.marker.MarkerTypeEnum
@@ -43,6 +44,7 @@ import com.nexters.doctor24.todoc.ui.map.preview.PreviewViewModel
 import com.nexters.doctor24.todoc.util.isCurrentMapDarkMode
 import com.nexters.doctor24.todoc.util.to24hourString
 import com.nexters.doctor24.todoc.util.toDp
+import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import timber.log.Timber
 
@@ -78,6 +80,8 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
     private var isSelected = false
     private lateinit var bottomSheetBehavior : BottomSheetBehavior<View>
 
+    private val analytics : FirebaseAnalytics by inject()
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -112,6 +116,7 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
                 when(newState) {
                     STATE_EXPANDED ->{
                         viewModelTime.setBottomSheetState(newState)
+                        analytics.logEvent(MAP_TIME_FILTER_OPEN, null)
                     }
                     STATE_COLLAPSED ->{
                         viewModelTime.setBottomSheetState(newState)
@@ -144,9 +149,11 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
 
         binding.textTabHospital.setOnClickListener {
             viewModel.onChangeTab(MarkerTypeEnum.HOSPITAL)
+            analytics.logEvent(MAP_HOSPITAL_TAB, null)
         }
         binding.textTabPharmacy.setOnClickListener {
             viewModel.onChangeTab(MarkerTypeEnum.PHARMACY)
+            analytics.logEvent(MAP_PHARMACY_TAB, null)
         }
 
         binding.buttonLocation.setOnClickListener {
@@ -186,6 +193,7 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
 
         binding.ivMapFragCloseBtn.setOnClickListener {
             bottomSheetBehavior.state = STATE_COLLAPSED
+            analytics.logEvent(MAP_TIME_FILTER_CLOSE, null)
         }
 
         initCategoryView()
@@ -218,6 +226,21 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
             setResetVisibility()
         })
 
+        viewModelTime.timeFilterSetEvent.observe(viewLifecycleOwner, Observer {
+            analytics.logEvent(MAP_TIME_FILTER_COMPLETE, Bundle().apply {
+                putString(MAP_TIME_FILTER_START_TIME_PARAM, viewModelTime.startTime.value)
+                putString(MAP_TIME_FILTER_END_TIME_PARAM, viewModelTime.endTime.value)
+            })
+        })
+
+        viewModelTime.inputTimeEvent.observe(viewLifecycleOwner, Observer {
+            if(it) {
+                analytics.logEvent(MAP_TIME_FILTER_START_INPUT, null)
+            } else {
+                analytics.logEvent(MAP_TIME_FILTER_END_INPUT, null)
+            }
+        })
+
         viewModelTime.checkTimeLimit.observe(viewLifecycleOwner, Observer {
             if(it.isNotEmpty()) {
                 Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
@@ -227,6 +250,8 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
         viewModelTime.isReset.observe(viewLifecycleOwner, Observer {
             if(::markerManager.isInitialized) markerManager.setMarker(arrayListOf())
             viewModel.reqMarker(naverMap.cameraPosition.target, naverMap.cameraPosition.zoom, viewModelTime.startTime.value?.to24hourString(), viewModelTime.endTime.value?.to24hourString())
+
+            analytics.logEvent(MAP_TIME_FILTER_RESET, null)
         })
 
         viewModelTime.isOpen.observe(viewLifecycleOwner, Observer {
@@ -307,6 +332,7 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
 
         viewModel.categoryEvent.observe(viewLifecycleOwner, Observer {
             bottomSheetCategory.show()
+            analytics.logEvent(MEDICAL_CATEGORY_OPEN, null)
         })
 
         viewModel.refreshEvent.observe(viewLifecycleOwner, Observer {
@@ -338,10 +364,14 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
         categoryViewModel.currentSelectItem.observe(viewLifecycleOwner, Observer {
             viewModel.reqMarkerWithCategory(it, viewModelTime.startTime.value?.to24hourString(), viewModelTime.endTime.value?.to24hourString())
             bottomSheetCategory.dismiss()
+            analytics.logEvent(MEDICAL_CATEGORY_TYPE, Bundle().apply {
+                putString(MEDICAL_CATEGORY_TYPE_PARAM, it)
+            })
         })
 
         categoryViewModel.refreshEvent.observe(viewLifecycleOwner, Observer {
             categoryAdapter.childViewList[0].isChecked = true
+            analytics.logEvent(MEDICAL_CATEGORY_RESET, null)
         })
 
         categoryViewModel.categoryCloseEvent.observe(viewLifecycleOwner, Observer {
@@ -467,7 +497,10 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
         isSelected = false
         markerManager.deSelectMarker()
         naverMap.setContentPadding(0, 0, 0, 0)
-        bottomSheetBehavior.state = STATE_COLLAPSED
+        if(bottomSheetBehavior.state == STATE_EXPANDED) {
+            bottomSheetBehavior.state = STATE_COLLAPSED
+            analytics.logEvent(MAP_TIME_FILTER_DIMMED, null)
+        }
     }
 
     override fun onStart() {
