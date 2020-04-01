@@ -105,7 +105,7 @@ internal class MaskActivity : BaseActivity<ActivityMaskMapBinding, MaskMapViewMo
 
         val medicalData = Bundle().apply {
             (marker.tag as MarkerUIData)?.let {
-                putParcelable(PreviewMaskFragment.KEY_MEDICAL, StoreSale(it.name,it.name,it.maskAddress,it.maskType,it.location.latitude.toFloat(),it.location.longitude.toFloat(),it.maskStock,it.maskState.state))
+                putParcelable(PreviewMaskFragment.KEY_MEDICAL, StoreSale(it.name,it.name,it.maskAddress,it.maskType,it.location.latitude.toFloat(),it.location.longitude.toFloat(),it.maskStock?:"",it.maskState.state))
             }
             naverMap.cameraPosition.target?.let { loc ->
                 Timber.d("MapApps - $loc")

@@ -15,6 +15,7 @@ import com.nexters.doctor24.todoc.data.mask.response.StoreSale
 import com.nexters.doctor24.todoc.databinding.PreviewMaskFragmentBinding
 import com.nexters.doctor24.todoc.ui.findload.FindLoadDialog
 import com.nexters.doctor24.todoc.ui.findload.FindLoadViewModel
+import com.nexters.doctor24.todoc.util.stockAt
 import com.nexters.doctor24.todoc.util.toDistance
 import kotlinx.android.synthetic.main.preview_mask_fragment.*
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
@@ -58,7 +59,7 @@ internal class PreviewMaskFragment : BottomSheetDialogFragment() {
                 id = it.code,
                 type = it.type,
                 placeName = it.name,
-                stockAt = it.stockAt,
+                stockAt = stockAt(it.stockAt),
                 address = it.addr,
                 distance = to.toDistance(from),
                 state = it.state!!

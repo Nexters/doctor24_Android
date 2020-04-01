@@ -1,3 +1,4 @@
+/*
 package com.nexters.doctor24.todoc.ui.map
 
 import android.content.SharedPreferences
@@ -25,9 +26,11 @@ import org.mockito.Mock
 import org.mockito.Mockito
 import org.mockito.junit.MockitoJUnitRunner
 
+*/
 /**
  * Created by jiyoung on 13/01/2020
- */
+ *//*
+
 @ExperimentalCoroutinesApi
 @RunWith(MockitoJUnitRunner::class)
 class NaverMapViewModelTest {
@@ -119,4 +122,4 @@ class NaverMapViewModelTest {
         }
     }
 
-}
+}*/

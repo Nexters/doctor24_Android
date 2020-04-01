@@ -200,6 +200,15 @@ fun setMinute(min: Int): String {
         "0$min"
 }
 
+fun stockAt(string: String) : String{
+
+    val stockTime = string.split(" ")
+    val day = stockTime[0].split("/")
+    val time = stockTime[1].split(":")
+
+    return day[1]+"월 "+day[2]+"일  " + setTime(time[0].toInt(),time[1].toInt())
+}
+
 fun setTime(hour: Int, minute: Int): String {
     return """${setAmPm(hour)} ${setHour(hour)}:${setMinute(minute)}"""
 }
