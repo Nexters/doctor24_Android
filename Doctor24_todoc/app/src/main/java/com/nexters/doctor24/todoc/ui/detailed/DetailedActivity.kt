@@ -11,6 +11,7 @@ import android.widget.Toast
 import androidx.core.net.toUri
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.GridLayoutManager
+import com.google.firebase.analytics.FirebaseAnalytics
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.CameraUpdate
 import com.naver.maps.map.NaverMap
@@ -20,6 +21,10 @@ import com.naver.maps.map.overlay.InfoWindow
 import com.naver.maps.map.overlay.Marker
 import com.naver.maps.map.overlay.OverlayImage
 import com.nexters.doctor24.todoc.R
+import com.nexters.doctor24.todoc.analytics.MEDICAL_DETAIL_CALL
+import com.nexters.doctor24.todoc.analytics.MEDICAL_DETAIL_CLOSE
+import com.nexters.doctor24.todoc.analytics.MEDICAL_DETAIL_FIND_LOAD
+import com.nexters.doctor24.todoc.analytics.MEDICAL_DETAIL_MINI_MAP
 import com.nexters.doctor24.todoc.base.BaseActivity
 import com.nexters.doctor24.todoc.data.detailed.response.DetailedInfoData
 import com.nexters.doctor24.todoc.databinding.DetailedFragmentBinding
@@ -27,6 +32,7 @@ import com.nexters.doctor24.todoc.ui.detailed.adapter.DayAdapter
 import com.nexters.doctor24.todoc.ui.findload.FindLoadDialog
 import com.nexters.doctor24.todoc.ui.findload.FindLoadViewModel
 import com.nexters.doctor24.todoc.util.isCurrentMapDarkMode
+import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import timber.log.Timber
 
@@ -51,6 +57,8 @@ internal class DetailedActivity : BaseActivity<DetailedFragmentBinding, Detailed
     private val findLoadViewModel: FindLoadViewModel by viewModel()
     private val findLoadDialog: FindLoadDialog by lazy { FindLoadDialog(findLoadViewModel) }
     private var detailData : DetailedInfoData? = null
+
+    private val analytics : FirebaseAnalytics by inject()
 
     @SuppressLint("SourceLockedOrientationActivity")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -81,11 +89,13 @@ internal class DetailedActivity : BaseActivity<DetailedFragmentBinding, Detailed
         binding.tvDetailedFragAddressDistance.text = intent.extras?.getString(KEY_DISTANCE) ?: ""
         binding.ivDetailedFragGotoMap.setOnClickListener {
             findLoadDialog.show(supportFragmentManager, FindLoadDialog.TAG)
+            analytics.logEvent(MEDICAL_DETAIL_FIND_LOAD, null)
         }
 
         binding.tvDetailedFragCallBtn.setOnClickListener {
             detailData?.phone.let {
                 startActivity(Intent(Intent.ACTION_DIAL, ("tel:${it ?: ""}").toUri()))
+                analytics.logEvent(MEDICAL_DETAIL_CALL, null)
             }
         }
     }
@@ -100,6 +110,7 @@ internal class DetailedActivity : BaseActivity<DetailedFragmentBinding, Detailed
         })
 
         viewModel.closeDetailed.observe(this, Observer {
+            analytics.logEvent(MEDICAL_DETAIL_CLOSE, null)
             finish()
         })
 
@@ -136,6 +147,8 @@ internal class DetailedActivity : BaseActivity<DetailedFragmentBinding, Detailed
             setBackgroundResource(NaverMap.DEFAULT_BACKGROUND_DRWABLE_DARK)
             mapType = NaverMap.MapType.Navi
         }
+
+        map.setOnMapClickListener { pointF, latLng -> analytics.logEvent(MEDICAL_DETAIL_MINI_MAP, null) }
         viewModel.setNaverMapView(map)
     }
 

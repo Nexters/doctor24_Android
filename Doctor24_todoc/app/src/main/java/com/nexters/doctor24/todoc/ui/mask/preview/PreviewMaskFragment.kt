@@ -8,8 +8,13 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import com.google.firebase.analytics.FirebaseAnalytics
 import com.naver.maps.geometry.LatLng
 import com.nexters.doctor24.todoc.R
+import com.nexters.doctor24.todoc.analytics.MASK_FIND_LOAD
+import com.nexters.doctor24.todoc.analytics.MASK_MARKER_CLOSE
+import com.nexters.doctor24.todoc.analytics.MASK_MARKER_TAP
+import com.nexters.doctor24.todoc.analytics.MASK_STATE_PARAM
 import com.nexters.doctor24.todoc.data.marker.MaskStateEnum
 import com.nexters.doctor24.todoc.data.mask.response.StoreSale
 import com.nexters.doctor24.todoc.databinding.PreviewMaskFragmentBinding
@@ -18,6 +23,7 @@ import com.nexters.doctor24.todoc.ui.findload.FindLoadViewModel
 import com.nexters.doctor24.todoc.util.stockAt
 import com.nexters.doctor24.todoc.util.toDistance
 import kotlinx.android.synthetic.main.preview_mask_fragment.*
+import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -36,6 +42,8 @@ internal class PreviewMaskFragment : BottomSheetDialogFragment() {
     private val previewMaskViewModel: PreviewMaskViewModel by sharedViewModel()
     private val findLoadViewModel: FindLoadViewModel by viewModel()
     private val findLoadDialog: FindLoadDialog by lazy { FindLoadDialog(findLoadViewModel) }
+
+    private val analytics : FirebaseAnalytics by inject()
 
     interface PreviewListener {
         fun onClosedPreview()
@@ -98,8 +106,13 @@ internal class PreviewMaskFragment : BottomSheetDialogFragment() {
         super.onViewCreated(view, savedInstanceState)
         binding.item = previewMaskData
 
+        analytics.logEvent(MASK_MARKER_TAP, Bundle().apply {
+            putString(MASK_STATE_PARAM, previewMaskData?.state)
+        })
+
         binding.tvPreviewMaskGotoMap.setOnClickListener {
             findLoadDialog.show(childFragmentManager, FindLoadDialog.TAG)
+            analytics.logEvent(MASK_FIND_LOAD, null)
         }
 
         drawMaskIcon(previewMaskData!!.state)
@@ -109,6 +122,7 @@ internal class PreviewMaskFragment : BottomSheetDialogFragment() {
     override fun onDestroy() {
         super.onDestroy()
         listener?.onClosedPreview()
+        analytics.logEvent(MASK_MARKER_CLOSE, null)
     }
 
     private fun drawMaskIcon(state: String) {

@@ -149,11 +149,11 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
 
         binding.textTabHospital.setOnClickListener {
             viewModel.onChangeTab(MarkerTypeEnum.HOSPITAL)
-            analytics.logEvent(MAP_HOSPITAL_TAB, null)
+            analytics.logEvent(MAP_HOSPITAL_TAP, null)
         }
         binding.textTabPharmacy.setOnClickListener {
             viewModel.onChangeTab(MarkerTypeEnum.PHARMACY)
-            analytics.logEvent(MAP_PHARMACY_TAB, null)
+            analytics.logEvent(MAP_PHARMACY_TAP, null)
         }
 
         binding.buttonLocation.setOnClickListener {
@@ -172,6 +172,7 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
                 }
             }
             naverMap.locationTrackingMode = locationState
+            analytics.logEvent(MAP_MY_LOCATION, null)
         }
 
         binding.buttonList.setOnClickListener {
@@ -181,6 +182,9 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
                 }
             }
             startActivity(listIntent)
+            analytics.logEvent(MEDICAL_LIST_TAP, Bundle().apply {
+                putString(MARKER_PREVIEW_TYPE_PARAM, viewModel.tabChangeEvent.value?.type ?: MarkerTypeEnum.HOSPITAL.type)
+            })
         }
 
         binding.linearLayout.setOnClickListener {
@@ -337,6 +341,7 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
 
         viewModel.refreshEvent.observe(viewLifecycleOwner, Observer {
             binding.btnRefresh.isVisible = false
+            analytics.logEvent(MAP_REFRESH, null)
         })
 
         viewModel.currentCategory.observe(viewLifecycleOwner, Observer {
@@ -354,6 +359,7 @@ internal class NaverMapFragment : BaseFragment<NavermapFragmentBinding, NaverMap
 
         viewModel.maskModeEvent.observe(viewLifecycleOwner, Observer {
             startActivity(Intent(context, MaskActivity::class.java))
+            analytics.logEvent(MASK_MODE_TAP, null)
         })
 
         viewModel.errorData.observe(viewLifecycleOwner, Observer {

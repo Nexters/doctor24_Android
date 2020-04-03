@@ -9,10 +9,12 @@ import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.Observer
+import com.google.firebase.analytics.FirebaseAnalytics
 import com.naver.maps.map.*
 import com.naver.maps.map.overlay.Marker
 import com.naver.maps.map.util.FusedLocationSource
 import com.nexters.doctor24.todoc.R
+import com.nexters.doctor24.todoc.analytics.*
 import com.nexters.doctor24.todoc.base.BaseActivity
 import com.nexters.doctor24.todoc.base.EventObserver
 import com.nexters.doctor24.todoc.data.mask.response.StoreSale
@@ -25,6 +27,7 @@ import com.nexters.doctor24.todoc.ui.mask.preview.PreviewMaskFragment
 import com.nexters.doctor24.todoc.util.isCurrentMapDarkMode
 import com.nexters.doctor24.todoc.util.selectStyle
 import com.nexters.doctor24.todoc.util.toDp
+import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import timber.log.Timber
 
@@ -45,6 +48,8 @@ internal class MaskActivity : BaseActivity<ActivityMaskMapBinding, MaskMapViewMo
     private lateinit var markerManager: MapMarkerManager
 
     private var isMarkerSelected = false
+
+    private val analytics : FirebaseAnalytics by inject()
 
     @SuppressLint("SourceLockedOrientationActivity")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -121,7 +126,6 @@ internal class MaskActivity : BaseActivity<ActivityMaskMapBinding, MaskMapViewMo
             listener = this@MaskActivity
         }.show(supportFragmentManager, PreviewMaskFragment.TAG)
 
-
         markerManager.getMarkerItem(marker)?.run {
             if (markerManager.isEqualsSelectMarker(this)) return
             selectMarker(this)
@@ -187,9 +191,11 @@ internal class MaskActivity : BaseActivity<ActivityMaskMapBinding, MaskMapViewMo
         viewModel.refreshEvent.observe(this, Observer {
             if (::markerManager.isInitialized) markerManager.setMarker(arrayListOf())
             viewModel.reqMaskMarker(naverMap.cameraPosition.target)
+            analytics.logEvent(MASK_REFRESH, null)
         })
 
         viewModel.closeEvent.observe(this, Observer {
+            analytics.logEvent(MASK_MOSE_CLOSE, null)
             finish()
         })
 
@@ -214,6 +220,9 @@ internal class MaskActivity : BaseActivity<ActivityMaskMapBinding, MaskMapViewMo
                     if (it) getString(R.string.mask_stock_on) else getString(R.string.mask_stock_off)
             }
             showOnlyStock(it)
+            analytics.logEvent(MASK_STOCK_ON_OFF, Bundle().apply {
+                putString(MASK_STOCK_ACTIVE_PARAM, it.toString())
+            })
         })
 
         viewModel.showPopup.observe(this, Observer {
