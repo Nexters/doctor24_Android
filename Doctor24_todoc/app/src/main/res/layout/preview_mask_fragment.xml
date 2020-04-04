@@ -138,8 +138,6 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="6dp"
                     android:layout_marginTop="4dp"
-                    android:lines="1"
-                    android:ellipsize="end"
                     android:text="@{item.address}"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@+id/iv_detailed_frag_address_ic"
