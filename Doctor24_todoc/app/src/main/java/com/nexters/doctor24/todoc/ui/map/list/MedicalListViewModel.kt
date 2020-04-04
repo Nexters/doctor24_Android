@@ -8,8 +8,15 @@ import com.nexters.doctor24.todoc.base.SingleLiveEvent
 
 internal class MedicalListViewModel : BaseViewModel() {
 
+    private val _sortEvent = SingleLiveEvent<Unit>()
+    val sortEvent : LiveData<Unit> get() = _sortEvent
+
     private val _closeEvent = SingleLiveEvent<Unit>()
     val closeEvent : LiveData<Unit> get() = _closeEvent
+
+    fun onClickSort() {
+        _sortEvent.call()
+    }
 
     fun onClickClose() {
         _closeEvent.call()

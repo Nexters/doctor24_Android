@@ -6,8 +6,10 @@ import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.firebase.analytics.FirebaseAnalytics
 import com.naver.maps.geometry.LatLng
 import com.nexters.doctor24.todoc.R
+import com.nexters.doctor24.todoc.analytics.MEDICAL_LIST_SORT
 import com.nexters.doctor24.todoc.base.BaseActivity
 import com.nexters.doctor24.todoc.data.marker.MarkerTypeEnum
 import com.nexters.doctor24.todoc.data.marker.response.ResMapMarker
@@ -18,6 +20,7 @@ import com.nexters.doctor24.todoc.ui.findload.FindLoadViewModel
 import com.nexters.doctor24.todoc.ui.map.marker.group.GroupMarkerListDialog
 import com.nexters.doctor24.todoc.util.toDistance
 import com.nexters.doctor24.todoc.util.toDistanceDouble
+import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import timber.log.Timber
 
@@ -40,6 +43,8 @@ internal class MedicalListActivity : BaseActivity<ActivityMedicalListBinding, Me
     private val listAdapter by lazy { MedicalListAdapter().apply { listener = this@MedicalListActivity } }
     private val findLoadViewModel : FindLoadViewModel by viewModel()
     private val findLoadDialog : FindLoadDialog by lazy { FindLoadDialog(findLoadViewModel) }
+
+    private val analytics : FirebaseAnalytics by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -103,6 +108,10 @@ internal class MedicalListActivity : BaseActivity<ActivityMedicalListBinding, Me
     private fun initObserve() {
         viewModel.closeEvent.observe(this, Observer {
             finish()
+        })
+
+        viewModel.sortEvent.observe(this, Observer {
+            analytics.logEvent(MEDICAL_LIST_SORT, null)
         })
     }
 

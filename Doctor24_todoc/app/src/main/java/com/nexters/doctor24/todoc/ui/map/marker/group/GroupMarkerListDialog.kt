@@ -4,22 +4,20 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.DisplayMetrics
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import androidx.databinding.DataBindingUtil
-import androidx.databinding.ViewDataBinding
-import androidx.databinding.library.baseAdapters.BR
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import androidx.viewbinding.ViewBinding
+import com.google.firebase.analytics.FirebaseAnalytics
 import com.naver.maps.geometry.LatLng
 import com.nexters.doctor24.todoc.R
+import com.nexters.doctor24.todoc.analytics.*
 import com.nexters.doctor24.todoc.base.BaseDialogFragment
 import com.nexters.doctor24.todoc.data.marker.MarkerTypeEnum
 import com.nexters.doctor24.todoc.data.marker.response.OperatingDate
@@ -29,11 +27,8 @@ import com.nexters.doctor24.todoc.databinding.ItemListHospitalBinding
 import com.nexters.doctor24.todoc.ext.dpToPixel
 import com.nexters.doctor24.todoc.ui.detailed.DetailedActivity
 import com.nexters.doctor24.todoc.ui.map.NaverMapViewModel
-import com.nexters.doctor24.todoc.ui.map.preview.PreviewFragment
 import com.nexters.doctor24.todoc.util.toDistance
-import com.nexters.doctor24.todoc.util.toDistanceDouble
-import kotlinx.android.extensions.LayoutContainer
-import kotlinx.android.synthetic.main.item_list_hospital.*
+import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import timber.log.Timber
 
@@ -52,6 +47,8 @@ class GroupMarkerListDialog : BaseDialogFragment<GroupMarkerListDialogBinding>()
     private val viewModel: NaverMapViewModel by sharedViewModel()
     private var groupData: ArrayList<ResMapMarker>? = arrayListOf()
     private var location : LatLng? = null
+
+    private val analytics : FirebaseAnalytics by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -94,7 +91,8 @@ class GroupMarkerListDialog : BaseDialogFragment<GroupMarkerListDialogBinding>()
                 todayHour = it.day,
                 distance = location?.toDistance(LatLng(it.latitude, it.longitude)) ?: "",
                 determine = location,
-                isShowFindLoad = false
+                isShowFindLoad = false,
+                categories = it.categories.toString()
             )
         }
         binding.recyclerViewMarkerList.apply {
@@ -103,11 +101,14 @@ class GroupMarkerListDialog : BaseDialogFragment<GroupMarkerListDialogBinding>()
             }
             layoutManager = LinearLayoutManager(context, RecyclerView.VERTICAL, false)
         }
+
+        analytics.logEvent(MARKER_BUNDLE_TAP, null)
     }
 
     private fun initObserve() {
         viewModel.dialogCloseEvent.observe(viewLifecycleOwner, Observer {
             dialogDismiss()
+            analytics.logEvent(MARKER_BUNDLE_CLOSE, null)
         })
     }
 
@@ -153,6 +154,13 @@ class GroupMarkerListDialog : BaseDialogFragment<GroupMarkerListDialogBinding>()
                     putExtra(DetailedActivity.KEY_MEDICAL_ID, item.id)
                     putExtra(DetailedActivity.KEY_DISTANCE, item.distance)
                 })
+
+                analytics.logEvent(MARKER_BUNDLE_DETAIL_OPEN, Bundle().apply {
+                    putString(MARKER_PREVIEW_ID_PARAM, item.id)
+                    putString(MARKER_PREVIEW_NAME_PARAM, item.placeName)
+                    putString(MARKER_PREVIEW_CATEGORY_PARAM, item.categories)
+                    putString(MARKER_PREVIEW_TYPE_PARAM, item.type)
+                })
             }
         }
     }
@@ -169,6 +177,7 @@ class GroupMarkerListDialog : BaseDialogFragment<GroupMarkerListDialogBinding>()
         val distance : String = "",
         val distanceOrder : Double = 0.0,
         val determine : LatLng? = null,
-        val isShowFindLoad : Boolean = false
+        val isShowFindLoad : Boolean = false,
+        val categories : String = ""
     )
 }
